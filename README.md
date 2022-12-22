@@ -100,7 +100,7 @@ wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
 4794 /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
 ```
 
-We now have 4794 families. The pecies tree has been updated to include
+We now have 4794 families. The species tree has been updated to include
 the names of internal nodes given by GeneRax.
 
 ```
