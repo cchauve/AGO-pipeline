@@ -24,7 +24,7 @@ ones not in the size range.
 
 ## Pipeline
 
-The parameters file is `parameters/YGOB.yaml`. As I had spaces issues,
+The parameters file is `parameters/YGOB_test1_NT.yml`. As I had spaces issues,
 I have set the output directories (log and results) in
 `/scratch/chauvec/SPP`.  
 
