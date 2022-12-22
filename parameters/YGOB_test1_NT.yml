@@ -1,0 +1,58 @@
+# Parameters file to process YGOB data
+version: 2
+run_name: &run_name YGOB_test1_NT
+
+# Environment
+root_dir:        &root_dir /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE
+exp_dir_pref:    &exp_dir_pref /scratch/chauvec/SPP
+tools_dir:       !join [*root_dir, /bin]
+data_dir:        !join [*root_dir, /data/YGOB]
+in_scripts_dir:  !join [*root_dir, /scripts]
+main_script:     !join [*root_dir, /YGOB.py]
+
+# Data
+species_tree:    species_tree.newick
+species:         species.txt
+families:        families.txt
+genes_dir:       genes
+gene_orders_dir: gene_orders
+map:             map.txt
+
+# SLURM
+slurm_account: def-chauvec
+
+# MACSE
+macse_template:       MACSE_template.sh
+macse_script:         MACSE.sh
+macse_rerun_pref:     MACSE_rerun
+macse_log_pref:       macse
+macse_dir:            MACSE
+macse_memory:         '4G'
+macse_time:           '00:30:00'
+
+# GeneRax
+generax_template: GeneRax_template.sh
+generax_script:   GeneRax.sh
+generax_dir:      GeneRax
+generax_log_pref: generax
+generax_families: families.txt
+generax_memory:   '4G'
+generax_time:     '12:00:00'
+generax_subst:    GTR+G
+generax_seq:      NT
+generax_strategy: SPR
+generax_seed:     '123'
+generax_model:    UndatedDL
+generax_options:  '--per-family-rates --si-quartet-support'
+generax_ntasks:   '100'
+generax_ncores:   '48'
+
+# Treerecs
+treerecs_template: Treerecs_template.sh
+treerecs_script:   Treerecs.sh
+treerecs_dir:      Treerecs
+treerecs_log_pref: treerecs
+treerecs_memory:   '4G'
+treerecs_time:     '01:00:00'
+treerecs_subst:    GTR
+treerecs_options:  '-O recphyloxml -f --info -v -r -C --ale-evaluation'
