@@ -113,7 +113,6 @@ obtained with GeneRax.
 ### Treerecs
 
 ```
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_treerecs
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_treerecs y
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml check_treerecs y
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_treerecs n

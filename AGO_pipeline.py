@@ -631,25 +631,6 @@ def stats_generax_slurm(parameters):
 
 # Treerecs functions ----------------------------------------------------------
 
-'''  Create Treerecs alignment files, one per family '''
-def aux_treerecs(parameters):
-    '''
-    output:
-    - creates file parameters['treerecs_aux_dir']/parameters['generax_families']_<familyname>
-      for each active family
-    File formats are the ones required by Treerecs: sequence substitution model\nalignment file path
-    '''
-    active_families = get_active_families(parameters)
-    for idx in active_families:
-        treerecs_family_file = os.path.join(
-            parameters['treerecs_aux_dir'], f'{parameters["generax_families"]}_{idx}'
-        )
-        alignment_file = os.path.join(
-            parameters['macse_results_dir'], f'{idx}_{parameters["generax_seq"]}.fasta'
-        )
-        with open(treerecs_family_file, 'w') as f:
-            f.write(f'# {idx}\n{parameters["treerecs_subst"]}\n{alignment_file}')
-
 ''' Substitutions in Treerecs template file to create GeneRax SLURM script '''
 def treerecs_script_patterns(parameters):
     return(
@@ -664,7 +645,6 @@ def treerecs_script_patterns(parameters):
             'XX_treerecs_time': str(parameters['treerecs_time']),
             'XX_treerecs_options': parameters['treerecs_options'],
             'XX_treerecs_map_file_prefix': os.path.join(parameters['generax_aux_dir'], parameters['generax_families']),
-            'XX_treerecs_alg_file_prefix': os.path.join(parameters['treerecs_aux_dir'], parameters['generax_families']),
             'XX_treerecs_log_dir': parameters['treerecs_log_dir'],
             'XX_treerecs_log_pref': parameters['treerecs_log_pref'],
             'XX_treerecs_results_dir': parameters['treerecs_results_dir']
@@ -800,8 +780,6 @@ def main():
         backup_suffix = sys.argv[3]
         update_active_families_post_step(parameters, parameters['generax_err_file'], backup_suffix)
         update_active_species_tree(parameters, parameters['generax_species_tree'], backup_suffix)
-    elif command == 'aux_treerecs':
-        aux_treerecs(parameters)
     elif command == 'run_treerecs':
         if len(sys.argv) == 4: run_val = (sys.argv[3] in TRUE_LIST)
         else: run_val = False
