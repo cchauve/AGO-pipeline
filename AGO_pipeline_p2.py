@@ -5,11 +5,7 @@
 
 import os
 import sys
-import shutil
-import functools
 import yaml
-from collections import defaultdict
-import xml.etree.ElementTree as ET
 import subprocess
 
 ''' Constants '''
@@ -52,7 +48,6 @@ def read_parameters(in_file):
         run_name = parameters['run_name']
         # Tools-independent directories
         parameters['exp_dir'] = os.path.join(parameters['exp_dir_pref'], run_name)
-        parameters['scripts_dir'] = os.path.join(parameters['exp_dir'], 'scripts')
         parameters['results_dir'] = os.path.join(parameters['exp_dir'], 'results')
         parameters['log_dir'] = os.path.join(parameters['exp_dir'], 'log')
         parameters['aux_dir'] = os.path.join(parameters['exp_dir'], 'aux')
