@@ -47,6 +47,10 @@ generax_options:  '--per-family-rates --si-quartet-support'
 generax_ntasks:   '100'
 generax_ncores:   '48'
 
+# RecPhyloXML
+recphyloxml_convert: 'recPhyloXML/python/NHXtoRecPhyloXML.py'
+recphyloxml_events:  'recPhyloXML/python/recPhyloXMLEventSummary.py'
+
 # Treerecs
 treerecs_template: Treerecs_template.sh
 treerecs_script:   Treerecs.sh

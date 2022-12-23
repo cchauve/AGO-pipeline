@@ -29,7 +29,7 @@ I have set the output directories (log and results) in
 `/scratch/chauvec/SPP`.  
 
 ```
-source /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/SPP/bin/activate
+source AGO_python3/bin/activate
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml init
 wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
 5028 /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
@@ -76,7 +76,7 @@ wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt_pre_MACSE
 5028 /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt_pre_MACSE
 ```
 
-We now have 4981 families.  
+We now have 4981 families. 
 
 ### GeneRax
 
@@ -93,6 +93,7 @@ grep -c ">" /scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_GeneRax.err
 ```
 
 There are 187 families for which GeneRax could not read the alignment.
+We update the active families and species tree.
 
 ```
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml update_post_generax pre_GeneRax
@@ -100,24 +101,20 @@ wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
 4794 /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
 ```
 
-We now have 4794 families. The species tree has been updated to include
-the names of internal nodes given by GeneRax.
+We now have 4794 families.  
+
+We convert the reconciled trees in recPhyloXML format and compute
+statistics for each tree.
 
 ```
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_generax n
+source AGO_python2/bin/activate
+python AGO_pipeline_p2.py parameters/YGOB_test1_NT.yml postprocess_generax
+deactivate
+python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_generax
 ```
 
 We can observe again a gene content inflation in reconciled gene trees 
 obtained with GeneRax.  
 
-### Treerecs
 
-```
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_treerecs y
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml check_treerecs y
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_treerecs n
-```
-
-Trerecs is ran with one process per family but it could be ran as a
-single parallel process with all gene trees in a single file. This
-should be proposed as an option.
+### DeCoSTAR

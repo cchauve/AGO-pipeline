@@ -12,6 +12,39 @@ from collections import defaultdict
 import xml.etree.ElementTree as ET
 import subprocess
 
+''' Constants '''
+
+# log/err files suffixes
+LOG_SUFF = 'log'
+ERR_SUFF = 'err'
+CSV_SUFF = 'csv'
+REC_SUFF = 'recphyloxml.xml'
+NHX_SUFF = 'nhx'
+# log messages
+SUCCESS_MSG = 'SUCCESS'
+ERROR_MSG = 'ERROR'
+# Error files separators
+SEP_ERR_FAM_ID = ':'
+SEP_ERR_FIELDS = '\t'
+# Stats files separators
+SEP_STATS = ':'
+SEP_SPECIES = ','
+SEP_STATS_FIELDS = '\t'
+# Statistics dictionary keys
+STATS_genes = 'genes' # Number of genes
+STATS_dup = 'duplications' # Number of duplications
+STATS_loss = 'losses' # Number of losses
+# XML tags to corresponding statistics keys
+STATS_xmlkeys = {'leaf': STATS_genes, 'speciation': STATS_genes, 'duplication': STATS_dup, 'loss': STATS_loss}
+STATS_keys = [STATS_genes, STATS_dup, STATS_loss]
+# Gene maps files separators
+SEP_GENE_MAP = '\t'
+# Empty file string
+EMPTY_FILE = 'EMPTY FILE'
+# Tools names
+MACSE = 'MACSE'
+GENERAX = 'GeneRax'
+
 ''' Reading the parameters YAML file '''
 def read_parameters(in_file):
     '''
@@ -58,27 +91,19 @@ def read_parameters(in_file):
         parameters['generax_log_dir'] = os.path.join(parameters['log_dir'], parameters['generax_dir'])
         parameters['generax_results_dir'] = os.path.join(parameters['results_dir'], parameters['generax_dir'])
         parameters['generax_aux_dir'] = os.path.join(parameters['aux_dir'], parameters['generax_dir'])
-        parameters['treerecs_log_dir'] = os.path.join(parameters['log_dir'], parameters['treerecs_dir'])
-        parameters['treerecs_results_dir'] = os.path.join(parameters['results_dir'], parameters['treerecs_dir'])
-        parameters['treerecs_aux_dir'] = os.path.join(parameters['aux_dir'], parameters['treerecs_dir'])
         # Tools-specific files
         parameters['macse_template_file'] = os.path.join(parameters['in_scripts_dir'], parameters['macse_template'])
         parameters['macse_script_file'] = os.path.join(parameters['scripts_dir'], parameters['macse_script'])
-        parameters['macse_log_file'] = os.path.join(parameters['log_dir'], f'{run_name}_MACSE.log')
-        parameters['macse_err_file'] = os.path.join(parameters['log_dir'], f'{run_name}_MACSE.err')
+        parameters['macse_log_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{MACSE}.{LOG_SUFF}')
+        parameters['macse_err_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{MACSE}.{ERR_SUFF}')
         parameters['generax_template_file'] = os.path.join(parameters['in_scripts_dir'], parameters['generax_template'])
         parameters['generax_script_file'] = os.path.join(parameters['scripts_dir'], parameters['generax_script'])
-        parameters['generax_log_file'] = os.path.join(parameters['log_dir'], f'{run_name}_GeneRax.log')
-        parameters['generax_err_file'] = os.path.join(parameters['log_dir'], f'{run_name}_GeneRax.err')
-        parameters['generax_stats_file'] = os.path.join(parameters['log_dir'], f'{run_name}_GeneRax.csv')
+        parameters['generax_log_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{GENERAX}.{LOG_SUFF}')
+        parameters['generax_err_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{GENERAX}.{ERR_SUFF}')
+        parameters['generax_stats_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{GENERAX}.{CSV_SUFF}')
         parameters['generax_species_tree'] = os.path.join(
             parameters['generax_results_dir'], 'species_trees', 'starting_species_tree.newick'
         )
-        parameters['treerecs_template_file'] = os.path.join(parameters['in_scripts_dir'], parameters['treerecs_template'])
-        parameters['treerecs_script_file'] = os.path.join(parameters['scripts_dir'], parameters['treerecs_script'])
-        parameters['treerecs_log_file'] = os.path.join(parameters['log_dir'], f'{run_name}_Treerecs.log')
-        parameters['treerecs_err_file'] = os.path.join(parameters['log_dir'], f'{run_name}_Treerecs.err')
-        parameters['treerecs_stats_file'] = os.path.join(parameters['log_dir'], f'{run_name}_Treerecs.csv')
 
     return(parameters)
 
@@ -98,32 +123,11 @@ def init(parameters):
     os.makedirs(parameters['generax_log_dir'], exist_ok=True)
     os.makedirs(parameters['generax_results_dir'], exist_ok=True)
     os.makedirs(parameters['generax_aux_dir'], exist_ok=True)
-    os.makedirs(parameters['treerecs_log_dir'], exist_ok=True)
-    os.makedirs(parameters['treerecs_results_dir'], exist_ok=True)
-    os.makedirs(parameters['treerecs_aux_dir'], exist_ok=True)
     with open(parameters['data_families'], 'r') as f1, open(parameters['active_families'], 'w') as f2:
         for fam in f1.readlines(): f2.write(f'{fam.split()[0]}\n')
     shutil.copy(parameters['data_species_tree'], parameters['active_species_tree'])
     shutil.copy(parameters['data_genes_map'], parameters['active_genes_map'])
 
-# log/err files suffixes
-LOG_SUFF = 'log'
-ERR_SUFF = 'err'
-# Error files separators
-SEP_ERR_FAM_ID = ':'
-SEP_ERR_FIELDS = '\t'
-# Stats files separators
-SEP_STATS = ':'
-SEP_SPECIES = ','
-SEP_STATS_FIELDS = '\t'
-# Statistics dictionary keys
-STATS_genes = 'genes' # Number of genes
-STATS_dup = 'duplications' # Number of duplications
-STATS_loss = 'losses' # Number of losses
-# XML tags to corresponding statistics keys
-STATS_keys = {'leaf': STATS_genes, 'speciation': STATS_genes, 'duplication': STATS_dup, 'loss': STATS_loss}
-# Gene maps files separators
-SEP_GENE_MAP = '\t'
 
 # Auxiliary functions ----------------------------------------------------------
         
@@ -146,22 +150,23 @@ def update_active_families(parameters, families_to_remove, backup_suffix):
     - modifies parameters['active_families']
     - creates parameters['active_families']_<backup_suffix>
     '''
-    backup_file = f'{parameters["active_families"]}_{backup_suffix}'
+    active_file = parameters['active_families']
+    backup_file = f'{active_file}_{backup_suffix}'
     if not os.path.isfile(backup_file):
-        shutil.copy(active_families, backup_file)
+        shutil.copy(active_file, backup_file)
         active_families = [i for i in get_active_families(parameters) if i not in families_to_remove]
         with open(parameters['active_families'], 'w') as f:
             for i in active_families: f.write(f'{i}\n')
 
 ''' Creates an error family id ><idx><SEP_ERR_FAM_ID><name> '''
-def set_err_family_id(family_idx, family_name):
+def set_family_id(family_idx, family_name):
     return(f'>{family_idx}{SEP_ERR_FAM_ID}{family_name}')            
 ''' Extracts the family name (str) from an error family index '''
-def get_err_family_name(err_family):
-    return(err_family.split(SEP_ERR_FAM_ID)[1])
+def get_family_name(family):
+    return(family.split(SEP_ERR_FAM_ID)[1])
 ''' Extracts the family idx (str) from an error family index '''
-def get_err_family_idx(err_family):
-    return(err_family.split(SEP_ERR_FAM_ID)[0][1:])
+def get_family_idx(family):
+    return(family.split(SEP_ERR_FAM_ID)[0][1:])
                 
 ''' Update active families from a step error file '''
 def update_active_families_post_step(parameters, err_file, backup_suffix):
@@ -177,7 +182,7 @@ def update_active_families_post_step(parameters, err_file, backup_suffix):
     - creates parameters['active_families']_<backup_suffix>
     '''
     with open(err_file, 'r') as f:
-        families_2_remove = [get_err_family_name(l.split(SEP_ERR_FIELDS)[0]) for l in f.readlines()[1:]]
+        families_2_remove = [get_family_name(l.split(SEP_ERR_FIELDS)[0]) for l in f.readlines()[1:]]
     update_active_families(parameters, families_2_remove, backup_suffix)
 
 ''' Update the active species tree '''
@@ -251,6 +256,17 @@ def create_slurm_script(parameters, template_key, script_key, patterns, run_scri
     else:
         return(None)
 
+''' Read the last line of a file '''
+def get_last_line_file(file_path):
+    '''
+    output: (str) last line of file or EMPTY_FILE if empty file
+    '''
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+        if len(lines) == 0: return(f'{file_path} {EMPTY_FILE}')
+        else: return(lines[-1].rstrip())
+    
+
 # MACSE functions ----------------------------------------------------------
 
 ''' Substitutions in MACSE template file to create MACSE SLURM script '''
@@ -311,7 +327,7 @@ def rerun_macse(parameters, mem, time, run_script=False):
         jobs_id = []
         for err_line in f1.readlines()[1:]:
             err_family = err_line.split(SEP_ERR_FIELDS)[0]
-            idx,fam = get_err_family_idx(err_family),get_err_family_name(err_family)
+            idx,fam = get_family_idx(err_family),get_family_name(err_family)
             patterns['%a'] = idx
             patterns['${SLURM_ARRAY_TASK_ID}'] = idx
             patterns['${FAMILY_ID}'] = fam
@@ -340,44 +356,27 @@ def check_macse(parameters):
     parameters['macse_err_file'] contains only entries for failed families
     fam_id<SEP_ERR_FIELDS>error message
     parameters['macse_log_file'] contains entries for all families
-    fam_id<SEP_ERR_FIELDS>ERROR/SUCCESS<SEP_ERR_FIELDS>error/success message
+    fam_id<SEP_ERR_FIELDS><ERROR_MSG/SUCCESS_MSG><SEP_ERR_FIELDS>error/success message
     '''
     active_families = get_active_families(parameters)
     with open(parameters['macse_log_file'], 'w') as log_file, open(parameters['macse_err_file'], 'w') as err_file:
         for idx in range(1,len(active_families)+1):
-            fam_id = set_err_family_id(idx, active_families[idx-1])
+            fam_id = set_family_id(idx, active_families[idx-1])
             idx_log_pref = os.path.join(parameters['macse_log_dir'], f'{parameters["macse_log_pref"]}_{idx}')
             idx_log_file,idx_err_file = f'{idx_log_pref}.{LOG_SUFF}',f'{idx_log_pref}.{ERR_SUFF}'
             if not (os.path.exists(idx_log_file) and os.path.exists(idx_err_file)):
-                log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "ERROR", "missing SLURM log"])}')
+                log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, ERROR_MSG, "missing SLURM log"])}')
                 err_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "missing SLURM log"])}')
                 continue
-            with open(idx_log_file, 'r') as idx_log_file, open(idx_err_file, 'r') as idx_err_file:
-                log_last,err_last = idx_log_file.readlines()[-1].rstrip(),idx_err_file.readlines()[-1].rstrip()
+            log_last,err_last = get_last_line_file(idx_log_file),get_last_line_file(idx_err_file)
             if log_last != 'PROGRAM HAS FINISHED SUCCESSFULLY':
-                log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "ERROR", log_last])}')
+                log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, ERROR_MSG, log_last])}')
                 err_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, err_last])}')
                 continue
-            log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "SUCCESS", log_last])}')
+            log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, SUCCESS_MSG, log_last])}')
         return(None)
 
-''' Check the results of MACSE through a SLURM script '''
-def check_macse_slurm(parameters):
-    ''' Same output than function check_macse plus SLURM job ID'''
-    macse_check_script = os.path.join(parameters['scripts_dir'], parameters['macse_script'].replace('.sh', '_check.sh'))
-    with open(macse_check_script, 'w') as check_script:
-        check_script.write('#!/bin/bash')
-        check_script.write('\n')
-        check_script.write(f'\n#SBATCH --account={parameters["slurm_account"]}')
-        check_script.write(f'\n#SBATCH --output={parameters["macse_log_file"].replace(".log","_check.log")}')
-        check_script.write(f'\n#SBATCH --output={parameters["macse_err_file"].replace(".err","_check.log")}')
-        check_script.write('\n')
-        check_script.write(f'\npython {parameters["main_script"]} check_macse')
-    jobid = subprocess.check_output(f'jobid=$(sbatch {macse_check_script})'+' && echo ${jobid##* }', shell=True)
-    return(jobid.decode().rstrip())
-    
-
-# Reconciliations ----------------------------------------------------------------
+# RecPhyloXML ----------------------------------------------------------------
 
 def read_RecPhyloXML(in_file):
     ''' 
@@ -436,7 +435,7 @@ def read_RecPhyloXML(in_file):
             for event in events[1:][::-1]: stats[siblings[get_species(event)]][STATS_loss] += 1
             # Last event
             last_event_tag,last_event_species = get_tag(events[-1]),get_species(events[-1])
-            stats[last_event_species][STATS_keys[last_event_tag]] += 1
+            stats[last_event_species][STATS_xmlkeys[last_event_tag]] += 1
             # Recursive calls
             for child in node.findall(f'{tag_pref}clade'): parse_clade_recursive(child, stats)
         stats = {sp:{STATS_genes: 0, STATS_dup: 0, STATS_loss: 0} for sp in siblings.keys()}
@@ -454,47 +453,6 @@ def read_RecPhyloXML(in_file):
     )
     return(recStats)
 
-''' Computes statistics of reconciliations from a log file and writes them in a csv file '''
-def stats_reconciliation(parameters, log_file_key, stats_file_key):
-    '''
-    output:
-    creates parameters[stats_file_key] 
-    Format: csv with separator SEP_STATS_FIELDS and a header line
-    '''
-    with open(parameters[log_file_key], 'r') as log_file:
-        statistics = {}
-        for family_log in log_file.readlines()[1:]:
-            family_data = family_log.rstrip().split(SEP_ERR_FIELDS)
-            if family_data[1] != 'ERROR': family_stats = family_data[2].split(SEP_SPECIES)
-            for stat in family_stats:
-                species,genes,dup,loss = stat.split(SEP_STATS)
-                if species not in statistics.keys():
-                    statistics[species] = {STATS_genes: 0, STATS_dup: 0, STATS_loss: 0}
-                statistics[species][STATS_genes] += int(genes)
-                statistics[species][STATS_dup] += int(dup)
-                statistics[species][STATS_loss] += int(loss)
-    with open(parameters[stats_file_key], 'w') as stats_file:
-        stats_file.write(SEP_STATS_FIELDS.join(['species', STATS_genes, STATS_dup, STATS_loss]))
-        for species,stats in statistics.items():
-            stats_str = [str(species), str(stats[STATS_genes]), str(stats[STATS_dup]), str(stats[STATS_loss])]
-            stats_file.write(f'\n{SEP_STATS_FIELDS.join(stats_str)}')
-    return(None)
-
-''' Computes statistics of reconciliations through a SLURM script '''
-def stats_reconciliation_slurm(parameters, log_file_key, err_file_key, script_key, command):
-    ''' Same output than function stats_reconciliation '''
-    stats_script = os.path.join(parameters['scripts_dir'], parameters[script_key].replace('.sh', '_stats.sh'))
-    with open(generax_stats_script, 'w') as stats_script:
-        stats_script.write('#!/bin/bash')
-        stats_script.write('\n')
-        stats_script.write(f'\n#SBATCH --account={parameters["slurm_account"]}')
-        stats_script.write(f'\n#SBATCH --output={parameters[log_file_key].replace(".log","_stats.log")}')
-        stats_script.write(f'\n#SBATCH --output={parameters[err_file_key].replace(".err","_stats.log")}')
-        stats_script.write('\n')
-        stats_script.write(f'\npython {parameters["main_script"]} {command}')
-    jobid = subprocess.check_output(f'jobid=$(sbatch {stats_script})'+' && echo ${jobid##* }', shell=True)
-    return(jobid.decode().rstrip())
-    
 # GeneRax functions ----------------------------------------------------------
                         
 '''  Create GeneRax input files: one families file, one map file per family '''
@@ -581,157 +539,47 @@ def check_generax(parameters):
     with open(in_generax_log_file, 'r') as log_file:
         err_lines = [l.rstrip().split(':') for l in log_file.readlines() if l.startswith('Error in family')]
         for err_line_header,err_line_msg in err_lines:
-            error_families[err_line_header.split()[3]] = err_line_error.rstrip()
+            error_families[err_line_header.split()[3]] = err_line_msg
     with open(parameters['generax_log_file'], 'w') as log_file, open(parameters['generax_err_file'], 'w') as err_file:
-        log_file.write('#species:genes:duplications:losses')
         for idx in range(1,len(active_families)+1):            
             family = active_families[idx-1]
-            fam_id = set_err_family_id(idx, family)
+            fam_id = set_family_id(idx, family)
             if family in error_families.keys():
-                log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "ERROR", error_families[family]])}')
+                log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, ERROR_MSG, error_families[family]])}')
                 err_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, error_families[family]])}')
                 continue
-            gene_tree = os.path.join(parameters['generax_results_dir'], 'results', family, 'geneTree.newick')
-            rec_tree = os.path.join(parameters['generax_results_dir'], 'reconciliations', f'{family}_reconciliated.xml')
-            if not (os.path.isfile(gene_tree) and os.path.isfile(rec_tree)):
-                log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "ERROR", "missing tree"])}')
-                err_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "missing tree"])}')
+            rec_tree = os.path.join(parameters['generax_results_dir'], 'reconciliations', f'{family}_reconciliated.nhx')
+            if not os.path.isfile(rec_tree):
+                log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, ERROR_MSG, "missing reconciled tree"])}')
+                err_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "missing reconciled tree"])}')
                 continue
-            stats_str = SEP_SPECIES.join([
-                SEP_STATS.join([sp]+[str(stat) for stat in stats.values()])
-                for sp,stats in read_RecPhyloXML(rec_tree).items()
-            ])
-            log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "SUCCESS", stats_str])}')
+            log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, SUCCESS_MSG, rec_tree])}')
     return(None)
-
-''' Check the results of GeneRax through a SLURM script '''
-def check_generax_slurm(parameters):
-    ''' Same output than function check_generax plus SLURM job ID '''
-    generax_check_script = os.path.join(parameters['scripts_dir'], parameters['generax_script'].replace('.sh', '_check.sh'))
-    with open(generax_check_script, 'w') as check_script:
-        check_script.write('#!/bin/bash')
-        check_script.write('\n')
-        check_script.write(f'\n#SBATCH --account={parameters["slurm_account"]}')
-        check_script.write(f'\n#SBATCH --output={parameters["generax_log_file"].replace(".log","_check.log")}')
-        check_script.write(f'\n#SBATCH --output={parameters["generax_err_file"].replace(".err","_check.log")}')
-        check_script.write('\n')
-        check_script.write(f'\npython {parameters["main_script"]} check_generax')
-    jobid = subprocess.check_output(f'jobid=$(sbatch {generax_check_script})'+' && echo ${jobid##* }', shell=True)
-    return(jobid.decode().rstrip())
 
 ''' Computes statistics post GeneRax '''
 def stats_generax(parameters):
-    ''' output: creates parameters['generax_stats_file'] '''
-    return(stats_reconciliation(parameters, 'generax_log_file', 'generax_stats_file'))
-
-''' Computes statistics post GeneRax through a SLURM script '''
-def stats_generax_slurm(parameters):
-    ''' Same output than function stats_generax '''
-    return(stats_reconciliation_slurm(parameters, "generax_log_file", "generax_err_file", 'generax_script', 'stats_generax'))
-
-# Treerecs functions ----------------------------------------------------------
-
-''' Substitutions in Treerecs template file to create GeneRax SLURM script '''
-def treerecs_script_patterns(parameters):
-    return(
-        {
-            'XX_slurm_account': parameters['slurm_account'],
-            'XX_families_nb': str(len(get_active_families(parameters))),
-            'XX_families_file': parameters['active_families'],
-            'XX_species_tree': parameters['active_species_tree'],
-            'XX_tools_dir': parameters['tools_dir'],
-            'XX_generax_results_dir': parameters['generax_results_dir'],
-            'XX_treerecs_memory': parameters['treerecs_memory'],
-            'XX_treerecs_time': str(parameters['treerecs_time']),
-            'XX_treerecs_options': parameters['treerecs_options'],
-            'XX_treerecs_map_file_prefix': os.path.join(parameters['generax_aux_dir'], parameters['generax_families']),
-            'XX_treerecs_log_dir': parameters['treerecs_log_dir'],
-            'XX_treerecs_log_pref': parameters['treerecs_log_pref'],
-            'XX_treerecs_results_dir': parameters['treerecs_results_dir']
-        }
-    )
-
-''' Create a GeneRax SLURM script '''
-def run_treerecs(parameters, run_script=False):
-    '''
-    input: run_script: (boolean) run created scripts if True
+    ''' 
     output: 
-    - creates parameters['treerecs_script_file']
-    - jobid: (str/None) SLURM job ID if job is run
-    '''
-    return(
-        create_slurm_script(
-            parameters,
-            'treerecs_template_file',
-            'treerecs_script_file',
-            treerecs_script_patterns(parameters),
-            run_script=run_script
-        )
-    )
-
-'''  Check the results of Treerecs, creating a log file and an error file '''
-def check_treerecs(parameters):
-    '''
-    output:
-    creates parameters['treerecs_log_file'] and parameters['treerecs_err_file']
-    format: one line per family
-    parameters['treerecs_err_file'] contains only entries for failed families
-    fam_id<SEP_ERR_FIELDS>error message
-    parameters['treerecs_log_file'] contains entries for all families
-    fam_id<SEP_ERR_FIELDS>ERROR/SUCCESS<SEP_ERR_FIELDS>error message/reconciliation stats
+    creates parameters['generax_stats_file'] with reconciliation statistics per species 
     '''
     active_families = get_active_families(parameters)
-    with open(parameters['treerecs_log_file'], 'w') as log_file, open(parameters['treerecs__err_file'], 'w') as err_file:
-        for idx in range(1,len(active_families)+1):
-            fam_id = set_err_family_id(idx, active_families[idx-1])
-            idx_log_pref = os.path.join(parameters['treerecs_log_dir'], f'{parameters["treerecs_log_pref"]}_{idx}')
-            idx_log_file,idx_err_file = f'{idx_log_pref}.{LOG_SUFF}',f'{idx_log_pref}.{ERR_SUFF}'
-            if not (os.path.exists(idx_log_file) and os.path.exists(idx_err_file)):
-                log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "ERROR", "missing SLURM log"])}')
-                err_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "missing SLURM log"])}')
-                continue
-            with open(idx_log_file, 'r') as idx_log_file, open(idx_err_file, 'r') as idx_err_file:
-                log_last,err_last = idx_log_file.readlines()[-1].rstrip(),idx_err_file.readlines()[-1].rstrip()
-            if not log_last.startswith('Total elapsed time'):
-                log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "ERROR", log_last])}')
-                err_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, err_last])}')
-                continue
-            rec_tree = os.path.join(parameters['treerecs_results_dir'], f'{family}_reconciliated.nhx_recs.recphylo.xml')
-            if not os.path.isfile(rec_tree):
-                log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "ERROR", "missing tree"])}')
-                err_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "missing tree"])}')
-                continue
-            stats_str = SEP_SPECIES.join([
-                SEP_STATS.join([sp]+[str(stat) for stat in stats.values()])
-                for sp,stats in read_RecPhyloXML(rec_tree).items()
-            ])
-            log_file.write(f'\n{SEP_ERR_FIELDS.join([fam_id, "SUCCESS", stats_str])}')
-        return(None)
-
-''' Check the results of Treerecs through a SLURM script '''
-def check_treerecs_slurm(parameters):
-    ''' Same output than function check_treerecs plus SLURM job ID'''
-    treerecs_check_script = os.path.join(parameters['scripts_dir'], parameters['treerecs_script'].replace('.sh', '_check.sh'))
-    with open(treerecs_check_script, 'w') as check_script:
-        check_script.write('#!/bin/bash')
-        check_script.write('\n')
-        check_script.write(f'\n#SBATCH --account={parameters["slurm_account"]}')
-        check_script.write(f'\n#SBATCH --output={parameters["treerecs_log_file"].replace(".log","_check.log")}')
-        check_script.write(f'\n#SBATCH --output={parameters["treerecs_err_file"].replace(".err","_check.log")}')
-        check_script.write('\n')
-        check_script.write(f'\npython {parameters["main_script"]} check_macse')
-    jobid = subprocess.check_output(f'jobid=$(sbatch {treerecs_check_script})'+' && echo ${jobid##* }', shell=True)
-    return(jobid.decode().rstrip())
-
-''' Computes statistics post Treerecs '''
-def stats_treerecs(parameters):
-    ''' output: creates parameters['treerecs_stats_file'] '''
-    return(stats_reconciliation(parameters, 'treerecs_log_file', 'treerecs_stats_file'))
-
-''' Computes statistics post GeneRax through a SLURM script '''
-def stats_treerecs_slurm(parameters):
-    ''' Same output than function stats_treerecs '''
-    return(stats_reconciliation_slurm(parameters, "treerecs_log_file", "treerecs_err_file", 'treerecs_script', 'stats_treerecs'))
+    statistics = {}
+    for family in active_families:
+        rec_tree = os.path.join(parameters['generax_results_dir'], 'reconciliations', f'{family}_reconciliated.{REC_SUFF}')
+        try:
+            stats_all = read_RecPhyloXML(rec_tree)
+            for species,stats in stats_all.items():
+                if species not in statistics.keys(): 
+                    statistics[species] = {STATS_genes: 0, STATS_dup: 0, STATS_loss: 0}
+                for stats_key in STATS_keys:
+                    statistics[species][stats_key] += stats[stats_key]
+        except FileNotFoundError:
+            print(f'File {rec_tree} not found')                
+    with open(parameters['generax_stats_file'], 'w') as stats_file:
+        stats_file.write(SEP_STATS_FIELDS.join(['species', STATS_genes, STATS_dup, STATS_loss]))
+        for species,stats in statistics.items():
+            stats_str = [str(species), str(stats[STATS_genes]), str(stats[STATS_dup]), str(stats[STATS_loss])]
+            stats_file.write(f'\n{SEP_STATS_FIELDS.join(stats_str)}')
 
 
 # MAIN --------------------------------------------------------------------------
@@ -750,9 +598,7 @@ def main():
         else: run_val = False
         run_macse_jobid = run_macse(parameters, run_script=run_val)
     elif command == 'check_macse':
-        if len(sys.argv) == 4: run_slurm = (sys.argv[3] in TRUE_LIST)
-        if run_slurm: check_macse_jobid = check_macse_slurm(parameters)
-        else: check_macse_jobid = check_macse(parameters)
+        check_macse(parameters)
     elif command == 'rerun_macse':
         mem = sys.argv[3]
         time = sys.argv[4]
@@ -769,30 +615,13 @@ def main():
         else: run_val = False
         run_generax_jobid = run_generax(parameters, run_script=run_val)
     elif command == 'check_generax':
-        if len(sys.argv) == 4: run_slurm = (sys.argv[3] in TRUE_LIST)
-        if run_slurm: check_generax_jobid = check_generax_slurm(parameters)
-        else: check_generax_jobid = check_generax(parameters)
+        check_generax(parameters)
     elif command == 'stats_generax':
-        if len(sys.argv) == 4: run_slurm = (sys.argv[3] in TRUE_LIST)
-        if run_slurm: stats_generax_jobid = stats_generax_slurm(parameters)
-        else: stats_generax_jobid = stats_generax(parameters)
+        stats_generax(parameters)
     elif command == 'update_post_generax':
         backup_suffix = sys.argv[3]
         update_active_families_post_step(parameters, parameters['generax_err_file'], backup_suffix)
         update_active_species_tree(parameters, parameters['generax_species_tree'], backup_suffix)
-    elif command == 'run_treerecs':
-        if len(sys.argv) == 4: run_val = (sys.argv[3] in TRUE_LIST)
-        else: run_val = False
-        run_treerecs_jobid = run_treerecs(parameters, run_script=run_val)
-    elif command == 'check_treerecs':
-        if len(sys.argv) == 4: run_slurm = (sys.argv[3] in TRUE_LIST)
-        if run_slurm: check_treerecs_jobid = check_treerecs_slurm(parameters)
-        else: check_treerecs_jobid = check_treerecs(parameters)
-    elif command == 'stats_treerecs':
-        if len(sys.argv) == 4: run_slurm = (sys.argv[3] in TRUE_LIST)
-        if run_slurm: stats_treerecs_jobid = stats_treerecs_slurm(parameters)
-        else: stats_treerecs_jobid = stats_treerecs(parameters)
-
            
 if __name__ == "__main__":
     main()
