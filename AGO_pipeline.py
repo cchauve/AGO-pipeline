@@ -584,6 +584,7 @@ def run_generax(parameters, run_script=False):
 ''' Reformat in proper recPhyloXML format all generax XML files '''
 def reformat_generax(parameters):
     def reformat_generax_RecPhyloXML(in_file, out_file):
+        ''' Should be done using the XML libray '''
         with open(in_file, 'r') as in_xml, open(out_file, 'w') as out_xml:
             out_xml.write('<recPhylo>\n')
             name = 0
@@ -652,11 +653,11 @@ def check_generax(parameters):
     return(None)
 
 ''' Returns the path to the XML reconciled gene tree for a family '''
-def generax_gene_tree(parameters, family):
+def generax_gene_tree(parameters, family, suffix):
     '''
     output: path to XML reconciled gene tree file for family
     '''
-    return(os.path.join(parameters['generax_results_dir'], 'reconciliations', f'{family}_reconciliated.{REC_SUFF}'))
+    return(os.path.join(parameters['generax_results_dir'], 'reconciliations', f'{family}_reconciliated.{suffix}'))
 
 ''' Computes statistics post GeneRax '''
 def stats_generax(parameters):
@@ -667,7 +668,7 @@ def stats_generax(parameters):
     active_families = get_active_families(parameters)
     statistics = {}
     for family in active_families:
-        rec_tree = generax_gene_tree(parameters, family)
+        rec_tree = generax_gene_tree(parameters, family, REC_SUFF)
         try:
             stats_all = read_RecPhyloXML(rec_tree)
             for species,stats in stats_all.items():
