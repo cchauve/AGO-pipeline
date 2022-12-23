@@ -50,13 +50,3 @@ generax_ncores:   '48'
 # RecPhyloXML
 recphyloxml_convert: 'recPhyloXML/python/NHXtoRecPhyloXML.py'
 recphyloxml_events:  'recPhyloXML/python/recPhyloXMLEventSummary.py'
-
-# Treerecs
-treerecs_template: Treerecs_template.sh
-treerecs_script:   Treerecs.sh
-treerecs_dir:      Treerecs
-treerecs_log_pref: treerecs
-treerecs_memory:   '4G'
-treerecs_time:     '01:00:00'
-treerecs_subst:    GTR
-treerecs_options:  '-O recphyloxml -f --info -v -r -C --ale-evaluation'
