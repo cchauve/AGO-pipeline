@@ -118,3 +118,8 @@ obtained with GeneRax.
 
 
 ### DeCoSTAR
+
+```
+python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_decostar
+python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_decostar y
+```

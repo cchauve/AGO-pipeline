@@ -22,20 +22,21 @@ map:             map.txt
 slurm_account: def-chauvec
 
 # MACSE
-macse_template:       MACSE_template.sh
-macse_script:         MACSE.sh
-macse_rerun_pref:     MACSE_rerun
-macse_log_pref:       macse
-macse_dir:            MACSE
-macse_memory:         '4G'
-macse_time:           '00:30:00'
+macse_template:   MACSE_template.sh
+macse_script:     MACSE.sh
+macse_rerun_pref: MACSE_rerun
+macse_log_pref:   macse
+macse_dir:        MACSE
+macse_pref:       MACSE
+macse_memory:     '4G'
+macse_time:       '00:30:00'
 
 # GeneRax
 generax_template: GeneRax_template.sh
 generax_script:   GeneRax.sh
 generax_dir:      GeneRax
+generax_pref:     GeneRax
 generax_log_pref: generax
-generax_families: families.txt
 generax_memory:   '4G'
 generax_time:     '12:00:00'
 generax_subst:    GTR+G
@@ -50,3 +51,23 @@ generax_ncores:   '48'
 # RecPhyloXML
 recphyloxml_convert: 'recPhyloXML/python/NHXtoRecPhyloXML.py'
 recphyloxml_events:  'recPhyloXML/python/recPhyloXMLEventSummary.py'
+
+# DeCoSTAR
+decostar_template:     DeCoSTAR_template.sh
+decostar_script:       DeCoSTAR.sh
+decostar_dir:          DeCoSTAR
+decostar_pref:         DeCoSTAR
+decostar_log_pref:     decostar
+decostar_memory:       '4G'
+decostar_time:         '24:00:00'
+decostar_adjacencies:  adjacencies.txt
+decostar_gene_trees:   gene_trees.txt
+decostar_parameters:   parameters.txt
+decostar_temperature:  '0.1'
+decostar_nb_samples:   '1000'
+decostar_input:        generax
+decostar_dated:        'false'
+decostar_rooted:       'true'
+decostar_hgt:          'false'
+decostar_amalgamation: 'false'
+decostar_verbose:      '2'
