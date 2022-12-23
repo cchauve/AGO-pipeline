@@ -649,25 +649,26 @@ def stats_generax(parameters):
 # DeCoSTAR functions ------------------------------------------------------------
 
 '''  Create DeCoSTAR input files: gene trees, adjacencies and parameters files '''
-def aux_decostar(parameters):
+
+def aux_decostar_gene_trees(parameters):
     '''
-    output:
-    - parameters['decostar_gene_trees_file']
-    - parameters['decostar_adjacencies_file']
-    - parameters['decostar_parameters_file']
-    File formats are the ones required by DeCoSTAR
+    output: parameters['decostar_gene_trees_file']
+    DeCoSTAR file containing the list of gene trees
     '''
-    orientation = {
-        ('0','0'): ['-','+'], ('0','1'): ['-','-'], ('1','0'): ['+','+'], ('1','1'): ['+','-']
-    }
-    
     input_tool = parameters['decostar_input'].lower()
-    # Creating gene trees file
     with open(parameters['decostar_gene_trees_file'], 'w') as gene_trees:
         if input_tool == 'generax':
             for family in get_active_families(parameters):
                 gene_trees.write(f'{generax_gene_tree(parameters, family)}\n')
-    # Creating the adjacencies
+
+def aux_decostar_adjacencies(parameters):
+    '''
+    output: parameters['decostar_adjacencies_file']
+    DeCoSTAR file containing the list of extant adjacencies
+    '''
+    orientation = {
+        ('0','0'): ['-','+'], ('0','1'): ['-','-'], ('1','0'): ['+','+'], ('1','1'): ['+','-']
+    }
     with open(parameters['decostar_adjacencies_file'], 'w') as adjacencies:
         for species in get_extant_species(parameters):
             gene_order_file = os.path.join(parameters['active_gene_orders_dir'], f'{species}.txt')
@@ -680,16 +681,23 @@ def aux_decostar(parameters):
                         adj = [prev_gene[0], gene_name] + orientation[(prev_gene[2],gene_sign)] + ['1']
                         adjacencies.write(f'{SEP_ADJ.join(adj)}\n')
                     prev_gene = [gene_name,gene_chr,gene_sign]
-    # Creating the parameters file
+
+def aux_decostar_parameters(parameters):
+    '''
+    output: parameters['decostar_parameters_file']
+    DeCoSTAR file containing the list of DeCoSTAR parameters
+    '''
+    input_tool = parameters['decostar_input'].lower()
     with open(parameters['decostar_parameters_file'], 'w') as decostar_parameters:
         decostar_parameters.write(f'species.file={parameters["active_species_tree"]}\n')
         decostar_parameters.write(f'adjacencies.file={parameters["decostar_adjacencies_file"]}\n')
         decostar_parameters.write(f'gene.distribution.file={parameters["decostar_gene_trees_file"]}\n')
         decostar_parameters.write(f'output.dir={parameters["decostar_results_dir"]}\n')
-        decostar_parameters.write('already.reconciled=true\n')
+        if input_tool == 'generax':
+            decostar_parameters.write('already.reconciled=true\n')
         decostar_parameters.write('use.boltzmann=true\n')
         decostar_parameters.write(f'boltzmann.temperature={parameters["decostar_temperature"]}\n')
-        decostar_parameters.write(f'nb.samples={parameters["decostar_nb_samples"]}\n')
+        decostar_parameters.write(f'nb.sample={parameters["decostar_nb_samples"]}\n')
         decostar_parameters.write(f'rooted={parameters["decostar_rooted"]}\n')
         decostar_parameters.write(f'dated.species.tree={parameters["decostar_dated"]}\n')
         decostar_parameters.write(f'with.transfer={parameters["decostar_hgt"]}\n')
@@ -698,6 +706,22 @@ def aux_decostar(parameters):
         decostar_parameters.write(f'write.adjacencies=true\n')
         decostar_parameters.write(f'write.genes=true\n')
         decostar_parameters.write(f'verbose={parameters["decostar_verbose"]}')
+
+    
+def aux_decostar(parameters):
+    '''
+    output:
+    - parameters['decostar_gene_trees_file']
+    - parameters['decostar_adjacencies_file']
+    - parameters['decostar_parameters_file']
+    File formats are the ones required by DeCoSTAR
+    '''
+    # Creating gene trees file
+    aux_decostar_gene_trees(parameters)
+    # Creating the adjacencies
+    aux_decostar_adjacencies(parameters)
+    # Creating the parameters file
+    aux_decostar_parameters(parameters)
 
 ''' Substitutions in DeCoSTAR template file to create DeCoSTAR SLURM script '''
 def decostar_script_patterns(parameters):
