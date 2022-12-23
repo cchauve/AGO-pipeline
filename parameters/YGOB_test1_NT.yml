@@ -48,10 +48,6 @@ generax_options:  '--per-family-rates --si-quartet-support'
 generax_ntasks:   '100'
 generax_ncores:   '48'
 
-# RecPhyloXML
-recphyloxml_convert: 'recPhyloXML/python/NHXtoRecPhyloXML.py'
-recphyloxml_events:  'recPhyloXML/python/recPhyloXMLEventSummary.py'
-
 # DeCoSTAR
 decostar_template:     DeCoSTAR_template.sh
 decostar_script:       DeCoSTAR.sh

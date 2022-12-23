@@ -107,9 +107,7 @@ We convert the reconciled trees in recPhyloXML format and compute
 statistics for each tree.
 
 ```
-source AGO_python2/bin/activate
-python AGO_pipeline_p2.py parameters/YGOB_test1_NT.yml postprocess_generax
-deactivate
+python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml reformat_generax
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_generax
 ```
 

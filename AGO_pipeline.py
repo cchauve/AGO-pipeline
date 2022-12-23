@@ -18,6 +18,7 @@ import subprocess
 LOG_SUFF = 'log'
 ERR_SUFF = 'err'
 CSV_SUFF = 'csv'
+XML_SUFF = 'xml'
 REC_SUFF = 'recphyloxml.xml'
 NHX_SUFF = 'nhx'
 # log messages
@@ -580,6 +581,43 @@ def run_generax(parameters, run_script=False):
         )
     )
 
+''' Reformat in proper recPhyloXML format all generax XML files '''
+def reformat_generax(parameters):
+    def reformat_generax_RecPhyloXML(in_file, out_file):
+        with open(in_file, 'r') as in_xml, open(out_file, 'w') as out_xml:
+            out_xml.write('<recPhylo>\n')
+            name = 0
+            for line in in_xml.readlines()[1:]:
+                line1 = line.strip()
+                if line1[0]!='<': continue
+                if line1 == '<name></name>':
+                    out_xml.write(line.replace('><', f'>n{name}<'))
+                    name += 1
+                elif line1.startswith('<speciation'):
+                    out_xml.write(line.replace('/>', '></speciation>'))
+                elif line1.startswith('<leaf'):
+                    out_xml.write(line.replace('/>', '></leaf>'))
+                elif line1.startswith('<duplication'):
+                    out_xml.write(line.replace('/>', '></duplication>'))
+                elif line1.startswith('<loss'):
+                    out_xml.write(line.replace('/>', '></loss>'))
+                elif line1.startswith('<speciationLoss'):
+                    out_xml.write(line.replace('/>', '></speciationLoss>'))
+                else:
+                    out_xml.write(line)
+                
+    with open(parameters['generax_log_file'], 'r') as log_file:
+        families_data = log_file.readlines()[1:]
+        for family_data in families_data:
+            fam_id,status,msg = family_data.rstrip().split(SEP_ERR_FIELDS)
+            if status == ERROR_MSG:
+                continue
+            rec_tree = os.path.splitext(msg)[0]
+            in_xml_rec_tree = rec_tree+'.'+XML_SUFF
+            out_xml_rec_tree = rec_tree+'.'+REC_SUFF
+            reformat_generax_RecPhyloXML(in_xml_rec_tree, out_xml_rec_tree)
+
+
 '''  Check the results of GeneRax, creating a log file and an error file '''
 def check_generax(parameters):
     '''
@@ -791,6 +829,8 @@ def main():
         run_generax_jobid = run_generax(parameters, run_script=run_val)
     elif command == 'check_generax':
         check_generax(parameters)
+    elif command == 'reformat_generax':
+        reformat_generax(parameters)
     elif command == 'stats_generax':
         stats_generax(parameters)
     elif command == 'update_post_generax':
@@ -804,6 +844,7 @@ def main():
         if len(sys.argv) == 4: run_val = (sys.argv[3] in TRUE_LIST)
         else: run_val = False
         run_decostar_jobid = run_decostar(parameters, run_script=run_val)
+
         
 if __name__ == "__main__":
     main()
