@@ -44,7 +44,8 @@ python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_macse y
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml check_macse y
 ```
 
-Log and error files are available at `/scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_MACSE.[log,err]`.  
+Log and error files are available at
+`/scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_MACSE.[log,err]`.  
 
 We run MACSE on the families that failed, increasing the time limit to
 1:00:00 per family.
@@ -54,7 +55,8 @@ python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml rerun_macse 4G 1:00:00 y
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml check_macse y
 ```
 
-Log and error files are available at `/scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_MACSE.[log,err]`.  
+Log and error files are available at
+`/scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_MACSE.[log,err]`.  
 ```
 grep -c ">" /scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_MACSE.err
 47
@@ -86,7 +88,8 @@ python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_generax y
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml check_generax y
 ```
 
-Log and error files are available at `/scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_GeneRax.[log,err]`.
+Log and error files are available at
+`/scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_GeneRax.[log,err]`.
 ```
 grep -c ">" /scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_GeneRax.err
 187

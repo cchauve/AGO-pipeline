@@ -893,18 +893,21 @@ def decostar_species_map(parameters):
         map[species_pair[1]] = species_pair[0]
     return(map)
 
-''' Reformat the DeCoSTAR adjacencies and genes files to use species names of active species tree and names of active families '''
-def reformat_decostar(parameters):
+
+''' Reformat DeCoSTAR genes file '''
+def reformat_decostar_genes_file(parameters, species_map):
     '''
-    output: parameters['decostar_out_genes_file'], parameters['decostar_out_adjacencies_file']
+    input:
+    - dict(str->str): mapping from DeCoSTAR species names to active species names
+    output: 
+    dict(str->str): mapping from DeCoSTAR gene names to reformated gene names 
+    of format family_name|gene_name for ancestral genes
+    creates parameters['decostar_out_genes_file']
     '''
     active_families = get_active_families(parameters)
-    species_map = decostar_species_map(parameters)
     char_sep = parameters['decostar_sep']
-    # Map of gene names initialized by extant genes
     genes_map = {}
     for gene,data in get_genes_map(parameters).items(): genes_map[gene] = f'{data[0]}{char_sep}{gene}'
-    # Genes file
     genes_file = os.path.join(parameters['decostar_results_dir'], 'genes.txt')
     with open(genes_file, 'r') as in_genes, open(parameters['decostar_out_genes_file'], 'w') as out_genes:
         for line in in_genes.readlines():
@@ -919,7 +922,18 @@ def reformat_decostar(parameters):
                 out_gene = in_gene
             out_gene_str = ' '.join([out_species, out_gene] + [genes_map[in_gene] for in_gene in line_split[2:]])
             out_genes.write(f'{out_gene_str}\n')
-    # Adjacencies file
+    return(genes_map)
+
+''' Reformat DeCoSTAR adjacencies file '''
+def reformat_decostar_adjacencies_file(parameters, species_map, genes_map):
+    '''
+    input:
+    - dict(str->str): mapping from DeCoSTAR species names to active species names
+    - dict(str->str): mapping from DeCoSTAR gene names to reformated gene names 
+      of format family_name|gene_name for ancestral genes
+    output: 
+    creates parameters['decostar_out_adjacencies_file']
+    '''
     adjacencies_file = os.path.join(parameters['decostar_results_dir'], 'adjacencies.txt')
     with open(adjacencies_file, 'r') as in_adj, open(parameters['decostar_out_adjacencies_file'], 'w') as out_adj:
         for line in in_adj.readlines():
@@ -930,6 +944,14 @@ def reformat_decostar(parameters):
             out_adj_str = ' '.join([out_species, out_gene1, out_gene2] + line_split[3:])
             out_adj.write(f'{out_adj_str}\n')
 
+''' Reformat the DeCoSTAR adjacencies and genes files to use species names of active species tree and names of active families '''
+def reformat_decostar(parameters):
+    '''
+    output: parameters['decostar_out_genes_file'], parameters['decostar_out_adjacencies_file']
+    '''
+    species_map = decostar_species_map(parameters)
+    genes_map = reformat_decostar_genes_file(parameters, species_map)
+    reformat_decostar_adjacencies_file(parameters, species_map, genes_map)
 
 # SPP-DCJ -----------------------------------------------------------------------
 
@@ -955,7 +977,9 @@ def aux_sppdcj_adjacencies(parameters):
     decostar_sep = parameters['decostar_sep']
     sppdcj_sep = parameters['sppdcj_sep']
     weight_threshold = float(parameters['sppdcj_threshold'])
-    with open(parameters['decostar_out_adjacencies_file'], 'r') as decostar_adj, open(parameters['sppdcj_in_adjacencies_file'], 'w') as sppdcj_adj:
+    decostar_adj_file = parameters['decostar_out_adjacencies_file']
+    sppdcj_adj_file = parameters['sppdcj_in_adjacencies_file']
+    with open(decostar_adj_file, 'r') as decostar_adj, open(sppdcj_adj_file, 'w') as sppdcj_adj:
         header_str = ["#Species","Gene_1","Ext_1","Species","Gene_2","Ext_2","Weight"]
         sppdcj_adj.write(f'{SEP_SPPDCJ_FIELDS.join(header_str)}')
         for adj in decostar_adj.readlines():
@@ -964,7 +988,11 @@ def aux_sppdcj_adjacencies(parameters):
             fam1,gene1_name = gene1.split(decostar_sep)
             fam2,gene2_name = gene2.split(decostar_sep)
             if float(weight) >= weight_threshold:
-                adj_str = [species,f'{fam1}{sppdcj_sep}{gene1_name}',signs[0],species,f'{fam2}{sppdcj_sep}{gene2_name}',signs[1],weight]
+                adj_str = [
+                    species,f'{fam1}{sppdcj_sep}{gene1_name}',signs[0],
+                    species,f'{fam2}{sppdcj_sep}{gene2_name}',signs[1],
+                    weight
+                ]
                 sppdcj_adj.write(f'\n{SEP_SPPDCJ_FIELDS.join(adj_str)}')
 
 ''' Creates SPP-DCJ input files '''
