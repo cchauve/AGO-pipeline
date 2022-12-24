@@ -723,7 +723,13 @@ def generax_gene_tree(parameters, family, suffix):
     '''
     output: path to XML reconciled gene tree file for family
     '''
-    return(os.path.join(parameters['generax_results_dir'], 'reconciliations', f'{family}_reconciliated.{suffix}'))
+    return(
+        os.path.join(
+            parameters['generax_results_dir'],
+            'reconciliations',
+            f'{family}_reconciliated.{suffix}'
+        )
+    )
 
 ''' Computes statistics post GeneRax '''
 def stats_generax(parameters):
@@ -764,7 +770,7 @@ def aux_decostar_gene_trees(parameters):
     with open(parameters['decostar_in_gene_trees_file'], 'w') as gene_trees:
         if input_tool == 'generax':
             for family in get_active_families(parameters):
-                gene_trees.write(f'{generax_gene_tree(parameters, family)}\n')
+                gene_trees.write(f'{generax_gene_tree(parameters, family, REC_SUFF)}\n')
 
 def aux_decostar_adjacencies(parameters):
     '''
