@@ -10,9 +10,10 @@ import functools
 import yaml
 from collections import defaultdict
 import xml.etree.ElementTree as ET
+import ete3
 import subprocess
 
-''' Constants '''
+''' Constants: should be in the yaml file with default values '''
 
 # log/err files suffixes
 LOG_SUFF = 'log'
@@ -43,6 +44,11 @@ STATS_xmlkeys = {'leaf': STATS_genes, 'speciation': STATS_genes, 'duplication': 
 STATS_keys = [STATS_genes, STATS_dup, STATS_loss]
 # Gene maps files separators
 SEP_GENE_MAP = '\t'
+# DeCoSTAR separator
+SEP_DECOSTAR = '|'
+# SPP-DCJ separator
+SEP_SPPDCJ_FIELDS = '\t'
+SEP_SPPDCJ = '_'
 # Empty file string
 EMPTY_FILE = 'EMPTY FILE'
 
@@ -96,10 +102,14 @@ def read_parameters(in_file):
         parameters['decostar_log_dir'] = os.path.join(parameters['log_dir'], parameters['decostar_dir'])
         parameters['decostar_results_dir'] = os.path.join(parameters['results_dir'], parameters['decostar_dir'])
         parameters['decostar_aux_dir'] = os.path.join(parameters['aux_dir'], parameters['decostar_dir'])
+        parameters['sppdcj_log_dir'] = os.path.join(parameters['log_dir'], parameters['sppdcj_dir'])
+        parameters['sppdcj_results_dir'] = os.path.join(parameters['results_dir'], parameters['sppdcj_dir'])
+        parameters['sppdcj_aux_dir'] = os.path.join(parameters['aux_dir'], parameters['sppdcj_dir'])
         # Tools-specific files
         MACSE = parameters['macse_pref']
         GENERAX = parameters['generax_pref']
         DECOSTAR = parameters['decostar_pref']
+        SPPDCJ = parameters['sppdcj_pref']
         parameters['macse_template_file'] = os.path.join(parameters['in_scripts_dir'], parameters['macse_template'])
         parameters['macse_script_file'] = os.path.join(parameters['scripts_dir'], parameters['macse_script'])
         parameters['macse_log_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{MACSE}.{LOG_SUFF}')
@@ -116,12 +126,34 @@ def read_parameters(in_file):
         parameters['decostar_template_file'] = os.path.join(parameters['in_scripts_dir'], parameters['decostar_template'])
         parameters['decostar_script_file'] = os.path.join(parameters['scripts_dir'], parameters['decostar_script'])
         parameters['decostar_parameters_file'] = os.path.join(parameters['decostar_aux_dir'], parameters['decostar_parameters'])
-        parameters['decostar_adjacencies_file'] = os.path.join(parameters['decostar_aux_dir'], parameters['decostar_adjacencies'])
-        parameters['decostar_gene_trees_file'] = os.path.join(parameters['decostar_aux_dir'], parameters['decostar_gene_trees'])
+        parameters['decostar_in_adjacencies_file'] = os.path.join(parameters['decostar_aux_dir'], parameters['decostar_adjacencies'])
+        parameters['decostar_in_gene_trees_file'] = os.path.join(parameters['decostar_aux_dir'], parameters['decostar_gene_trees'])
+        parameters['decostar_out_adjacencies_file'] = os.path.join(
+            parameters['decostar_results_dir'], f'{run_name}_{parameters["decostar_adjacencies"]}'
+        )
+        parameters['decostar_out_genes_file'] = os.path.join(
+            parameters['decostar_results_dir'], f'{run_name}_{parameters["decostar_genes"]}'
+        )
         parameters['decostar_log_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{DECOSTAR}.{LOG_SUFF}')
         parameters['decostar_err_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{DECOSTAR}.{ERR_SUFF}')
         parameters['decostar_stats_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{DECOSTAR}.{CSV_SUFF}')
-
+        if 'decostar_sep' not in parameters.keys(): parameters['decostar_sep'] = SEP_DECOSTAR
+        parameters['sppdcj_ilp_template_file'] = os.path.join(parameters['in_scripts_dir'], parameters['sppdcj_ilp_template'])
+        parameters['sppdcj_gurobi_template_file'] = os.path.join(parameters['in_scripts_dir'], parameters['sppdcj_gurobi_template'])
+        parameters['sppdcj_ilp_script_file'] = os.path.join(parameters['scripts_dir'], parameters['sppdcj_ilp_script'])
+        parameters['sppdcj_gurobi_script_file'] = os.path.join(parameters['scripts_dir'], parameters['sppdcj_gurobi_script'])        
+        parameters['sppdcj_in_adjacencies_file'] = os.path.join(parameters['sppdcj_aux_dir'], parameters['sppdcj_adjacencies'])
+        parameters['sppdcj_in_species_tree_file'] = os.path.join(parameters['sppdcj_aux_dir'], parameters['sppdcj_species_tree'])
+        parameters['sppdcj_out_adjacencies_file'] = os.path.join(
+            parameters['sppdcj_results_dir'], f'{run_name}_{parameters["sppdcj_adjacencies"]}'
+        )
+        parameters['sppdcj_out_idmap_file'] = os.path.join(
+            parameters['sppdcj_results_dir'], f'{run_name}_{parameters["sppdcj_idmap"]}'
+        )
+        parameters['sppdcj_log_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{SPPDCJ}.{LOG_SUFF}')
+        parameters['sppdcj_err_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{SPPDCJ}.{ERR_SUFF}')
+        parameters['sppdcj_stats_file'] = os.path.join(parameters['log_dir'], f'{run_name}_{SPPDCJ}.{CSV_SUFF}')
+        if 'sppdcj_sep' not in parameters.keys(): parameters['sppdcj_sep'] = SEP_SPPDCJ
     return(parameters)
 
 def init(parameters):
@@ -143,6 +175,9 @@ def init(parameters):
     os.makedirs(parameters['decostar_log_dir'], exist_ok=True)
     os.makedirs(parameters['decostar_results_dir'], exist_ok=True)
     os.makedirs(parameters['decostar_aux_dir'], exist_ok=True)
+    os.makedirs(parameters['sppdcj_log_dir'], exist_ok=True)
+    os.makedirs(parameters['sppdcj_results_dir'], exist_ok=True)
+    os.makedirs(parameters['sppdcj_aux_dir'], exist_ok=True)
     with open(parameters['data_families'], 'r') as f1, open(parameters['active_families'], 'w') as f2:
         for fam in f1.readlines(): f2.write(f'{fam.split()[0]}\n')
     shutil.copy(parameters['data_species_tree'], parameters['active_species_tree'])
@@ -511,6 +546,37 @@ def read_RecPhyloXML(in_file):
     )
     return(recStats)
 
+# Species tree ---------------------------------------------------------------
+
+''' Creates a map from node names to list of descendant extant species '''
+def get_leaves(tree_file):
+    '''
+    input: paths to a Newick tree file with internal nodes named
+    output:
+    - dictionary dict(str->list(str)) indexed by names of nodes in tree_file
+      each list is sorted in alphabetical order
+    '''
+    tree = ete3.Tree(tree_file, format=1)
+    leaves = defaultdict(list)
+    for node in tree.traverse():
+        for leaf in node: leaves[node.name].append(leaf.name)
+        leaves[node.name].sort()
+    return(leaves)
+
+''' Creates a map from node names to children '''
+def get_children(tree_file):
+    '''
+    input: paths to a Newick tree file with internal nodes named
+    output:
+    - dictionary dict(str->list(str)) indexed by names of nodes in tree_file
+    '''
+    tree = ete3.Tree(tree_file, format=1)
+    children = defaultdict(list)
+    for node in tree.traverse():
+        if not node.is_leaf():
+            children[node.name] = [ch.name for ch in node.children]
+    return(children)
+
 # GeneRax functions ----------------------------------------------------------
                         
 '''  Create GeneRax input files: one families file, one map file per family '''
@@ -691,24 +757,24 @@ def stats_generax(parameters):
 
 def aux_decostar_gene_trees(parameters):
     '''
-    output: parameters['decostar_gene_trees_file']
+    output: parameters['decostar_in_gene_trees_file']
     DeCoSTAR file containing the list of gene trees
     '''
     input_tool = parameters['decostar_input'].lower()
-    with open(parameters['decostar_gene_trees_file'], 'w') as gene_trees:
+    with open(parameters['decostar_in_gene_trees_file'], 'w') as gene_trees:
         if input_tool == 'generax':
             for family in get_active_families(parameters):
                 gene_trees.write(f'{generax_gene_tree(parameters, family)}\n')
 
 def aux_decostar_adjacencies(parameters):
     '''
-    output: parameters['decostar_adjacencies_file']
+    output: parameters['decostar_in_adjacencies_file']
     DeCoSTAR file containing the list of extant adjacencies
     '''
     orientation = {
         ('0','0'): ['-','+'], ('0','1'): ['-','-'], ('1','0'): ['+','+'], ('1','1'): ['+','-']
     }
-    with open(parameters['decostar_adjacencies_file'], 'w') as adjacencies:
+    with open(parameters['decostar_in_adjacencies_file'], 'w') as adjacencies:
         for species in get_extant_species(parameters):
             gene_order_file = os.path.join(parameters['active_gene_orders_dir'], f'{species}.txt')
             with open(gene_order_file, 'r') as gene_order:
@@ -729,8 +795,8 @@ def aux_decostar_parameters(parameters):
     input_tool = parameters['decostar_input'].lower()
     with open(parameters['decostar_parameters_file'], 'w') as decostar_parameters:
         decostar_parameters.write(f'species.file={parameters["active_species_tree"]}\n')
-        decostar_parameters.write(f'adjacencies.file={parameters["decostar_adjacencies_file"]}\n')
-        decostar_parameters.write(f'gene.distribution.file={parameters["decostar_gene_trees_file"]}\n')
+        decostar_parameters.write(f'adjacencies.file={parameters["decostar_in_adjacencies_file"]}\n')
+        decostar_parameters.write(f'gene.distribution.file={parameters["decostar_in_gene_trees_file"]}\n')
         decostar_parameters.write(f'output.dir={parameters["decostar_results_dir"]}\n')
         if input_tool == 'generax':
             decostar_parameters.write('already.reconciled=true\n')
@@ -746,12 +812,12 @@ def aux_decostar_parameters(parameters):
         decostar_parameters.write(f'write.genes=true\n')
         decostar_parameters.write(f'verbose={parameters["decostar_verbose"]}')
 
-    
+''' Creates the input data files for DeCoSTAR '''    
 def aux_decostar(parameters):
     '''
     output:
-    - parameters['decostar_gene_trees_file']
-    - parameters['decostar_adjacencies_file']
+    - parameters['decostar_in_gene_trees_file']
+    - parameters['decostar_in_adjacencies_file']
     - parameters['decostar_parameters_file']
     File formats are the ones required by DeCoSTAR
     '''
@@ -792,7 +858,163 @@ def run_decostar(parameters, run_script=False):
             decostar_script_patterns(parameters),
             run_script=run_script
         )
-    )       
+    )
+
+''' Read the map from nodes to descendant leaves from DeCoSTAR output '''
+def decostar_get_leaves(parameters):
+    '''
+    output:
+    - dictionary dict(str->list(str)) indexed by names of nodes in tree_file
+      each list is sorted in alphabetical order
+    '''
+    map_file = os.path.join(parameters['decostar_results_dir'],'species.txt')
+    leaves = {}
+    with open(map_file, 'r') as map:
+        for node in map.readlines():
+            node_data = node.rstrip().split()
+            leaves[node_data[0]] = node_data[1:]
+            leaves[node_data[0]].sort()
+    return(leaves)
+
+''' Return a map of correspondance between species names pf active species tree and DeCoSTAR species '''
+def decostar_species_map(parameters):
+    '''
+    output: dict(str->str) indexd by DeCoSTAR species labels
+    '''
+    active_leaves_map = get_leaves(parameters['active_species_tree'])
+    decostar_leaves_map = decostar_get_leaves(parameters)
+    map_aux = defaultdict(list)
+    for species,leaves in active_leaves_map.items():
+        map_aux[''.join(leaves)].append(species)
+    for species,leaves in decostar_leaves_map.items():
+        map_aux[''.join(leaves)].append(species)
+    map = {}
+    for species_pair in map_aux.values():
+        map[species_pair[1]] = species_pair[0]
+    return(map)
+
+''' Reformat the DeCoSTAR adjacencies and genes files to use species names of active species tree and names of active families '''
+def reformat_decostar(parameters):
+    '''
+    output: parameters['decostar_out_genes_file'], parameters['decostar_out_adjacencies_file']
+    '''
+    active_families = get_active_families(parameters)
+    species_map = decostar_species_map(parameters)
+    char_sep = parameters['decostar_sep']
+    # Map of gene names initialized by extant genes
+    genes_map = {}
+    for gene,data in get_genes_map(parameters).items(): genes_map[gene] = f'{data[0]}{char_sep}{gene}'
+    # Genes file
+    genes_file = os.path.join(parameters['decostar_results_dir'], 'genes.txt')
+    with open(genes_file, 'r') as in_genes, open(parameters['decostar_out_genes_file'], 'w') as out_genes:
+        for line in in_genes.readlines():
+            line_split = line.rstrip().split()
+            in_species,in_gene = line_split[0],line_split[1]
+            out_species = species_map[in_species]
+            if char_sep in in_gene:
+                family,gene_id = in_gene.split(char_sep)
+                out_gene = f'{active_families[int(family)]}{char_sep}{gene_id}'
+                genes_map[in_gene] = out_gene
+            else:
+                out_gene = in_gene
+            out_gene_str = ' '.join([out_species, out_gene] + [genes_map[in_gene] for in_gene in line_split[2:]])
+            out_genes.write(f'{out_gene_str}\n')
+    # Adjacencies file
+    adjacencies_file = os.path.join(parameters['decostar_results_dir'], 'adjacencies.txt')
+    with open(adjacencies_file, 'r') as in_adj, open(parameters['decostar_out_adjacencies_file'], 'w') as out_adj:
+        for line in in_adj.readlines():
+            line_split = line.rstrip().split()
+            in_species,in_gene1,in_gene2 = line_split[0],line_split[1],line_split[2]
+            out_species = species_map[in_species]
+            out_gene1,out_gene2 = genes_map[in_gene1],genes_map[in_gene2]
+            out_adj_str = ' '.join([out_species, out_gene1, out_gene2] + line_split[3:])
+            out_adj.write(f'{out_adj_str}\n')
+
+
+# SPP-DCJ -----------------------------------------------------------------------
+
+''' Creates SPP-DCJ species tree file '''
+def aux_sppdcj_species_trees(parameters):
+    '''
+    output: parameters['sppdcj_in_species_tree_file']
+    '''
+    children_map = get_children(parameters['active_species_tree'])
+    with open(parameters['sppdcj_in_species_tree_file'], 'w') as species_tree:
+        for species,children in children_map.items():
+            species_tree.write(f'{species}{SEP_SPPDCJ_FIELDS}{children[0]}\n')
+            species_tree.write(f'{species}{SEP_SPPDCJ_FIELDS}{children[1]}\n')
+
+''' Creates the SPP-DCJ adjacencies file '''
+def aux_sppdcj_adjacencies(parameters):
+    '''
+    output: parameters['sppdcj_in_adjacencies_file']
+    '''
+    orientation = {
+        ('-','+'): ['t','t'], ('-','-'): ['t','h'], ('+','-'): ['h','h'], ('+','+'): ['h','t']
+    }
+    decostar_sep = parameters['decostar_sep']
+    sppdcj_sep = parameters['sppdcj_sep']
+    weight_threshold = float(parameters['sppdcj_threshold'])
+    with open(parameters['decostar_out_adjacencies_file'], 'r') as decostar_adj, open(parameters['sppdcj_in_adjacencies_file'], 'w') as sppdcj_adj:
+        header_str = ["#Species","Gene_1","Ext_1","Species","Gene_2","Ext_2","Weight"]
+        sppdcj_adj.write(f'{SEP_SPPDCJ_FIELDS.join(header_str)}')
+        for adj in decostar_adj.readlines():
+            species,gene1,gene2,sign1,sign2,_,weight = adj.rstrip().split()
+            signs = orientation[(sign1,sign2)]
+            fam1,gene1_name = gene1.split(decostar_sep)
+            fam2,gene2_name = gene2.split(decostar_sep)
+            if float(weight) >= weight_threshold:
+                adj_str = [species,f'{fam1}{sppdcj_sep}{gene1_name}',signs[0],species,f'{fam2}{sppdcj_sep}{gene2_name}',signs[1],weight]
+                sppdcj_adj.write(f'\n{SEP_SPPDCJ_FIELDS.join(adj_str)}')
+
+''' Creates SPP-DCJ input files '''
+def aux_sppdcj(parameters):
+    '''
+    output:
+    parameters['sppdcj_in_species_tree_file']
+    parameters['sppdcj_in_adjacencies_file']
+    '''
+    aux_sppdcj_species_trees(parameters)
+    aux_sppdcj_adjacencies(parameters)
+
+''' Substitutions in SPP-DCJ template files to create SLURM scripts '''
+def sppdcj_script_patterns(parameters):
+    return(
+        {
+            'XX_slurm_account': parameters['slurm_account'],
+            'XX_tools_dir': parameters['tools_dir'],
+            'XX_sppdcj_ilp_memory': parameters['sppdcj_ilp_memory'],
+            'XX_sppdcj_ilp_time': str(parameters['sppdcj_ilp_time']),
+            'XX_sppdcj_gurobi_memory': parameters['sppdcj_gurobi_memory'],
+            'XX_sppdcj_gurobi_time': str(parameters['sppdcj_gurobi_time']),
+            'XX_sppdcj_alpha': str(parameters['sppdcj_alpha']),
+            'XX_sppdcj_beta': str(parameters['sppdcj_beta']),
+            'XX_sppdcj_ilp_options': parameters['sppdcj_ilp_options'],
+            'XX_sppdcj_log_dir': parameters['sppdcj_log_dir'],
+            'XX_sppdcj_log_pref': parameters['sppdcj_log_pref'],
+            'XX_sppdcj_species_tree_file': parameters['sppdcj_in_species_tree_file'],
+            'XX_sppdcj_adjacencies_file': parameters['sppdcj_in_adjacencies_file'],
+            'XX_sppdcj_idmap_file': parameters['sppdcj_out_idmap_file']
+        }
+    )
+
+''' Create a SPP-DCJ SLURM script to create the ILP '''
+def run_sppdcj_ilp(parameters, run_script=False):
+    '''
+    input: run_script: (boolean) run created scripts if True
+    output: 
+    - creates parameters['sppdcj_ilp_script_file']
+    - jobid: (str/None) SLURM job ID if job is run
+    '''
+    return(
+        create_slurm_script(
+            parameters,
+            'sppdcj_ilp_template_file',
+            'sppdcj_ilp_script_file',
+            sppdcj_script_patterns(parameters),
+            run_script=run_script
+        )
+    )
 
 
 # MAIN --------------------------------------------------------------------------
@@ -845,6 +1067,14 @@ def main():
         if len(sys.argv) == 4: run_val = (sys.argv[3] in TRUE_LIST)
         else: run_val = False
         run_decostar_jobid = run_decostar(parameters, run_script=run_val)
+    elif command == 'reformat_decostar':
+        reformat_decostar(parameters)
+    elif command == 'aux_sppdcj':
+        aux_sppdcj(parameters)
+    elif command == 'run_sppdcj_ilp':
+        if len(sys.argv) == 4: run_val = (sys.argv[3] in TRUE_LIST)
+        else: run_val = False
+        run_sppdcj_ilp_jobid = run_sppdcj_ilp(parameters, run_script=run_val)
 
         
 if __name__ == "__main__":

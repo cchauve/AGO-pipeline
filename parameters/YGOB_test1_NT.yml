@@ -57,6 +57,7 @@ decostar_log_pref:     decostar
 decostar_memory:       '4G'
 decostar_time:         '24:00:00'
 decostar_adjacencies:  adjacencies.txt
+decostar_genes:        genes.txt
 decostar_gene_trees:   gene_trees.txt
 decostar_parameters:   parameters.txt
 decostar_temperature:  '0.1'
@@ -66,4 +67,24 @@ decostar_dated:        'false'
 decostar_rooted:       'true'
 decostar_hgt:          'false'
 decostar_amalgamation: 'false'
-decostar_verbose:      '2'
+decostar_verbose:      '1'
+
+# SPP-DCJ
+sppdcj_ilp_template:     SPPDCJ_ILP_template.sh
+sppdcj_ilp_script:       SPPDCJ_ILP.sh
+sppdcj_gurobi_template:  SPPDCJ_Gurobi_template.sh
+sppdcj_gurobi_script:    SPPDCJ_GurobiP.sh
+sppdcj_dir:              SPPDCJ
+sppdcj_pref:             SPPDCJ
+sppdcj_log_pref:         sppdcj
+sppdcj_ilp_memory:       '32G'
+sppdcj_ilp_time:         '24:00:00'
+sppdcj_gurobi_memory:    '32G'
+sppdcj_gurobi_time:      '24:00:00'
+sppdcj_threshold:        '0.9'
+sppdcj_alpha:            '0.5'
+sppdcj_beta:             '0.25'
+sppdcj_ilp_options:      ' '
+sppdcj_adjacencies:      adjacencies.txt
+sppdcj_species_tree:     species_tree.txt
+sppdcj_idmap:            idmap.txt

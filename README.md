@@ -120,4 +120,12 @@ obtained with GeneRax.
 ```
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_decostar
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_decostar y
+python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml reformat_decostar
+```
+
+### SPP-DCJ
+
+```
+python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_sppdcj
+python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_sppdcj_ilp y
 ```
