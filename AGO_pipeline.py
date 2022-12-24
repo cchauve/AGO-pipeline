@@ -768,7 +768,6 @@ def aux_decostar_gene_trees(parameters):
     output: parameters['decostar_in_gene_trees_file']
     DeCoSTAR file containing the list of gene trees, assumed to be from GeneRax
     '''
-    input_tool = parameters['decostar_input'].lower()
     with open(parameters['decostar_in_gene_trees_file'], 'w') as gene_trees:
         for family in get_active_families(parameters):
             gene_trees.write(f'{generax_gene_tree(parameters, family, REC_SUFF)}\n')
