@@ -60,14 +60,13 @@ decostar_adjacencies:  adjacencies.txt
 decostar_genes:        genes.txt
 decostar_gene_trees:   gene_trees.txt
 decostar_parameters:   parameters.txt
-decostar_temperature:  '0.1'
-decostar_nb_samples:   '1000'
-decostar_input:        generax
-decostar_dated:        'false'
-decostar_rooted:       'true'
-decostar_hgt:          'false'
-decostar_amalgamation: 'false'
-decostar_verbose:      '1'
+decostar.par_already.reconcilied:   'true'
+decostar.par_use.boltzmann:         'true'
+decostar.par_boltzmann.temperature: '0.1'
+decostar.par_nb.sample:             '1000'
+decostar.par_dated.species.tree:    'false'
+decostar.par_rooted:                'true'
+decostar.par_verbose:               '1'
 
 # SPP-DCJ
 sppdcj_ilp_template:     SPPDCJ_ILP_template.sh

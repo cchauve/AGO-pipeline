@@ -51,6 +51,8 @@ SEP_SPPDCJ_FIELDS = '\t'
 SEP_SPPDCJ = '_'
 # Empty file string
 EMPTY_FILE = 'EMPTY FILE'
+# DECOSTAR PARAMETER PREFIX
+DECOSTAR_PAR_PREF = 'decostar.par_'
 
 ''' Reading the parameters YAML file '''
 def read_parameters(in_file):
@@ -764,13 +766,12 @@ def stats_generax(parameters):
 def aux_decostar_gene_trees(parameters):
     '''
     output: parameters['decostar_in_gene_trees_file']
-    DeCoSTAR file containing the list of gene trees
+    DeCoSTAR file containing the list of gene trees, assumed to be from GeneRax
     '''
     input_tool = parameters['decostar_input'].lower()
     with open(parameters['decostar_in_gene_trees_file'], 'w') as gene_trees:
-        if input_tool == 'generax':
-            for family in get_active_families(parameters):
-                gene_trees.write(f'{generax_gene_tree(parameters, family, REC_SUFF)}\n')
+        for family in get_active_families(parameters):
+            gene_trees.write(f'{generax_gene_tree(parameters, family, REC_SUFF)}\n')
 
 def aux_decostar_adjacencies(parameters):
     '''
@@ -798,25 +799,25 @@ def aux_decostar_parameters(parameters):
     output: parameters['decostar_parameters_file']
     DeCoSTAR file containing the list of DeCoSTAR parameters
     '''
-    input_tool = parameters['decostar_input'].lower()
-    with open(parameters['decostar_parameters_file'], 'w') as decostar_parameters:
-        decostar_parameters.write(f'species.file={parameters["active_species_tree"]}\n')
-        decostar_parameters.write(f'adjacencies.file={parameters["decostar_in_adjacencies_file"]}\n')
-        decostar_parameters.write(f'gene.distribution.file={parameters["decostar_in_gene_trees_file"]}\n')
-        decostar_parameters.write(f'output.dir={parameters["decostar_results_dir"]}\n')
-        if input_tool == 'generax':
-            decostar_parameters.write('already.reconciled=true\n')
-        decostar_parameters.write('use.boltzmann=true\n')
-        decostar_parameters.write(f'boltzmann.temperature={parameters["decostar_temperature"]}\n')
-        decostar_parameters.write(f'nb.sample={parameters["decostar_nb_samples"]}\n')
-        decostar_parameters.write(f'rooted={parameters["decostar_rooted"]}\n')
-        decostar_parameters.write(f'dated.species.tree={parameters["decostar_dated"]}\n')
-        decostar_parameters.write(f'with.transfer={parameters["decostar_hgt"]}\n')
-        decostar_parameters.write(f'try.all.amalgamation={parameters["decostar_amalgamation"]}\n')
-        decostar_parameters.write(f'write.newick=true\n')
-        decostar_parameters.write(f'write.adjacencies=true\n')
-        decostar_parameters.write(f'write.genes=true\n')
-        decostar_parameters.write(f'verbose={parameters["decostar_verbose"]}')
+    with open(parameters['decostar_parameters_file'], 'w') as decostar_parameters_file:
+        # Input data parameters
+        decostar_parameters_file.write(f'species.file={parameters["active_species_tree"]}\n')
+        decostar_parameters_file.write(f'adjacencies.file={parameters["decostar_in_adjacencies_file"]}\n')
+        decostar_parameters_file.write(f'gene.distribution.file={parameters["decostar_in_gene_trees_file"]}\n')
+        decostar_parameters_file.write(f'output.dir={parameters["decostar_results_dir"]}\n')
+        # Method parameters: default values
+        decostar_parameters_file.write('write.newick=true\n')
+        decostar_parameters_file.write('write.adjacencies=true\n')
+        decostar_parameters_file.write('write.genes=true\n')
+        # Method parameters from the YAML file
+        decostar_parameters_keys = [
+            k for k in parameters.keys() if k.startswith(DECOSTAR_PAR_PREF)
+        ]
+        for parameter_key in decostar_parameters_keys:
+            decostar_key = parameter_key.replace(DECOSTAR_PAR_PREF,'')
+            decostar_value = parameters[parameter_key]
+            decostar_parameters_file.write(f'{decostar_key}={decostar_value}\n')
+            
 
 ''' Creates the input data files for DeCoSTAR '''    
 def aux_decostar(parameters):
