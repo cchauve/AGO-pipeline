@@ -1081,8 +1081,6 @@ def stats_decostar(parameters):
             for k in range(key_w+1):
                 adj_dicts[species][gene1][ext1][k] += 1
                 adj_dicts[species][gene2][ext2][k] += 1
-    print(adj_dicts['Ndairenensis']['5027|NDAI0J00810']['h'][5])
-    print(adj_dicts['Ndairenensis']['5027|NDAI0J00810']['t'][5])
     # Statistics
     # #adjacencies, #genes in an adjacency, #extremities with conflict, #free extremities
     stat_keys = ['adj','genes','conflict','free']

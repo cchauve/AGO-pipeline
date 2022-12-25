@@ -76,8 +76,8 @@ sppdcj_gurobi_script:    SPPDCJ_GurobiP.sh
 sppdcj_dir:              SPPDCJ
 sppdcj_pref:             SPPDCJ
 sppdcj_log_pref:         sppdcj
-sppdcj_ilp_memory:       '32G'
-sppdcj_ilp_time:         '24:00:00'
+sppdcj_ilp_memory:       '128G'
+sppdcj_ilp_time:         '48:00:00'
 sppdcj_gurobi_memory:    '32G'
 sppdcj_gurobi_time:      '24:00:00'
 sppdcj_threshold:        '0.9'
