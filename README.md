@@ -124,7 +124,13 @@ obtained with GeneRax.
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_decostar
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_decostar y
 python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml reformat_decostar
+python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_decostar
 ```
+
+The las command generates the file
+`/scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_DeCoSTAR.csv'
+that shows that even with a high weight there is till a lot of
+conflict. This needs to be investigated.
 
 ### SPP-DCJ
 

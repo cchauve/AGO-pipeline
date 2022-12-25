@@ -8,7 +8,6 @@ exp_dir_pref:    &exp_dir_pref /scratch/chauvec/SPP
 tools_dir:       !join [*root_dir, /bin]
 data_dir:        !join [*root_dir, /data/YGOB]
 in_scripts_dir:  !join [*root_dir, /scripts]
-main_script:     !join [*root_dir, /YGOB.py]
 
 # Data
 species_tree:    species_tree.newick
@@ -60,12 +59,13 @@ decostar_adjacencies:  adjacencies.txt
 decostar_genes:        genes.txt
 decostar_gene_trees:   gene_trees.txt
 decostar_parameters:   parameters.txt
-decostar.par_already.reconcilied:   'true'
+decostar.par_already.reconciled:    'true'
 decostar.par_use.boltzmann:         'true'
 decostar.par_boltzmann.temperature: '0.1'
 decostar.par_nb.sample:             '1000'
 decostar.par_dated.species.tree:    'false'
 decostar.par_rooted:                'true'
+decostar.par_with.transfer:         'false'
 decostar.par_verbose:               '1'
 
 # SPP-DCJ
