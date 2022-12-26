@@ -142,7 +142,7 @@ def recPhyloXML_read_events(in_file):
 
 ''' 
 Correct a (Generax) recPhyloXML file that does not follow the expected format
-- label internal nodes n<start_id>, n<start_id+1>, ... in order of appareance 
+- label internal nodes <start_id>, <start_id+1>, ... in order of appareance 
 - reformat reconciliation events <event .../> -> <event ...></event>
 Returns the first unused ID (int)
 '''
@@ -156,7 +156,7 @@ def recPhyloXML_format(in_file, out_file, start_id=0):
             line1 = line.strip()
             if line1[0]!='<': continue
             if line1 == '<name></name>':
-                out_xml.write(line.replace('><', f'>n{current_id}<'))
+                out_xml.write(line.replace('><', f'>{current_id}<'))
                 current_id += 1
             elif line1.startswith('<speciation'):
                 out_xml.write(line.replace('/>', '></speciation>'))
