@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-''' Running the various steps of the ancestral gene order pipeline '''
+""" AGO pipeline """
+
+__author__    = "Cedric Chauve"
+__email__     = "cedric.chauve@sfu.ca"
+__version__   = "0.99"
+__status__    = "Development"
 
 import os
 import sys
