@@ -62,10 +62,11 @@ decostar_parameters:   parameters.txt
 decostar.par_already.reconciled:    'true'
 decostar.par_use.boltzmann:         'true'
 decostar.par_boltzmann.temperature: '0.1'
-decostar.par_nb.sample:             '1000'
+decostar.par_nb.sample:             '100'
 decostar.par_dated.species.tree:    'false'
 decostar.par_rooted:                'true'
 decostar.par_with.transfer:         'false'
+decostar.par_write.adjacency.trees: 'true'
 decostar.par_verbose:               '1'
 
 # SPP-DCJ
@@ -76,11 +77,11 @@ sppdcj_gurobi_script:    SPPDCJ_GurobiP.sh
 sppdcj_dir:              SPPDCJ
 sppdcj_pref:             SPPDCJ
 sppdcj_log_pref:         sppdcj
-sppdcj_ilp_memory:       '128G'
+sppdcj_ilp_memory:       '256G'
 sppdcj_ilp_time:         '48:00:00'
 sppdcj_gurobi_memory:    '32G'
 sppdcj_gurobi_time:      '24:00:00'
-sppdcj_threshold:        '0.9'
+sppdcj_threshold:        '0.5'
 sppdcj_alpha:            '0.5'
 sppdcj_beta:             '0.25'
 sppdcj_ilp_options:      ' '

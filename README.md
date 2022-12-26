@@ -30,7 +30,7 @@ I have set the output directories (log and results) in
 
 ```
 source AGO_python3/bin/activate
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml init
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml init
 wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
 5028 /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
 ```
@@ -40,8 +40,8 @@ We start with 5028 families.
 ### MACSE
 
 ```
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_macse y
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml check_macse y
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml run_macse y
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml check_macse y
 ```
 
 Log and error files are available at
@@ -51,8 +51,8 @@ We run MACSE on the families that failed, increasing the time limit to
 1:00:00 per family.
 
 ```
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml rerun_macse 4G 1:00:00 y
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml check_macse y
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml rerun_macse 4G 1:00:00 y
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml check_macse y
 ```
 
 Log and error files are available at
@@ -71,7 +71,7 @@ We end the MACSE phase by updating the list of active families to
 discard the ones for which MACSE failed to complete.
 
 ```
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml update_post_macse pre_MACSE
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml update_post_macse pre_MACSE
 wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
 4981 /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
 wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt_pre_MACSE
@@ -83,9 +83,9 @@ We now have 4981 families.
 ### GeneRax
 
 ```
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_generax
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_generax y
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml check_generax y
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_generax
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml run_generax y
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml check_generax y
 ```
 
 Log and error files are available at
@@ -99,7 +99,7 @@ There are 187 families for which GeneRax could not read the alignment.
 We update the active families and species tree.
 
 ```
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml update_post_generax pre_GeneRax
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml update_post_generax pre_GeneRax
 wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
 4794 /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
 ```
@@ -110,8 +110,8 @@ We convert the reconciled trees in recPhyloXML format and compute
 statistics for each tree.
 
 ```
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml reformat_generax
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_generax
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml reformat_generax
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_generax
 ```
 
 We can observe again a gene content inflation in reconciled gene trees 
@@ -121,10 +121,10 @@ obtained with GeneRax.
 ### DeCoSTAR
 
 ```
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_decostar
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_decostar y
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml reformat_decostar
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_decostar
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_decostar
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml run_decostar y
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml reformat_decostar
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_decostar
 ```
 
 The las command generates the file
@@ -135,6 +135,6 @@ conflict. This needs to be investigated.
 ### SPP-DCJ
 
 ```
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_sppdcj
-python3 AGO_pipeline.py parameters/YGOB_test1_NT.yml run_sppdcj_ilp y
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_sppdcj
+python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml run_sppdcj_ilp y
 ```
