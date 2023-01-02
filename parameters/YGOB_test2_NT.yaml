@@ -297,16 +297,19 @@ tools:
    SPPDCJ_ILP:
       name: &sppdcj_ilp_name 'SPPDCJ_ILP'
       input:
-         dir:  &sppdcj_ilp_input_dir !join [*dir_aux, *sppdcj_ilp_name]
+         species: &sppdcj_ilp_input_species 'Cglabrata Scerevisiae'
+         suffix:  &sppdcj_ilp_input_suffix  'Cglabrata_Scerevisiae'
+         dir:     &sppdcj_ilp_input_dir     !join [*dir_aux, *sppdcj_ilp_name]
          file:
-           - &sppdcj_ilp_input_file_species_tree !join [*sppdcj_ilp_input_dir, 'species_tree.txt']
-           - &sppdcj_ilp_input_file_adjacencies  !join [*sppdcj_ilp_input_dir, 'adjacencies.txt']
+           - &sppdcj_ilp_input_file_species_tree !join [*sppdcj_ilp_input_dir, !concat ['species_tree_', *sppdcj_ilp_input_suffix, '.txt']]
+           - &sppdcj_ilp_input_file_adjacencies  !join [*sppdcj_ilp_input_dir, !concat ['adjacencies_', *sppdcj_ilp_input_suffix, '.txt']]
          threshold: &sppdcj_ilp_input_threshold  '0.75'
          beta:      &sppdcj_ilp_input_beta       '0.25'
          script:
             - !join [*run_dir_scripts, 'SPPDCJ_create_input_files.py']
             - !ref [*data_adjacencies_path]
             - !ref [*generax_slurm_results_species_tree]
+            - !ref [*sppdcj_ilp_input_species]
             - !ref [*sppdcj_ilp_input_threshold]
             - !ref [*sppdcj_ilp_input_file_species_tree]
             - !ref [*sppdcj_ilp_input_file_adjacencies]
@@ -314,7 +317,10 @@ tools:
          dir:  &sppdcj_ilp_output_dir  !join [*dir_results, *sppdcj_ilp_name]
          file: &sppdcj_ilp_output_file !join [
                   *sppdcj_ilp_output_dir,
-                  !concat [*run_name, '_idmap_', *sppdcj_ilp_input_threshold, '_', *sppdcj_ilp_input_beta, '.txt']
+                  !concat [
+                     *run_name, '_idmap_', *sppdcj_ilp_input_suffix, '_',
+                     *sppdcj_ilp_input_threshold, '_', *sppdcj_ilp_input_beta, '.txt'
+                  ]
                ]
       slurm:
          options: &sppdcj_ilp_options ['--mem=256G', '--time=24:00:00']

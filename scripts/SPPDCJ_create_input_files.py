@@ -26,19 +26,36 @@ def newick_get_children(tree_file):
             children[node.name] = [ch.name for ch in node.children]
     return(children)
 
+''' 
+Returns the list of species in the subtree rooted at 
+the LCA of leaves_list
+'''
+def newick_get_lca_species(tree_file, leaves_list):
+    tree = ete3.Tree(tree_file, format=1)
+    leaf1 = tree.get_leaves_by_name(leaves_list[0])[0]
+    leaves2 = [tree.get_leaves_by_name(leaf)[0] for leaf in leaves_list[1:]]
+    lca = leaf1.get_common_ancestor(*leaves2)
+    nodes_list = [lca] + lca.get_descendants()
+    return [node.name for node in nodes_list]
+
 ''' Creates SPP-DCJ species tree file '''
-def sppdcj_species_trees(in_species_tree, out_species_tree):
+def sppdcj_species_trees(in_species_tree, out_species_tree, species_list=None):
     '''
     output: out_species_tree
     '''
     children_map = newick_get_children(in_species_tree)
     with open(out_species_tree, 'w') as out_tree:
         for species,children in children_map.items():
-            out_tree.write(f'{species}\t{children[0]}\n')
-            out_tree.write(f'{species}\t{children[1]}\n')
+            if species_list is None or species in species_list:                
+                out_tree.write(f'{species}\t{children[0]}\n')
+                out_tree.write(f'{species}\t{children[1]}\n')
 
 ''' Creates the SPP-DCJ adjacencies file '''
-def sppdcj_adjacencies(in_adjacencies_file, in_weight_threshold, out_adjacencies_file):
+def sppdcj_adjacencies(
+        in_adjacencies_file,
+        in_weight_threshold,
+        out_adjacencies_file,
+        species_list=None):
     '''
     output: out_adjacencies_file
     '''
@@ -52,30 +69,37 @@ def sppdcj_adjacencies(in_adjacencies_file, in_weight_threshold, out_adjacencies
         out_adjacencies.write(f'{sppdcj_sep.join(header_str)}')
         for species_data in in_species_adjacencies.readlines():
             species,species_adjacencies_file = species_data.rstrip().split()
-            with open(species_adjacencies_file, 'r') as in_adjacencies:
-                for adj in in_adjacencies.readlines():
-                    gene1,gene2,sign1,sign2,_,weight = adj.rstrip().split()
-                    signs = decostar_sign2extremity[(sign1,sign2)]
-                    fam1,gene1_name = gene1.split(decostar_sep)
-                    fam2,gene2_name = gene2.split(decostar_sep)
-                    if float(weight) >= in_weight_threshold:
-                        adj_str = [
-                            species,f'{fam1}_{gene1_name}',signs[0],
-                            species,f'{fam2}_{gene2_name}',signs[1],
-                            weight
-                        ]
-                        out_adjacencies.write(f'\n{sppdcj_sep.join(adj_str)}')
+            if species_list is None or species in species_list:
+                with open(species_adjacencies_file, 'r') as in_adjacencies:
+                    for adj in in_adjacencies.readlines():
+                        gene1,gene2,sign1,sign2,_,weight = adj.rstrip().split()
+                        signs = decostar_sign2extremity[(sign1,sign2)]
+                        fam1,gene1_name = gene1.split(decostar_sep)
+                        fam2,gene2_name = gene2.split(decostar_sep)
+                        if float(weight) >= in_weight_threshold:
+                            adj_str = [
+                                species,f'{fam1}_{gene1_name}',signs[0],
+                                species,f'{fam2}_{gene2_name}',signs[1],
+                                weight
+                            ]
+                            out_adjacencies.write(f'\n{sppdcj_sep.join(adj_str)}')
 
                 
 def main():
     in_adjacencies_file = sys.argv[1]
     in_species_tree = sys.argv[2]
-    in_weight_threshold = float(sys.argv[3])
-    out_species_tree = sys.argv[4]
-    out_adjacencies_file = sys.argv[5]
+    in_extant_species = sys.argv[3].split()
+    in_weight_threshold = float(sys.argv[4])
+    out_species_tree = sys.argv[5]
+    out_adjacencies_file = sys.argv[6]
 
-    sppdcj_species_trees(in_species_tree, out_species_tree)
-    sppdcj_adjacencies(in_adjacencies_file, in_weight_threshold, out_adjacencies_file)
+    if in_extant_species == 'all':
+        species_list = None
+    else:
+        species_list = newick_get_lca_species(in_species_tree, in_extant_species)
+    
+    sppdcj_species_trees(in_species_tree, out_species_tree, species_list=species_list)
+    sppdcj_adjacencies(in_adjacencies_file, in_weight_threshold, out_adjacencies_file, species_list=species_list)
         
 if __name__ == "__main__":
     main()

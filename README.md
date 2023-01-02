@@ -143,12 +143,14 @@ we decide to create an ILP for adjacencies of weight at least 0.75.
 
 ### SPPDCJ: creating the ILP
 
+We create it for a 3 nodes subtree with leaves **Cglabrata** and **Scerevisiae**.  
+
 ```
 > python src/AGO.py parameters/YGOB_test2_NT.yaml script SPPDCJ_ILP
         /scratch/chauvec/SPP/YGOB_test2_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
 > sbatch  /scratch/chauvec/SPP/YGOB_test2_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
 sbatch: NOTE: Your memory request of 262144M was likely submitted as 256G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
-Submitted batch job 55016665
+Submitted batch job 55028925
 ```
 
 The ILP creation is currently running.
