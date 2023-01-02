@@ -47,15 +47,15 @@ class Parameters:
             os.makedirs(dir_path, exist_ok=True)
             for tool in self.parameters['tools'].keys():
                 os.makedirs(os.path.join(dir_path, tool), exist_ok=True)
-        for in_file_keys,in_file_values in self.parameters['data'].items():
+        for AGO_object_name,AGO_object_values_values in self.parameters['data'].items():
             # Copy only input data files for record
-            in_file_name = in_file_values['name']
-            in_file_path = in_file_values['path']
+            in_file_path = AGO_object_values['path']
             if os.path.isfile(in_file_path):
-                in_file_path = in_file_values['path']
+                if name in self.parameters['data']
+                in_file_name = os.path.basename(in_file_path)
                 out_file_path = os.path.join(
                     self.parameters['dir']['data'],
-                    in_file_name
+                    in_file_name 
                 )
                 shutil.copy(in_file_path, out_file_path)
                 print(f'\t{in_file_path} -> {out_file_path}.')

@@ -1,18 +1,21 @@
 # Parameters file to process YGOB data
 version: 2
 
-# Specific run parameters
+# [optional] Specific run parameters
 run:
-   # [required] Run name
+   # Run name
    name: &run_name 'YGOB_test2_NT'
-   # [optional] Directories
+   # Run-specific directories
    dir:
+      # Root directory for parameters and tool-specific scripts
       root:    &run_dir_root    '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE'
+      # Tool-specific scripts
       scripts: &run_dir_scripts !join [*run_dir_root, 'scripts']
+      # YGOB data
       data:    &run_dir_data    !join [*run_dir_root, 'data/YGOB']
+      # Directory for experiments scripts, results, log, statistics and auxiliary files
       exp:     &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
 
-# [required] Active data directories
 dir:
    data:    &dir_data    !join [*run_dir_exp, 'data']
    aux:     &dir_aux     !join [*run_dir_exp, 'aux']
@@ -20,97 +23,37 @@ dir:
    stats:   &dir_stats   !join [*run_dir_exp, 'statistics']
    results: &dir_results !join [*run_dir_exp, 'results']
 
-# Data access
 data:
-   # [required] Path to species tree file in Newick format
-   # [comment] Currently internal node labels, if any, are ignored
    species_tree:
-      dir:   &data_species_tree_dir   !ref [*run_dir_data]
-      name:  &data_species_tree_name  'species_tree.newick'
-      path:  &data_species_tree_path  !join [*data_species_tree_dir, *data_species_tree_name]
-
-   # [optional] List of species, extant and ancestral
-   # [format] <species name><TAB><['extant','ancestral']>   
-   species:
-      dir:   &data_species_dir   !ref [*dir_data]
-      name:  &data_species_name  'species.txt'
-      path:  &data_species_path  !join [*data_species_dir, *data_species_name]
-
-   # [required] Path to file describing genes in each gene family
-   # [format] One family per line
-   # [format] <family ID><TAB><list of genes names separated by ' '>   
+      path: &data_species_tree_path  !join [*run_dir_data, 'species_tree.newick']
    families:
-      dir:   &data_families_dir   !ref [*run_dir_data]
-      name:  &data_families_name  'families.txt'
-      path:  &data_families_path  !join [*data_families_dir, *data_families_name]
-      
-   # [required] Path to a file giving the path to gene order files per extant species
-   # [format] One extant species per line
-   # [format] <species name><TAB><path>
+      path: &data_families_path  !join [*run_dir_data, 'families.txt']
    gene_orders:
-      dir:   &data_gene_orders_dir   !ref [*run_dir_data]
-      name:  &data_gene_orders_name  'gene_orders.txt'
-      path:  &data_gene_orders_path  !join [*data_gene_orders_dir, *data_gene_orders_name]
-
-   # [optional] Path to a file giving the path to one unaligned FASTA file per family
-   # [format] One family per line
-   # [format] <family ID><TAB><path>
+      path: &data_gene_orders_path  !join [*run_dir_data, 'gene_orders.txt']
+   # [optional] 
+   species:
+      path: &data_species_path  !join [*dir_data, *data_species_name]
    sequences:
-      dir:   &data_sequences_dir   !ref [*run_dir_data]
-      name:  &data_sequences_name  'sequences.txt'
-      path:  &data_sequences_path  !join [*data_sequences_dir, *data_sequences_name]
-
-   # [optional] File giving the path to one aligned FASTA file per family
-   # [format] One family per line
-   # [format] <family ID><TAB><path>
+      path: &data_sequences_path  !join [*run_dir_data, 'sequences.txt']
    alignments:
-      name:  &data_alignments_name   'alignments.txt'
-      path:  &data_alignments_path   !join [*dir_data, *data_alignments_name]
-      # Suffixes for nucleotides and amino-acids alignments files
+      path: &data_alignments_path   !join [*dir_data, 'alignments.txt']
+      # [optional] Suffixes for nucleotides and amino-acids alignments files
       NT_ext: &data_alignments_NT_ext '_NT.fasta'
       AA_ext: &data_alignments_AA_ext '_AA.fasta'
-      
-   # [optional] Path to the file giving the path to one unreconciled gene tree file per family
-   # [format] One family per line
-   # [format] <family ID><TAB><path>
-   # gene_trees: 
-   #   name:  &data_gene_trees_name   'gene_trees.txt'
-   #   path:  &data_gene_trees_path   !join [*dir_data, *data_gene_trees_name]
-
-   # [optional] File giving the path to one reconciled gene tree file per family
-   # [format] One family per line
-   # [format] <family ID><TAB><path>
    reconciliations:
-      name:  &data_reconciliations_name   'reconciliations.txt'
-      path:  &data_reconciliations_path   !join [*dir_data, *data_reconciliations_name]
-      ext:   &data_reconciliations_ext    '.recphyloxml'
-
-   # [optional] File giving the path to one adjacency file per species, extant and ancestral
-   # [format] One species per line
-   # [format] <species name><TAB><path>
+      path:  &data_reconciliations_path   !join [*dir_data, reconciliations.txt']
+      # [optional] extensions for reconciliations files created by AGO
+      ext: &data_reconciliations_ext    '.recphyloxml'
    adjacencies:
-      name:  &data_adjacencies_name   'adjacencies.txt'
-      path:  &data_adjacencies_path   !join [*dir_data, *data_adjacencies_name]
+      path:  &data_adjacencies_path   !join [*dir_data, 'adjacencies.txt']
+   # gene_trees: 
+   #   path:  &data_gene_trees_path   !join [*dir_data, 'gene_trees.txt']
+   # Commented as GeneRax generates directly reconciled gene trees
 
-   # Assumptions:
-   # - exactly one of data.sequences, data.alignments, data.gene_trees, data.reconciliations
-   #   data.adjacencies is provided as starting data, all others will be in *dir_data
-   # - species names in data.gene_orders do match leaves of data.species_tree
-   # - extant species names in data.adjacencies do match leaves of data.species_tree
-   # - genes in data.gene_orders do match genes in data.families
-   # - gene in FASTA files from data.sequences do match genes in data.families
-   # - families in data.sequences do match families in data.families
-   # - gene sequences FASTA header of the form ">gene_name\n"
-
-
-# Global SLURM parameters
 slurm:
-   # [required] Default account
    account: &slurm_account 'def-chauvec'
 
-# LOG files
 log:
-   # [required] Files extensions for log, error and stats files
    ext:
       log:  &log_ext_log  'log'
       err:  &log_ext_err  'err'
@@ -122,37 +65,27 @@ log:
       warning: &log_msg_warning 'WARNING'
       missing: &log_msg_missing 'file is missing'
 
-# Tools used in the pipeline
 tools:
    # MACSE: multiple sequences alignment
    MACSE:
-      # [required] Name of the tool used in directories and log file names
       name: &macse_name 'MACSE'
-      # [required] Input and output properties
       input:
-         # [required] Input file to MACSE giving paths to sequence files
          file: &macse_input_file !ref [*data_sequences_path]
       output:
-         # [required] File where MACSE alignments paths are stored
          file: &macse_output_file !ref [*data_alignments_path]
       slurm:
-         # [required] Slurm options; might be empty
          options: &macse_slurm_options ['--mem=8G', '--time=02:00:00']
-         # [optional] macse runs through a job array indexed by families
+         modules: &macse_slurm_modules ['java']
          array:
-            # [required] 'input' block with fields for 'file', 'field', 'var' in this order
             input:
                file:  &macse_slurm_array_input_file  !ref [*macse_input_file]
                field: &macse_slurm_array_input_field 2
                var:   &macse_slurm_array_input_var   'SEQ_FILE'
-            # [optional] Blocks with same structure than 'input' block
             results:
                file:  &macse_slurm_array_results_file  !ref [*macse_input_file]
                field: &macse_slurm_array_results_field 1
                var:   &macse_slurm_array_results_var   'FAM_ID'
                ext:   &macse_slurm_array_results_ext   !ref [*data_alignments_NT_ext]
-         # [required] List of expected results files
-         # If based on an array, uses tools.MACSE.slurm.array.results variables
          results:
             dir: &macse_results_dir  !join [*dir_results, *macse_name]
             files:
@@ -164,9 +97,6 @@ tools:
                      *macse_results_dir,
                      !concat ['${', *macse_slurm_array_results_var, '}', *data_alignments_AA_ext]
                   ]
-         # [required] List of modules to load; might be empty
-         modules: ['java']
-         # [required] Command to be run in Slurm script
          cmd:
             - 'java -jar /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/bin/macse_v2.06.jar \'
             - '   -prog alignSequences \'
@@ -192,6 +122,8 @@ tools:
       output:
          file:  &generax_output_file !ref [*data_reconciliations_path]
       slurm:
+         options: &generax_slurm_options ['--mem-per-cpu=4G', '--time=12:00:00', '--ntasks=100']
+         modules: &generax_slurm_modules []
          array:
             results:
                file:  &generax_slurm_array_results_file  !ref [*data_alignments_path]
@@ -209,8 +141,6 @@ tools:
                      *generax_results_dir, 'species_trees', 'starting_species_tree.newick'
                   ]
                 - &generax_slurm_results_species_file !ref [*data_species_path]
-         options: &generax_slurm_options ['--mem-per-cpu=4G', '--time=12:00:00', '--ntasks=100']
-         modules: []
          cmd:
             - 'mpiexec -np 48 /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/bin/GeneRax/build/bin/generax \'
             - !concat ['   -f ', *generax_input_file, ' \']
@@ -255,12 +185,13 @@ tools:
       output:
          file: &decostar_output_file !ref [*data_adjacencies_path]
       slurm:
+         options: &decostar_options ['--mem=4G', '--time=24:00:00']
+         modules: &decostar_modules []
          array:
             results:
                file:  &decostar_slurm_array_results_file  !ref [*generax_slurm_results_species_file]
                field: &decostar_slurm_array_results_field 1
                var:   &decostar_slurm_array_results_var   'SPECIES'      
-         options: &decostar_options ['--mem=4G', '--time=24:00:00']
          results:
             dir: &decostar_results_dir  !join [*dir_results, *decostar_name]
             files:
@@ -272,7 +203,6 @@ tools:
                 - &decostar_slurm_results_genes_file_1     !join [*decostar_results_dir, 'genes.txt']
                 - &decostar_slurm_results_genes_file_2     !join [*decostar_results_dir, 'genes_reformatted.txt']
                 - &decostar_slurm_results_species_file     !join [*decostar_results_dir, 'species.txt']
-         modules: []
          cmd:
             - '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/bin/DeCoSTAR \'
             - !concat ['   species.file=', *generax_slurm_results_species_tree, ' \']
@@ -338,17 +268,17 @@ tools:
             - !ref [*sppdcj_ilp_input_file_adjacencies]
       slurm:
          options: &sppdcj_ilp_options ['--mem=256G', '--time=24:00:00']
+         modules: &sppdcj_ilp_modules []
          results:
             dir: &sppdcj_ilp_results_dir  !join [*dir_results, *sppdcj_ilp_name]
-            files:
+            other:
                 - &sppdcj_ilp_results_file !join [
                   *sppdcj_ilp_results_dir,
                   !concat [
-                     *run_name, '_idmap_', *sppdcj_ilp_input_suffix, '_',
+                     *idmap_', *sppdcj_ilp_input_suffix, '_',
                      *sppdcj_ilp_input_threshold, '_', *sppdcj_ilp_input_beta, '.txt'
                   ]
                ]
-         modules: []
          cmd:
             - '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/bin/spp_dcj/scripts/spp_dcj.py \'
             - !concat ['   -m ', *sppdcj_ilp_results_file, ' \']
