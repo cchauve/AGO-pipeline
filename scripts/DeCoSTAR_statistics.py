@@ -29,12 +29,15 @@ def decostar_read_results(in_genes_file, in_adjacencies_file, in_species_tree_fi
             species,gene_name = gene.rstrip().split()[0:2]
             genes_lists[species].append(gene_name)
             adj_dicts[species][gene_name] = {'h': {'w': []}, 't': {'w': []}}
-    with open(in_adjacencies_file, 'r') as in_adjacencies:
-        for adj in in_adjacencies.readlines():
-            species,gene1,gene2,sign1,sign2,_,weight = adj.rstrip().split()
-            ext1,ext2 = decostar_sign2extremity[(sign1,sign2)]
-            adj_dicts[species][gene1][ext1]['w'].append(float(weight))
-            adj_dicts[species][gene2][ext2]['w'].append(float(weight))
+    with open(in_adjacencies_file, 'r') as in_species_adjacencies:
+        for species_data in in_species_adjacencies.readlines():
+            species,in_adjacencies_file = species_data.rstrip().split()
+            with open(in_adjacencies_file, 'r') as in_adjacencies:
+                for adj in in_adjacencies.readlines():
+                    gene1,gene2,sign1,sign2,_,weight = adj.rstrip().split()
+                    ext1,ext2 = decostar_sign2extremity[(sign1,sign2)]
+                    adj_dicts[species][gene1][ext1]['w'].append(float(weight))
+                    adj_dicts[species][gene2][ext2]['w'].append(float(weight))
     # Sorting weights for each gene extremity
     for species in species_list:
         for gene in adj_dicts[species].keys():

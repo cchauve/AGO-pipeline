@@ -44,24 +44,27 @@ def sppdcj_adjacencies(in_adjacencies_file, in_weight_threshold, out_adjacencies
     '''
     sppdcj_sep = '\t'
     decostar_sep = '|'
-    with open(in_adjacencies_file, 'r') as in_adjacencies, \
+    with open(in_adjacencies_file, 'r') as in_species_adjacencies, \
          open(out_adjacencies_file, 'w') as out_adjacencies:
         header_str = [
             "#Species","Gene_1","Ext_1","Species","Gene_2","Ext_2","Weight"
         ]
         out_adjacencies.write(f'{sppdcj_sep.join(header_str)}')
-        for adj in in_adjacencies.readlines():
-            species,gene1,gene2,sign1,sign2,_,weight = adj.rstrip().split()
-            signs = decostar_sign2extremity[(sign1,sign2)]
-            fam1,gene1_name = gene1.split(decostar_sep)
-            fam2,gene2_name = gene2.split(decostar_sep)
-            if float(weight) >= in_weight_threshold:
-                adj_str = [
-                    species,f'{fam1}_{gene1_name}',signs[0],
-                    species,f'{fam2}_{gene2_name}',signs[1],
-                    weight
-                ]
-                out_adjacencies.write(f'\n{sppdcj_sep.join(adj_str)}')
+        for species_data in in_species_adjacencies.readlines():
+            species,species_adjacencies_file = species_data.rstrip().split()
+            with open(species_adjacencies_file, 'r') as in_adjacencies:
+                for adj in in_adjacencies.readlines():
+                    gene1,gene2,sign1,sign2,_,weight = adj.rstrip().split()
+                    signs = decostar_sign2extremity[(sign1,sign2)]
+                    fam1,gene1_name = gene1.split(decostar_sep)
+                    fam2,gene2_name = gene2.split(decostar_sep)
+                    if float(weight) >= in_weight_threshold:
+                        adj_str = [
+                            species,f'{fam1}_{gene1_name}',signs[0],
+                            species,f'{fam2}_{gene2_name}',signs[1],
+                            weight
+                        ]
+                        out_adjacencies.write(f'\n{sppdcj_sep.join(adj_str)}')
 
                 
 def main():

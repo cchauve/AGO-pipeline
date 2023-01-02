@@ -80,8 +80,8 @@ def decostar_reconciled_families(in_reconciliations_file):
             families.append(fam_id)
     return families
 
-''' Reformat DeCoSTAR genes file '''
-def decostar_reformat_genes_file(
+''' Read DeCoSTAR genes file '''
+def decostar_reformat_genes(
         in_species_map,
         in_families_file,
         in_reconciliations_file,
@@ -131,26 +131,40 @@ def decostar_reformat_adjacencies_file(
         in_species_map,
         in_genes_name,
         in_adjacencies_file,
-        out_adjacencies_file):
+        out_adjacencies_file,
+        out_adjacencies_dir
+):
     '''
     input:
     - dict(str->str): mapping from DeCoSTAR species names to species names
     - dict(str->str): mapping from DeCoSTAR gene names to reformated gene names
       of format family_name|gene_name for ancestral genes
     - DeCoSTAR adjacencies file
-    - reformatted adjacencies file
+    - file with paths to adjacencies for every species
+    - directory where to write species adjacencies files
     '''
-    with open(in_adjacencies_file, 'r') as in_adjacencies, \
-         open(out_adjacencies_file, 'w') as out_adjacencies:
+    adjacencies = {
+        species: [] for species in in_species_map.values()
+    }
+    with open(in_adjacencies_file, 'r') as in_adjacencies:
         for line in in_adjacencies.readlines():
             line_split = line.rstrip().split()
             in_species,in_gene1,in_gene2 = line_split[0],line_split[1],line_split[2]
             out_species = in_species_map[in_species]
             out_gene1,out_gene2 = in_genes_name[in_gene1],in_genes_name[in_gene2]
             out_adjacency_str = ' '.join(
-                [out_species, out_gene1, out_gene2] + line_split[3:]
+                [out_gene1, out_gene2] + line_split[3:]
             )
-            out_adjacencies.write(f'{out_adjacency_str}\n')
+            adjacencies[out_species].append(out_adjacency_str)
+    with open(out_adjacencies_file, 'w') as out_adjacencies:
+        for species,species_adjacencies in adjacencies.items():
+            out_species_adjacencies_file = os.path.join(
+                out_adjacencies_dir, f'{species}_adjacencies.txt'
+            )
+            out_adjacencies.write(f'{species}\t{out_species_adjacencies_file}\n')
+            with open(out_species_adjacencies_file, 'w') as out_species_adjacencies:
+                for out_adjacency in species_adjacencies:
+                    out_species_adjacencies.write(f'{out_adjacency}\n')
 
 
 def main():
@@ -162,13 +176,14 @@ def main():
     in_adjacencies_file = sys.argv[6]
     out_genes_file = sys.argv[7]
     out_adjacencies_file = sys.argv[8]
+    out_adjacencies_dir = sys.argv[9]    
 
     species_map = decostar_species_map(in_species_tree_file, in_species_file)
-    genes_map = decostar_reformat_genes_file(
+    genes_map = decostar_reformat_genes(
         species_map, in_families_file, in_reconciliations_file, in_genes_file, out_genes_file
     )
     decostar_reformat_adjacencies_file(
-        species_map, genes_map, in_adjacencies_file, out_adjacencies_file
+        species_map, genes_map, in_adjacencies_file, out_adjacencies_file, out_adjacencies_dir
     )
     
 if __name__ == "__main__":

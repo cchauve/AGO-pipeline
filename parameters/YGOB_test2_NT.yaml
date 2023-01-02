@@ -25,7 +25,6 @@ data:
    # [required] Path to species tree file in Newick format
    # [comment] Currently internal node labels, if any, are ignored
    species_tree:
-      input: &data_species_tree_input 'true'
       dir:   &data_species_tree_dir   !ref [*run_dir_data]
       name:  &data_species_tree_name  'species_tree.newick'
       path:  &data_species_tree_path  !join [*data_species_tree_dir, *data_species_tree_name]
@@ -34,7 +33,6 @@ data:
    # [format] One family per line
    # [format] <family ID><TAB><list of genes names separated by ' '>   
    families:
-      input: &data_families_input 'true'
       dir:   &data_families_dir   !ref [*run_dir_data]
       name:  &data_families_name  'families.txt'
       path:  &data_families_path  !join [*data_families_dir, *data_families_name]
@@ -43,7 +41,6 @@ data:
    # [format] One extant species per line
    # [format] <species name><TAB><path>
    gene_orders:
-      input: &data_gene_orders_input 'true'
       dir:   &data_gene_orders_dir   !ref [*run_dir_data]
       name:  &data_gene_orders_name  'gene_orders.txt'
       path:  &data_gene_orders_path  !join [*data_gene_orders_dir, *data_gene_orders_name]
@@ -52,7 +49,6 @@ data:
    # [format] One family per line
    # [format] <family ID><TAB><path>
    sequences:
-      input: &data_sequences_input 'true'
       dir:   &data_sequences_dir   !ref [*run_dir_data]
       name:  &data_sequences_name  'sequences.txt'
       path:  &data_sequences_path  !join [*data_sequences_dir, *data_sequences_name]
@@ -61,7 +57,6 @@ data:
    # [format] One family per line
    # [format] <family ID><TAB><path>
    alignments:
-      input: &data_alignments_input  'false'
       name:  &data_alignments_name   'alignments.txt'
       path:  &data_alignments_path   !join [*dir_data, *data_alignments_name]
       # Suffixes for nucleotides and amino-acids alignments files
@@ -72,36 +67,29 @@ data:
    # [format] One family per line
    # [format] <family ID><TAB><path>
    # gene_trees: 
+   #   name:  &data_gene_trees_name   'gene_trees.txt'
+   #   path:  &data_gene_trees_path   !join [*dir_data, *data_gene_trees_name]
 
    # [optional] File giving the path to one reconciled gene tree file per family
    # [format] One family per line
    # [format] <family ID><TAB><path>
    reconciliations:
-      input: &data_reconciliations_input  'false'
       name:  &data_reconciliations_name   'reconciliations.txt'
       path:  &data_reconciliations_path   !join [*dir_data, *data_reconciliations_name]
       ext:   &data_reconciliations_ext    '.recphyloxml'
 
-   # [optional] File giving the adjacencies, extant and ancestral
-   # [format] One adjacency per line
-   # [format] <gene 1>< ><gene 2>< ><+/->< ><+/->< ><weight>
+   # [optional] File giving the path to one adjacency file per species, extant and ancestral
+   # [format] One species per line
+   # [format] <species name><TAB><path>
    adjacencies:
-      input: &data_adjacencies_input  'false'
       name:  &data_adjacencies_name   'adjacencies.txt'
       path:  &data_adjacencies_path   !join [*dir_data, *data_adjacencies_name]
 
-   # [optional] File giving the genes and their descendants, extant and ancestral
-   # [format] One agene per line
-   # [format] <species>< ><family|gene>[< ><list of descendants separated by ' '>]
-   adjacencies:
-      input: &data_genes_input  'false'
-      name:  &data_genes_name   'genes.txt'
-      path:  &data_genes_path   !join [*dir_data, *data_genes_name]
-
    # Assumptions:
    # - exactly one of data.sequences, data.alignments, data.gene_trees, data.reconciliations
-   #   data.adjacncies is provided as starting data, all others will be in *dir_data
+   #   data.adjacencies is provided as starting data, all others will be in *dir_data
    # - species names in data.gene_orders do match leaves of data.species_tree
+   # - extant species names in data.adjacencies do match leaves of data.species_tree
    # - genes in data.gene_orders do match genes in data.families
    # - gene in FASTA files from data.sequences do match genes in data.families
    # - families in data.sequences do match families in data.families
@@ -254,18 +242,15 @@ tools:
             - !ref [*decostar_input_file_trees]
       output:
          dir:  &decostar_output_dir  !join [*dir_results, *decostar_name]
-         file: &decostar_output_file !join [
-                  *dir_aux, *decostar_name,
-                  !concat [*decostar_name, '_dummy_output.txt']
-               ]
+         file: &decostar_output_file !join [*dir_results, *decostar_name, 'dummy.txt']
       slurm:
          options: &decostar_options ['--mem=4G', '--time=24:00:00']
          results:
             files:
                 - &decostar_slurm_results_adjacencies_file !join [*decostar_output_dir, 'adjacencies.txt']
-                - &decostar_slurm_results_genes_file       !join [*decostar_output_dir, 'genes.txt']
+                - &decostar_slurm_results_genes_file_1     !join [*decostar_output_dir, 'genes.txt']
+                - &decostar_slurm_results_genes_file_2     !join [*decostar_output_dir, 'genes_reformatted.txt']
                 - &decostar_slurm_results_species_file     !join [*decostar_output_dir, 'species.txt']
-                - !ref [*data_genes_path]
                 - !ref [*data_adjacencies_path]
          modules: []
          cmd:
@@ -291,10 +276,11 @@ tools:
             - !concat ['   ', *decostar_slurm_results_species_file, ' \']
             - !concat ['   ', *data_families_path, ' \']
             - !concat ['   ', *data_reconciliations_path, ' \']
-            - !concat ['   ', *decostar_slurm_results_genes_file, ' \']
+            - !concat ['   ', *decostar_slurm_results_genes_file_1, ' \']
             - !concat ['   ', *decostar_slurm_results_adjacencies_file, ' \']
-            - !concat ['   ', *data_genes_path, ' \']
-            - !concat ['   ', *data_adjacencies_path]
+            - !concat ['   ', *decostar_slurm_results_genes_file_2, ' \']
+            - !concat ['   ', *data_adjacencies_path, ' \']
+            - !concat ['   ', *decostar_output_dir]
       stats:
          files:
             - &decostar_stats_file  !join [*dir_stats, *decostar_name, !concat [*decostar_name, '.', *log_ext_stat]]
@@ -302,7 +288,7 @@ tools:
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
             - !ref [*generax_slurm_results_species_tree]
             - !ref [*decostar_slurm_results_species_file]
-            - !ref [*data_genes_path]
+            - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
             - "0.5 0.6 0.7 0.8 0.9 1.0"
             - !ref [*decostar_stats_file]

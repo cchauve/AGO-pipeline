@@ -50,7 +50,8 @@ class Parameters:
         for in_file_keys,in_file_values in self.parameters['data'].items():
             # Copy only input data files for record
             in_file_name = in_file_values['name']
-            if in_file_values['input'] == 'true':
+            in_file_path = in_file_values['path']
+            if os.path.isfile(in_file_path):
                 in_file_path = in_file_values['path']
                 out_file_path = os.path.join(
                     self.parameters['dir']['data'],
@@ -58,8 +59,8 @@ class Parameters:
                 )
                 shutil.copy(in_file_path, out_file_path)
                 print(f'\t{in_file_path} -> {out_file_path}.')
-        else:
-            print(f'\t{in_file_name} will be computed.')        
+            else:
+                print(f'\t{in_file_path} will be computed.')        
 
     def get_dir(self, dir_key, tool=None):
         if tool is None:
