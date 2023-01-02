@@ -1,174 +1,100 @@
-""" AGO pipeline utils """
+#!/usr/bin/env python3
+# coding: utf-8
+
+""" AGO pipeline: utils functions """
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
 __version__   = "0.99"
 __status__    = "Development"
 
-import xml.etree.ElementTree as ET
-import ete3
+import os
+import subprocess
+from AGO_parameters import Parameters
 
-# Auxiliary functions: I/O -------------------------------------------------------------
-
-''' Read the last line of a file '''
-def get_last_line_file(file_path, msg="missing"):
+''' Generic function to create SLURM script '''
+def create_slurm_script(parameters, tool):
     '''
-    output: (str) last line of file or msg if empty file
     '''
-    with open(file_path, 'r') as f:
-        lines = f.readlines()
-        if len(lines) == 0: return(f'{file_path} {msg}')
-        else: return(lines[-1].rstrip())
+    aux_dir = parameters.get_dir_aux(tool)
+    script_file = os.path.join(aux_dir, f'{tool}.sh')
+    if parameters.check_tool_input_script(tool):
+        subprocess.run(parameters.get_tool_input_script(tool))
+    with open(script_file, 'w') as script:
+        script.write('#!/bin/bash\n')
+        slurm_options = parameters.get_slurm_options(tool)
+        slurm_modules = parameters.get_slurm_modules(tool, concat=" ")
+        slurm_cmd = parameters.get_slurm_cmd(tool, concat='\n')
+        for option in slurm_options:
+            script.write(f'\n#SBATCH {option}')
+        if parameters.check_slurm_array_input(tool):
+            TASK_ID = '${SLURM_ARRAY_TASK_ID}'
+            array_size = parameters.get_slurm_array_input_len(tool)
+            script.write(f'\n#SBATCH --array=1-{array_size}\n')
+            array_specs = parameters.get_slurm_array_data(tool)
+            for array_spec in array_specs.values():
+                script.write(
+                    f'\n{array_spec["var"]}='
+                    f'$(sed "{TASK_ID}q;d" {array_spec["file"]} |'
+                    f'cut -f {array_spec["field"]})'
+                )
+        if len(slurm_modules) > 0:
+            script.write(f'\n\nmodule load {slurm_modules}')
+        script.write(f'\n\n{slurm_cmd}')
+    return [script_file]
 
-# Newick tree ---------------------------------------------------------------
 
-''' Creates a map from node names to list of descendant extant species '''
-def newick_get_leaves(tree_file):
-    '''
-    input: paths to a Newick tree file with internal nodes named
-    output:
-    - dictionary dict(str->list(str)) indexed by names of nodes in tree_file
-      each list is sorted in alphabetical order
-    '''
-    tree = ete3.Tree(tree_file, format=1)
-    leaves = defaultdict(list)
-    for node in tree.traverse():
-        for leaf in node:
-            leaves[node.name].append(leaf.name)
-        leaves[node.name].sort()
-    return(leaves)
-
-''' Creates a map from node names to children '''
-def newick_get_children(tree_file):
-    '''
-    input: paths to a Newick tree file with internal nodes named
-    output:
-    - dictionary dict(str->list(str)) indexed by names of nodes in tree_file
-    '''
-    tree = ete3.Tree(tree_file, format=1)
-    children = defaultdict(list)
-    for node in tree.traverse():
-        if not node.is_leaf():
-            children[node.name] = [ch.name for ch in node.children]
-    return(children)
-
-# RecPhyloXML ----------------------------------------------------------------
-
-# Statistics dictionary keys
-STATS_genes = 'genes' # Number of genes
-STATS_dup = 'duplications' # Number of duplications
-STATS_loss = 'losses' # Number of losses
-# XML tags to corresponding statistics keys
-STATS_xmlkeys = {'leaf': STATS_genes, 'speciation': STATS_genes, 'duplication': STATS_dup, 'loss': STATS_loss}
-STATS_keys = [STATS_genes, STATS_dup, STATS_loss]
-
-def recPhyloXML_read_events(in_file):
-    ''' 
-    Read a recPhyloXML file and returns a dictionary indexed by species
-    and for each containing a dictionary recording number of genes, of duplications
-    and of losses with the keys STATS_genes, STATS_dup, STATS_loss
-    '''
-
-    def get_tag(node):
-        ''' Returns the tag of a node without its prefix {...} '''
-        return(node.tag.rpartition('}')[2])
-    def get_prefix(node):
-        ''' Returns the prefix of tag '''
-        pref = node.tag.rpartition("}")[0]
-        if len(pref)>0: return(pref+'}')
-        else: return(pref)
-    def get_text(node):
-        ''' Returns the text associated to a node '''
-        if node.text is not None: return((node.text).strip())
-        else: return('')
-    def get_name(node):
-        ''' Returns the name of a clade node; assumption: any clade node has a name '''
-        return(get_text(node.find(f'{tag_pref}name')))
-    def get_species(node):
-        ''' Returns the species of a eventRec node '''
-        return(node.get(f'speciesLocation'))
-        
-    def parse_spTree(root):
-        ''' 
-        input: XML root node
-        output: dict(species name(str) -> species name of sibling species (str/None))
-        '''
-        def parse_clade_recursive(node, siblings):
-            ''' Assumption: node is tagged <clade> '''
-            children = node.findall(f'{tag_pref}clade')
-            # Updating siblings dictionary
-            if len(children) == 2:
-                siblings[get_name(children[0])] = get_name(children[1])
-                siblings[get_name(children[1])] = get_name(children[0])
-            # Recursive calls
-            for child in children:
-                parse_clade_recursive(child, siblings)
-        siblings = {get_name(root): None}
-        parse_clade_recursive(root, siblings)
-        return(siblings)
-
-    def parse_recGeneTree(root, siblings):
-        ''' 
-        input: XML root node
-        output: dict(species name(str) -> dict(STATS_genes: int, STATS_dup: int, STATS_loss: int))
-        '''
-        def parse_clade_recursive(node, stats):
-            # Reconciliation event (possibly more than one)
-            events = node.find(f'{tag_pref}eventsRec')
-            # If more than one, then speciationLoss ended by last event
-            # Loop on speciationLoss events to add a loss to the sibling species
-            for event in events[1:][::-1]:
-                stats[siblings[get_species(event)]][STATS_loss] += 1
-            # Last event
-            last_event_tag,last_event_species = get_tag(events[-1]),get_species(events[-1])
-            stats[last_event_species][STATS_xmlkeys[last_event_tag]] += 1
-            # Recursive calls
-            for child in node.findall(f'{tag_pref}clade'):
-                parse_clade_recursive(child, stats)
-        stats = {sp:{STATS_genes: 0, STATS_dup: 0, STATS_loss: 0} for sp in siblings.keys()}
-        parse_clade_recursive(root, stats)
-        return(stats)
-
-    root = ET.parse(in_file).getroot()
-    tag_pref = get_prefix(root)
-    siblings = parse_spTree(
-        root.find(f'{tag_pref}spTree').find(f'{tag_pref}phylogeny').find(f'{tag_pref}clade')
-    )
-    recStats = parse_recGeneTree(
-        root.find(f'{tag_pref}recGeneTree').find(f'{tag_pref}phylogeny').find(f'{tag_pref}clade'),
-        siblings
-    )
-    return(recStats)
-
-''' 
-Correct a (Generax) recPhyloXML file that does not follow the expected format
-- label internal nodes <start_id>, <start_id+1>, ... in order of appareance 
-- reformat reconciliation events <event .../> -> <event ...></event>
-Returns the first unused ID (int)
-'''
-def recPhyloXML_format(in_file, out_file, start_id=0):
-    ''' Should be done using the XML libray '''
-    with open(in_file, 'r') as in_xml, \
-         open(out_file, 'w') as out_xml:
-        out_xml.write('<recPhylo>\n')
-        current_id = start_id
-        for line in in_xml.readlines()[1:]:
-            line1 = line.strip()
-            if line1[0]!='<': continue
-            if line1 == '<name></name>':
-                out_xml.write(line.replace('><', f'>{current_id}<'))
-                current_id += 1
-            elif line1.startswith('<speciation'):
-                out_xml.write(line.replace('/>', '></speciation>'))
-            elif line1.startswith('<leaf'):
-                out_xml.write(line.replace('/>', '></leaf>'))
-            elif line1.startswith('<duplication'):
-                out_xml.write(line.replace('/>', '></duplication>'))
-            elif line1.startswith('<loss'):
-                out_xml.write(line.replace('/>', '></loss>'))
-            elif line1.startswith('<speciationLoss'):
-                out_xml.write(line.replace('/>', '></speciationLoss>'))
+''' Generic function to check the results of a Slurm process and create a log file '''
+def check_slurm_results(parameters, tool):
+    # File where to write the link to output files
+    output_file = parameters.get_output_file(tool)
+    log_file = parameters.get_log_file(tool)
+    # Separators
+    sep1 = parameters.get_sep_fields()
+    sep2 = parameters.get_sep_space()
+    sep3 = parameters.get_sep_list()
+    # List of errors
+    errors = []
+    with open(log_file, 'w') as log, \
+         open(output_file, 'w') as output:
+        log.write(
+            f'#status{sep1}tool{sep1}index{sep1}message\n'
+        )
+        for results_file in parameters.get_slurm_results_files(tool):
+            res_index,res_path = results_file[0],results_file[1]
+            if not os.path.isfile(res_path):
+                log.write(
+                    f'{parameters.get_error_msg()}{sep1}'
+                    f'{tool}{sep1}'
+                    f'{res_index}{sep1}'
+                    f'{res_path}{sep2}{parameters.get_missing_msg()}\n'
+                )
+                if res_index not in errors:
+                    errors.append(res_index)
             else:
-                out_xml.write(line)
-    return(current_id)
+                log.write(
+                    f'{parameters.get_success_msg()}{sep1}'
+                    f'{tool}{sep1}'
+                    f'{res_index}{sep1}'
+                    f'{res_path}\n'
+                )
+                if res_index != '':
+                    output.write(f'{res_index}{sep1}{res_path}\n')
+    return (log_file, output_file)
 
+''' Generic function to delete the results file creates by a Slurm process '''
+def clean_slurm_results(parameters, tool):
+    nb_deleted_files = 0
+    for results_file in parameters.get_slurm_results_files(tool):
+        res_path = results_file[1]
+        if os.path.isfile(res_path):
+            os.remove(res_path)
+            nb_deleted_files += 1
+    return [nb_deleted_files]
+
+''' Generic function to compute a statistics file '''
+def compute_statistics(parameters, tool):
+    cmd = parameters.get_statistics_cmd(tool)
+    if cmd is not None:
+        subprocess.run(cmd)
+    return parameters.get_statistics_files(tool)
