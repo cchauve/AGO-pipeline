@@ -46,7 +46,6 @@ output, computing statistics) are in `scripts`.
         /scratch/chauvec/SPP/YGOB_test2_NT/data/alignments.txt will be computed.
         /scratch/chauvec/SPP/YGOB_test2_NT/data/reconciliations.txt will be computed.
         /scratch/chauvec/SPP/YGOB_test2_NT/data/adjacencies.txt will be computed.
-        /scratch/chauvec/SPP/YGOB_test2_NT/data/genes.txt will be computed.
 > wc -l /scratch/chauvec/SPP/YGOB_test2_NT/data/families.txt
 5028 /scratch/chauvec/SPP/YGOB_test2_NT/data/families.txt
 ```
