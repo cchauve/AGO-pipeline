@@ -24,15 +24,30 @@ ones not in the size range.
 
 ## Pipeline
 
-The parameters file is `parameters/YGOB_test1_NT.yml`. As I had spaces issues,
+The parameters file is `parameters/YGOB_test2_NT.yml`. As I had spaces issues,
 I have set the output directories (log and results) in
-`/scratch/chauvec/SPP`.  
+`/scratch/chauvec/SPP`.
+
+The principle of the pipeline is that all computations are specified in the
+parameters file.
+
+Scripts that are independent of the tools used as ins `src`.
+
+Scripts specific to tools (such as creating the input files, formatting the
+output, computing statistics) are in `scripts`.
 
 ```
 source AGO_python3/bin/activate
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml init
-wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
-5028 /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
+python3 src/AGO_pipeline.py parameters/YGOB_test2_NT.yml init
+> source AGO_python3/bin/activate
+> python src/AGO.py parameters/YGOB_test2_NT.yaml init
+        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/species_tree.newick -> /scratch/chauvec/SPP/YGOB_test2_NT/data/species_tree.newick.
+        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/families.txt -> /scratch/chauvec/SPP/YGOB_test2_NT/data/families.txt.
+        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/gene_orders.txt -> /scratch/chauvec/SPP/YGOB_test2_NT/data/gene_orders.txt.
+        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/sequences.txt -> /scratch/chauvec/SPP/YGOB_test2_NT/data/sequences.txt.
+        reconciliations.txt will be computed.
+> wc -l /scratch/chauvec/SPP/YGOB_test2_NT/data/families.txt
+5028 /scratch/chauvec/SPP/YGOB_test2_NT/data/families.txt
 ```
 
 We start with 5028 families.  
@@ -40,101 +55,100 @@ We start with 5028 families.
 ### MACSE
 
 ```
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml run_macse y
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml check_macse y
+> python src/AGO.py parameters/YGOB_test2_NT.yaml script MACSE
+        /scratch/chauvec/SPP/YGOB_test2_NT/aux/MACSE/MACSE.sh
+> sbatch /scratch/chauvec/SPP/YGOB_test2_NT/aux/MACSE/MACSE.sh
+sbatch: NOTE: Your memory request of 8192M was likely submitted as 8G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 54943853
+> python src/AGO.py parameters/YGOB_test2_NT.yaml check MACSE
+        /scratch/chauvec/SPP/YGOB_test2_NT/log/MACSE.log
+        /scratch/chauvec/SPP/YGOB_test2_NT/data/alignments.txt
 ```
 
-Log and error files are available at
-`/scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_MACSE.[log,err]`.  
-
-We run MACSE on the families that failed, increasing the time limit to
-1:00:00 per family.
+Log files are available at
+`/scratch/chauvec/SPP/YGOB_test2_NT/log/MACSE.log`
+and `/scratch/chauvec/SPP/YGOB_test2_NT/log/MACSE/*.[log,err].  
 
 ```
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml rerun_macse 4G 1:00:00 y
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml check_macse y
+grep -c "ERROR" /scratch/chauvec/SPP/YGOB_test2_NT/log/MACSE.log
+7
 ```
 
-Log and error files are available at
-`/scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_MACSE.[log,err]`.  
-```
-grep -c ">" /scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_MACSE.err
-47
-```
+There are 7 families that were not aligned. We leave it as is to
+test the robustness of the pipeline to intermediate computations
+failing on some families.  
 
-There are 47 families that were not aligned due to the time limit, but
-for family 2231 (unidentified error). We leave it as is to test the
-robustness of the pipeline to intermediate computations failing on
-some families.  
-
-We end the MACSE phase by updating the list of active families to
-discard the ones for which MACSE failed to complete.
-
-```
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml update_post_macse pre_MACSE
-wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
-4981 /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
-wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt_pre_MACSE
-5028 /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt_pre_MACSE
-```
-
-We now have 4981 families. 
+We now have 5021 families. 
 
 ### GeneRax
 
 ```
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_generax
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml run_generax y
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml check_generax y
+> python src/AGO.py parameters/YGOB_test2_NT.yaml script GeneRax
+        /scratch/chauvec/SPP/YGOB_test2_NT/aux/GeneRax/GeneRax.sh
+> sbatch /scratch/chauvec/SPP/YGOB_test2_NT/aux/GeneRax/GeneRax.sh
+sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 54957315
+> python src/AGO.py parameters/YGOB_test2_NT.yaml check GeneRax
+        /scratch/chauvec/SPP/YGOB_test2_NT/log/GeneRax.log
+        /scratch/chauvec/SPP/YGOB_test2_NT/data/reconciliations.txt
+> python src/AGO.py parameters/YGOB_test2_NT.yaml stats GeneRax
+        /scratch/chauvec/SPP/YGOB_test2_NT/statistics/GeneRax/GeneRax.csv
+
 ```
 
 Log and error files are available at
-`/scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_GeneRax.[log,err]`.
-```
-grep -c ">" /scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_GeneRax.err
-187
-```
-
-There are 187 families for which GeneRax could not read the alignment.
-We update the active families and species tree.
+`/scratch/chauvec/SPP/YGOB_test2_NT/log/GeneRax.log` and
+`/scratch/chauvec/SPP/YGOB_test2_NT/log/GeneRax/*.[log,err]`.
 
 ```
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml update_post_generax pre_GeneRax
-wc -l /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
-4794 /scratch/chauvec/SPP/YGOB_test1_NT/aux/families.txt
+> grep -c "ERROR" /scratch/chauvec/SPP/YGOB_test2_NT/log/GeneRax.log
+194
 ```
 
-We now have 4794 families.  
+There are 194 families for which GeneRax could not read the alignment
+or mape genes to species.
 
-We convert the reconciled trees in recPhyloXML format and compute
-statistics for each tree.
 
 ```
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml reformat_generax
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_generax
+> wc -l /scratch/chauvec/SPP/YGOB_test2_NT/data/reconciliations.txt
+4827 /scratch/chauvec/SPP/YGOB_test2_NT/data/reconciliations.txt
 ```
 
-We can observe again a gene content inflation in reconciled gene trees 
+We now have 4827 families for which the reconciled trees are in a
+recPhyloXML format that can be read by DeCoSTAR.  
+
+In `/scratch/chauvec/SPP/YGOB_test2_NT/statistics/GeneRax/GeneRax.csv`
+we can observe again a gene content inflation in reconciled gene trees 
 obtained with GeneRax.  
 
 
 ### DeCoSTAR
 
 ```
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_decostar
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml run_decostar y
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml reformat_decostar
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml stats_decostar
+> python src/AGO.py parameters/YGOB_test2_NT.yaml script DeCoSTAR
+        /scratch/chauvec/SPP/YGOB_test2_NT/aux/DeCoSTAR/DeCoSTAR.sh
+> sbatch /scratch/chauvec/SPP/YGOB_test2_NT/aux/DeCoSTAR/DeCoSTAR.sh
+sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 54997458
+> python src/AGO.py parameters/YGOB_test2_NT.yaml check DeCoSTAR
+        /scratch/chauvec/SPP/YGOB_test2_NT/log/DeCoSTAR.log
+        /scratch/chauvec/SPP/YGOB_test2_NT/aux/DeCoSTAR/DeCoSTAR_dummy_output.txt
+> python src/AGO.py parameters/YGOB_test2_NT.yaml stats DeCoSTAR
+        /scratch/chauvec/SPP/YGOB_test2_NT/statistics/DeCoSTAR/DeCoSTAR.csv
 ```
 
-The las command generates the file
-`/scratch/chauvec/SPP/YGOB_test1_NT/log/YGOB_test1_NT_DeCoSTAR.csv'
-that shows that even with a high weight there is till a lot of
-conflict. This needs to be investigated.
+DeCoSTAR ran without any issue. From the statistics file
+`/scratch/chauvec/SPP/YGOB_test2_NT/statistics/DeCoSTAR/DeCoSTAR.csv`
+we decide to create an ILP for adjacencies of weight at least 0.75.
 
-### SPP-DCJ
+### SPPDCJ: creating the ILP
 
 ```
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml aux_sppdcj
-python3 src/AGO_pipeline.py parameters/YGOB_test1_NT.yml run_sppdcj_ilp y
+> python src/AGO.py parameters/YGOB_test2_NT.yaml script SPPDCJ_ILP
+        /scratch/chauvec/SPP/YGOB_test2_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
+> sbatch  /scratch/chauvec/SPP/YGOB_test2_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
+sbatch: NOTE: Your memory request of 262144M was likely submitted as 256G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 55016665
 ```
+
+The ILP creation is currently running.
