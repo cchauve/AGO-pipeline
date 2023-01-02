@@ -32,7 +32,7 @@ data:
       path: &data_gene_orders_path  !join [*run_dir_data, 'gene_orders.txt']
    # [optional] 
    species:
-      path: &data_species_path  !join [*dir_data, *data_species_name]
+      path: &data_species_path  !join [*dir_data, 'species.txt']
    sequences:
       path: &data_sequences_path  !join [*run_dir_data, 'sequences.txt']
    alignments:
@@ -275,7 +275,7 @@ tools:
                 - &sppdcj_ilp_results_file !join [
                   *sppdcj_ilp_results_dir,
                   !concat [
-                     *idmap_', *sppdcj_ilp_input_suffix, '_',
+                     'idmap_', *sppdcj_ilp_input_suffix, '_',
                      *sppdcj_ilp_input_threshold, '_', *sppdcj_ilp_input_beta, '.txt'
                   ]
                ]

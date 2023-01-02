@@ -204,12 +204,13 @@ I have set the output directories (log and results) in
 ```
 > source AGO_python3/bin/activate
 > python src/AGO.py parameters/YGOB_test2_NT.yaml init
-        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/species_tree.newick will be computed.
-        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/families.txt will be computed.
-        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/gene_orders.txt will be computed.
-        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/sequences.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/species_tree.newick -> /scratch/chauvec/SPP/YGOB_test2_NT/data/species_tree.newick.
+        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/families.txt -> /scratch/chauvec/SPP/YGOB_test2_NT/data/families.txt.
+        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/gene_orders.txt -> /scratch/chauvec/SPP/YGOB_test2_NT/data/gene_orders.txt.
+        /scratch/chauvec/SPP/YGOB_test2_NT/data/species.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB/sequences.txt -> /scratch/chauvec/SPP/YGOB_test2_NT/data/sequences.txt.
         /scratch/chauvec/SPP/YGOB_test2_NT/data/alignments.txt will be computed.
-        /scratch/chauvec/SPP/YGOB_test2_NT/data/reconciliations.txt will be computed.
+        /scratch/chauvec/SPP/YGOB_test2_NT/data/reconciliations.txt' will be computed.
         /scratch/chauvec/SPP/YGOB_test2_NT/data/adjacencies.txt will be computed.
 > wc -l /scratch/chauvec/SPP/YGOB_test2_NT/data/families.txt
 5028 /scratch/chauvec/SPP/YGOB_test2_NT/data/families.txt
