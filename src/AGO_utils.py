@@ -44,10 +44,9 @@ def create_slurm_script(parameters, tool):
     return [script_file]
 
 
-''' Generic function to check the results of a Slurm process and create a log file '''
-def check_slurm_results(parameters, tool):
+''' Generic function to create a log file '''
+def create_slurm_log_file(parameters, tool):
     # File where to write the link to output files
-    output_file = parameters.get_output_file(tool)
     log_file = parameters.get_log_file(tool)
     # Separators
     sep1 = parameters.get_sep_fields()
@@ -55,12 +54,12 @@ def check_slurm_results(parameters, tool):
     sep3 = parameters.get_sep_list()
     # List of errors
     errors = []
-    with open(log_file, 'w') as log, \
-         open(output_file, 'w') as output:
+    results_files = parameters.get_slurm_results_files(tool)
+    with open(log_file, 'w') as log:
         log.write(
             f'#status{sep1}tool{sep1}index{sep1}message\n'
         )
-        for results_file in parameters.get_slurm_results_files(tool):
+        for results_file in results_files:
             res_index,res_path = results_file[0],results_file[1]
             if not os.path.isfile(res_path):
                 log.write(
@@ -78,8 +77,27 @@ def check_slurm_results(parameters, tool):
                     f'{res_index}{sep1}'
                     f'{res_path}\n'
                 )
+    return log_file
+
+''' Generic function to create an output file from Slurm results '''
+def create_slurm_output_file(parameters, tool):
+    output_file = parameters.get_output_file(tool)
+    if output_file is not None:
+        sep1 = parameters.get_sep_fields()
+        results_files = parameters.get_slurm_results_files(tool)
+        with open(output_file, 'w') as output:
+            for results_file in results_files:
+                res_index,res_path = results_file[0],results_file[1]        
                 if res_index != '':
                     output.write(f'{res_index}{sep1}{res_path}\n')
+        return output_file
+    else:
+        return 'No output file is created'
+
+''' Generic function to check the results of a Slurm process and create a log file '''
+def check_slurm_results(parameters, tool):
+    log_file = create_slurm_log_file(parameters, tool)
+    output_file = create_slurm_output_file(parameters, tool)
     return (log_file, output_file)
 
 ''' Generic function to delete the results file creates by a Slurm process '''

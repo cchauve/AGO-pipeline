@@ -15,7 +15,7 @@ from DeCoSTAR_statistics import decostar_sign2extremity
 ''' Creates a map from node names to children '''
 def newick_get_children(tree_file):
     '''
-    input: paths to a Newick tree file with internal nodes named
+    input: path to a Newick tree file with internal nodes named
     output:
     - dictionary dict(str->list(str)) indexed by names of nodes in tree_file
     '''
@@ -31,6 +31,14 @@ Returns the list of species in the subtree rooted at
 the LCA of leaves_list
 '''
 def newick_get_lca_species(tree_file, leaves_list):
+    '''
+    input: 
+    - path to a Newick tree file with internal nodes named
+    - list of extant species names
+    output:
+    list of names of the nodes in the smallest subtree 
+    containing all extant leaves from list
+    '''
     tree = ete3.Tree(tree_file, format=1)
     leaf1 = tree.get_leaves_by_name(leaves_list[0])[0]
     leaves2 = [tree.get_leaves_by_name(leaf)[0] for leaf in leaves_list[1:]]
@@ -41,6 +49,10 @@ def newick_get_lca_species(tree_file, leaves_list):
 ''' Creates SPP-DCJ species tree file '''
 def sppdcj_species_trees(in_species_tree, out_species_tree, species_list=None):
     '''
+    input:
+    - path to a Newick tree file with internal nodes named
+    - path to output SPP-DCJ species tree file
+    - list of species to consider (None means all)
     output: out_species_tree
     '''
     children_map = newick_get_children(in_species_tree)
@@ -57,6 +69,11 @@ def sppdcj_adjacencies(
         out_adjacencies_file,
         species_list=None):
     '''
+    input:
+    - path to DeCoSTAR adjacencies file
+    - minimum weight threshold to keep adjacencies
+    - path to output SPP-DCJ adjacencies file
+    - list of species to consider (None means all)
     output: out_adjacencies_file
     '''
     sppdcj_sep = '\t'
@@ -88,7 +105,7 @@ def sppdcj_adjacencies(
 def main():
     in_adjacencies_file = sys.argv[1]
     in_species_tree = sys.argv[2]
-    in_extant_species = sys.argv[3].split()
+    in_extant_species = sys.argv[3]
     in_weight_threshold = float(sys.argv[4])
     out_species_tree = sys.argv[5]
     out_adjacencies_file = sys.argv[6]
@@ -96,7 +113,7 @@ def main():
     if in_extant_species == 'all':
         species_list = None
     else:
-        species_list = newick_get_lca_species(in_species_tree, in_extant_species)
+        species_list = newick_get_lca_species(in_species_tree, in_extant_species.split())
     
     sppdcj_species_trees(in_species_tree, out_species_tree, species_list=species_list)
     sppdcj_adjacencies(in_adjacencies_file, in_weight_threshold, out_adjacencies_file, species_list=species_list)

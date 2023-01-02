@@ -220,10 +220,12 @@ class Parameters:
             ]
         return results_files
 
-    def get_output_dir(self, tool):
-        return self.parameters['tools'][tool]['output']['dir']
     def get_output_file(self, tool):
-        return self.parameters['tools'][tool]['output']['file']
+        tool_dict = self.parameters['tools'][tool]
+        if 'output' in tool_dict.keys() and 'file' in  tool_dict['output'].keys():
+            return self.parameters['tools'][tool]['output']['file']
+        else:
+            return None
 
     def get_statistics_all(self, tool):
         if 'stats' in self.parameters['tools'][tool].keys():

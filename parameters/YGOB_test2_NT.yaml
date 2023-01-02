@@ -29,6 +29,13 @@ data:
       name:  &data_species_tree_name  'species_tree.newick'
       path:  &data_species_tree_path  !join [*data_species_tree_dir, *data_species_tree_name]
 
+   # [optional] List of species, extant and ancestral
+   # [format] <species name><TAB><['extant','ancestral']>   
+   species:
+      dir:   &data_species_dir   !ref [*dir_data]
+      name:  &data_species_name  'species.txt'
+      path:  &data_species_path  !join [*data_species_dir, *data_species_name]
+
    # [required] Path to file describing genes in each gene family
    # [format] One family per line
    # [format] <family ID><TAB><list of genes names separated by ' '>   
@@ -126,8 +133,7 @@ tools:
          # [required] Input file to MACSE giving paths to sequence files
          file: &macse_input_file !ref [*data_sequences_path]
       output:
-         # [required] Dir/file where MACSE alignments are stored
-         dir:  &macse_output_dir  !join [*dir_results, *macse_name]
+         # [required] File where MACSE alignments paths are stored
          file: &macse_output_file !ref [*data_alignments_path]
       slurm:
          # [required] Slurm options; might be empty
@@ -146,15 +152,16 @@ tools:
                var:   &macse_slurm_array_results_var   'FAM_ID'
                ext:   &macse_slurm_array_results_ext   !ref [*data_alignments_NT_ext]
          # [required] List of expected results files
-         # If based on an array, uses tools.MACSE.slurm.array.output variables
+         # If based on an array, uses tools.MACSE.slurm.array.results variables
          results:
+            dir: &macse_results_dir  !join [*dir_results, *macse_name]
             files:
                 - &macse_slurm_results_file_1 !join [
-                     *macse_output_dir,
+                     *macse_results_dir,
                      !concat ['${', *macse_slurm_array_results_var, '}', *data_alignments_NT_ext]
                   ]
                 - &macse_slurm_results_file_2 !join [
-                     *macse_output_dir,
+                     *macse_results_dir,
                      !concat ['${', *macse_slurm_array_results_var, '}', *data_alignments_AA_ext]
                   ]
          # [required] List of modules to load; might be empty
@@ -183,7 +190,6 @@ tools:
             - !ref [*generax_input_file]
             - !ref [*generax_input_dir]
       output:
-         dir:   &generax_output_dir  !join [*dir_results, *generax_name]
          file:  &generax_output_file !ref [*data_reconciliations_path]
       slurm:
          array:
@@ -192,22 +198,24 @@ tools:
                field: &generax_slurm_array_results_field 1
                var:   &generax_slurm_array_results_var   'FAM_ID'
          results:
+            dir: &generax_results_dir  !join [*dir_results, *generax_name]
             files: 
                 - &generax_slurm_results_file !join [
-                     *generax_output_dir, 'reconciliations',
+                     *generax_results_dir, 'reconciliations',
                      !concat ['${', *generax_slurm_array_results_var, '}', *data_reconciliations_ext]
                   ]
             other:
                 - &generax_slurm_results_species_tree !join [
-                     *generax_output_dir, 'species_trees', 'starting_species_tree.newick'
+                     *generax_results_dir, 'species_trees', 'starting_species_tree.newick'
                   ]
+                - &generax_slurm_results_species_file !ref [*data_species_path]
          options: &generax_slurm_options ['--mem-per-cpu=4G', '--time=12:00:00', '--ntasks=100']
          modules: []
          cmd:
             - 'mpiexec -np 48 /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/bin/GeneRax/build/bin/generax \'
             - !concat ['   -f ', *generax_input_file, ' \']
             - !concat ['   -s ', *data_species_tree_path, ' \']
-            - !concat ['   -p ', *generax_output_dir, ' \']
+            - !concat ['   -p ', *generax_results_dir, ' \']
             - '   --per-family-rates --si-quartet-support \'
             - '   --seed 123 \'
             - '   --rec-model UndatedDL \'
@@ -215,8 +223,12 @@ tools:
             - ' '
             - !concat [!join [*run_dir_scripts, 'recPhyloXML_reformat.py'], ' \']
             - !concat ['   ', *generax_input_file, ' \']
-            - !concat ['   ', *generax_output_dir, ' \']
+            - !concat ['   ', *generax_results_dir, ' \']
             - !concat ['   ', *data_reconciliations_ext]
+            - ' '
+            - !concat [!join [*run_dir_scripts, 'GeneRax_create_species_file.py'], ' \']
+            - !concat ['   ', *generax_slurm_results_species_tree, ' \']
+            - !concat ['   ', *generax_slurm_results_species_file]
       stats:
          files:
             - &generax_stats_file  !join [*dir_stats, *generax_name, !concat [*generax_name, '.', *log_ext_stat]]
@@ -241,24 +253,32 @@ tools:
             - !ref [*decostar_input_file_adjacencies]
             - !ref [*decostar_input_file_trees]
       output:
-         dir:  &decostar_output_dir  !join [*dir_results, *decostar_name]
-         file: &decostar_output_file !join [*dir_results, *decostar_name, 'dummy.txt']
+         file: &decostar_output_file !ref [*data_adjacencies_path]
       slurm:
+         array:
+            results:
+               file:  &decostar_slurm_array_results_file  !ref [*generax_slurm_results_species_file]
+               field: &decostar_slurm_array_results_field 1
+               var:   &decostar_slurm_array_results_var   'SPECIES'      
          options: &decostar_options ['--mem=4G', '--time=24:00:00']
          results:
+            dir: &decostar_results_dir  !join [*dir_results, *decostar_name]
             files:
-                - &decostar_slurm_results_adjacencies_file !join [*decostar_output_dir, 'adjacencies.txt']
-                - &decostar_slurm_results_genes_file_1     !join [*decostar_output_dir, 'genes.txt']
-                - &decostar_slurm_results_genes_file_2     !join [*decostar_output_dir, 'genes_reformatted.txt']
-                - &decostar_slurm_results_species_file     !join [*decostar_output_dir, 'species.txt']
-                - !ref [*data_adjacencies_path]
+                - &decostar_slurm_results_species_adjacencies !join [
+                     *decostar_results_dir, !concat ['${', *decostar_slurm_array_results_var, '}_adjacencies.txt']
+                  ]
+            other:
+                - &decostar_slurm_results_adjacencies_file !join [*decostar_results_dir, 'adjacencies.txt']
+                - &decostar_slurm_results_genes_file_1     !join [*decostar_results_dir, 'genes.txt']
+                - &decostar_slurm_results_genes_file_2     !join [*decostar_results_dir, 'genes_reformatted.txt']
+                - &decostar_slurm_results_species_file     !join [*decostar_results_dir, 'species.txt']
          modules: []
          cmd:
             - '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/bin/DeCoSTAR \'
             - !concat ['   species.file=', *generax_slurm_results_species_tree, ' \']
             - !concat ['   adjacencies.file=', *decostar_input_file_adjacencies, ' \']
             - !concat ['   gene.distribution.file=', *decostar_input_file_trees, ' \']
-            - !concat ['   output.dir=', *decostar_output_dir, ' \']
+            - !concat ['   output.dir=', *decostar_results_dir, ' \']
             - '   write.newick=true \'
             - '   write.adjacencies=true \'
             - '   write.genes=true \'
@@ -279,8 +299,7 @@ tools:
             - !concat ['   ', *decostar_slurm_results_genes_file_1, ' \']
             - !concat ['   ', *decostar_slurm_results_adjacencies_file, ' \']
             - !concat ['   ', *decostar_slurm_results_genes_file_2, ' \']
-            - !concat ['   ', *data_adjacencies_path, ' \']
-            - !concat ['   ', *decostar_output_dir]
+            - !concat ['   ', *decostar_results_dir]
       stats:
          files:
             - &decostar_stats_file  !join [*dir_stats, *decostar_name, !concat [*decostar_name, '.', *log_ext_stat]]
@@ -297,8 +316,12 @@ tools:
    SPPDCJ_ILP:
       name: &sppdcj_ilp_name 'SPPDCJ_ILP'
       input:
-         species: &sppdcj_ilp_input_species 'Cglabrata Scerevisiae'
-         suffix:  &sppdcj_ilp_input_suffix  'Cglabrata_Scerevisiae'
+         # Worked creating ILP file /scratch/chauvec/SPP/YGOB_test2_NT/results/SPPDCJ_ILP/YGOB_test2_NT_idmap_Cglabrata_Scerevisiae_0.75_0.25.txt
+         # species: &sppdcj_ilp_input_species 'Cglabrata Scerevisiae'
+         # suffix:  &sppdcj_ilp_input_suffix  'Cglabrata_Scerevisiae'
+         # Trying all species
+         species: &sppdcj_ilp_input_species 'all'
+         suffix:  &sppdcj_ilp_input_suffix  'all'
          dir:     &sppdcj_ilp_input_dir     !join [*dir_aux, *sppdcj_ilp_name]
          file:
            - &sppdcj_ilp_input_file_species_tree !join [*sppdcj_ilp_input_dir, !concat ['species_tree_', *sppdcj_ilp_input_suffix, '.txt']]
@@ -313,24 +336,22 @@ tools:
             - !ref [*sppdcj_ilp_input_threshold]
             - !ref [*sppdcj_ilp_input_file_species_tree]
             - !ref [*sppdcj_ilp_input_file_adjacencies]
-      output:
-         dir:  &sppdcj_ilp_output_dir  !join [*dir_results, *sppdcj_ilp_name]
-         file: &sppdcj_ilp_output_file !join [
-                  *sppdcj_ilp_output_dir,
+      slurm:
+         options: &sppdcj_ilp_options ['--mem=256G', '--time=24:00:00']
+         results:
+            dir: &sppdcj_ilp_results_dir  !join [*dir_results, *sppdcj_ilp_name]
+            files:
+                - &sppdcj_ilp_results_file !join [
+                  *sppdcj_ilp_results_dir,
                   !concat [
                      *run_name, '_idmap_', *sppdcj_ilp_input_suffix, '_',
                      *sppdcj_ilp_input_threshold, '_', *sppdcj_ilp_input_beta, '.txt'
                   ]
                ]
-      slurm:
-         options: &sppdcj_ilp_options ['--mem=256G', '--time=24:00:00']
-         results:
-            files:
-                - !ref [*sppdcj_ilp_output_file]
          modules: []
          cmd:
             - '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/bin/spp_dcj/scripts/spp_dcj.py \'
-            - !concat ['   -m ', *sppdcj_ilp_output_file, ' \']
+            - !concat ['   -m ', *sppdcj_ilp_results_file, ' \']
             - !concat ['   -a ', *sppdcj_ilp_input_threshold, ' \']
             - !concat ['   -b ', *sppdcj_ilp_input_beta, ' \']
             - !concat ['   ', *sppdcj_ilp_input_file_species_tree, ' \']
