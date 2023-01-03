@@ -46,6 +46,7 @@ run:
      - &sppdcj_gurobi_exec         'gurobi_cl'
      - &sppdcj_gurobi_options      'MIPGap=0.05'
      - &sppdcj_slurm_options       '--mem=2000G --time=48:00:00'
+     - &sppdcj_writesol_exec       !join [*run_dir_bin, 'spp_dcj', 'scripts', 'sol2adjacencies.py']
 
 # AGO pipeline
 dir:
@@ -307,19 +308,17 @@ tools:
          results:
             dir: &sppdcj_ilp_results_dir  !join [*dir_results, *sppdcj_ilp_name]
             prefix: &sppdcj_results_prefix !concat [
-                       'idmap_', *sppdcj_input_suffix, '_',
+                       *sppdcj_input_suffix, '_',
                        *sppdcj_ilp_threshold, '_',
                        *sppdcj_ilp_alpha, '_',
                        *sppdcj_ilp_beta
                     ]
             other:
                 - &sppdcj_ilp_results_file_idmap !join [
-                     *sppdcj_ilp_results_dir,
-                     !concat [*sppdcj_results_prefix, '.txt']
+                     *sppdcj_ilp_results_dir, !concat [*sppdcj_results_prefix, '.idmap']
                   ]
                 - &sppdcj_ilp_results_file_ilp !join [
-                     *sppdcj_ilp_results_dir,
-                     !concat [*sppdcj_results_prefix, '.ilp']
+                     *sppdcj_ilp_results_dir, !concat [*sppdcj_results_prefix, '.ilp']
                   ]
          cmd:
             - !concat [*sppdcj_ilp_exec, ' \']
@@ -335,23 +334,31 @@ tools:
       name:   &sppdcj_name 'SPPDCJ'
       suffix: !concat ['_', *sppdcj_input_suffix]
       input:
-         file: &sppdcj_input_file !ref [*sppdcj_ilp_results_file_ilp]
-      slurm:
+         file:
+           - &sppdcj_input_file_ilp !ref [*sppdcj_ilp_results_file_ilp]
+           - &sppdcj_input_file_idmap !ref [*sppdcj_ilp_results_file_idmap]
+         slurm:
          options: !ref [*sppdcj_slurm_options]
          results:
             dir: &sppdcj_results_dir  !join [*dir_results, *sppdcj_name]
             other:
                 - &sppdcj_results_file_sol !join [
-                     *sppdcj_results_dir,
-                     !concat [*sppdcj_results_prefix, '.sol']
+                     *sppdcj_results_dir, !concat [*sppdcj_results_prefix, '.sol']
                   ]
                 - &sppdcj_results_file_log !join [
-                     *sppdcj_results_dir,
-                     !concat [*sppdcj_results_prefix, '.log']
+                     *sppdcj_results_dir, !concat [*sppdcj_results_prefix, '.log']
+                  ]
+                - &sppdcj_results_file_adjacencies !join [
+                     *sppdcj_results_dir, !concat [*sppdcj_results_prefix, '_adjacencies.txt']
                   ]
          cmd:
             - !concat [*sppdcj_gurobi_exec, ' \']
             - !concat ['   ', *sppdcj_gurobi_options, ' \']
             - !concat ['   ResultFile=', *sppdcj_results_file_sol, ' \']
-            - !concat ['   ', *sppdcj_input_file, ' \']
+            - !concat ['   ', *sppdcj_input_file_ilp, ' \']
             - !concat ['   > ', *sppdcj_results_file_log]
+            - !concat [' ']
+            - !concat [*sppdcj_writesol_exec, ' \']
+            - !concat ['   ', *sppdcj_results_file_sol, ' \']
+            - !concat ['   ', *sppdcj_input_file_idmap, ' \']
+            - !concat ['   > ', *sppdcj_results_file_adjacencies]
