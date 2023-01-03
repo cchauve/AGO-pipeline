@@ -1,21 +1,51 @@
 # Parameters file to process YGOB data
 version: 2
 
-# [optional] Specific run parameters
+# Specific run/tools parameters
 run:
-   # Run name
    name: &run_name 'YGOB_test2_NT'
-   # Run-specific directories
    dir:
       # Root directory for parameters and tool-specific scripts
-      root:    &run_dir_root    '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE'
+      - &run_dir_root    '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE'
+      - &run_dir_bin     !join [*run_dir_root, 'bin']
       # Tool-specific scripts
-      scripts: &run_dir_scripts !join [*run_dir_root, 'scripts']
+      - &run_dir_scripts !join [*run_dir_root, 'scripts']
       # YGOB data
-      data:    &run_dir_data    !join [*run_dir_root, 'data/YGOB']
+      - &run_dir_data    !join [*run_dir_root, 'data/YGOB']
       # Directory for experiments scripts, results, log, statistics and auxiliary files
-      exp:     &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
+      - &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
+   tools:
+     # MACSE
+     - &macse_exec          !join [*run_dir_bin, 'macse_v2.06.jar']
+     - &macse_slurm_options '--mem=8G --time=02:00:00'
+     # GeneRax
+     - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
+     - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
+     - &generax_options         '--per-family-rates --si-quartet-support'
+     - &generax_seed            '123'
+     - &generax_rec_model       'UndatedDL'
+     - &generax_strategy        'SPR'
+     - &generax_alignment_model 'GTR+G'
+     # DeCoSTAR
+     - &decostar_exec                  !join [*run_dir_bin, 'DeCoSTAR']
+     - &decostar_slurm_options         '--mem=4G --time=24:00:00'
+     - &decostar_nb_sample             '1000'
+     - &decostar_boltzmann_temperature '0.1'
+     - &decostar_stats_thresholds      "0.5 0.6 0.7 0.8 0.9 1.0"
+     # SPP-DCJ
+     - &sppdcj_ilp_exec             !join [*run_dir_bin, 'spp_dcj', 'scripts', 'spp_dcj.py']
+     - &sppdcj_ilp_slurm_options    '--mem=256G --time=24:00:00'
+     - &sppdcj_ilp_threshold        '0.75'
+     - &sppdcj_ilp_alpha            '0.5'     
+     - &sppdcj_ilp_beta             '0.25'
+     # Worked creating ILP file idmap_Cglabrata_Scerevisiae_0.5_0.75_0.25.txt
+     # &sppdcj_ilp_input_species 'Cglabrata Scerevisiae'
+     # &sppdcj_ilp_input_suffix  'Cglabrata_Scerevisiae'
+     # Trying all species
+     - &sppdcj_ilp_input_species 'all'
+     - &sppdcj_ilp_input_suffix  'all'
 
+# AGO pipeline
 dir:
    data:    &dir_data    !join [*run_dir_exp, 'data']
    aux:     &dir_aux     !join [*run_dir_exp, 'aux']
@@ -74,8 +104,8 @@ tools:
       output:
          file: &macse_output_file !ref [*data_alignments_path]
       slurm:
-         options: &macse_slurm_options ['--mem=8G', '--time=02:00:00']
-         modules: &macse_slurm_modules ['java']
+         options: !ref [*macse_slurm_options]
+         modules: ['java']
          array:
             input:
                file:  &macse_slurm_array_input_file  !ref [*macse_input_file]
@@ -98,7 +128,7 @@ tools:
                      !concat ['${', *macse_slurm_array_results_var, '}', *data_alignments_AA_ext]
                   ]
          cmd:
-            - 'java -jar /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/bin/macse_v2.06.jar \'
+            - !concat ['java -jar ', *macse_exec, ' \']
             - '   -prog alignSequences \'
             - !concat ['   -seq ${', *macse_slurm_array_input_var, '} \']
             - !concat ['   -out_NT ', *macse_slurm_results_file_1, ' \']
@@ -116,14 +146,13 @@ tools:
             - !ref [*data_gene_orders_path]
             - !ref [*data_alignments_path]
             - !ref [*data_alignments_NT_ext]
-            - 'GTR+G'
+            - !ref [*generax_alignment_model]
             - !ref [*generax_input_file]
             - !ref [*generax_input_dir]
       output:
          file:  &generax_output_file !ref [*data_reconciliations_path]
       slurm:
-         options: &generax_slurm_options ['--mem-per-cpu=4G', '--time=12:00:00', '--ntasks=100']
-         modules: &generax_slurm_modules []
+         options: !ref [*generax_slurm_options] 
          array:
             results:
                file:  &generax_slurm_array_results_file  !ref [*data_alignments_path]
@@ -142,14 +171,14 @@ tools:
                   ]
                 - &generax_slurm_results_species_file !ref [*data_species_path]
          cmd:
-            - 'mpiexec -np 48 /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/bin/GeneRax/build/bin/generax \'
+            - !concat ['mpiexec -np 48 ', *generax_exec, ' \']
             - !concat ['   -f ', *generax_input_file, ' \']
             - !concat ['   -s ', *data_species_tree_path, ' \']
             - !concat ['   -p ', *generax_results_dir, ' \']
-            - '   --per-family-rates --si-quartet-support \'
-            - '   --seed 123 \'
-            - '   --rec-model UndatedDL \'
-            - '   --strategy SPR'
+            - !concat ['   ', *generax_options, ' \']
+            - !concat ['   --seed ', *generax_seed, ' \']
+            - !concat ['   --rec-model ', *generax_rec_model, ' \']
+            - !concat ['   --strategy ', *generax_strategy]
             - ' '
             - !concat [!join [*run_dir_scripts, 'recPhyloXML_reformat.py'], ' \']
             - !concat ['   ', *generax_input_file, ' \']
@@ -161,7 +190,10 @@ tools:
             - !concat ['   ', *generax_slurm_results_species_file]
       stats:
          files:
-            - &generax_stats_file  !join [*dir_stats, *generax_name, !concat [*generax_name, '.', *log_ext_stat]]
+            - &generax_stats_file  !join [
+                 *dir_stats, *generax_name,
+                 !concat [*generax_name, '.', *log_ext_stat]
+              ]
          cmd:
             - !join [*run_dir_scripts, 'recPhyloXML_statistics.py']
             - !ref [*generax_output_file]
@@ -185,8 +217,7 @@ tools:
       output:
          file: &decostar_output_file !ref [*data_adjacencies_path]
       slurm:
-         options: &decostar_options ['--mem=4G', '--time=24:00:00']
-         modules: &decostar_modules []
+         options: !ref [*decostar_slurm_options]
          array:
             results:
                file:  &decostar_slurm_array_results_file  !ref [*generax_slurm_results_species_file]
@@ -196,7 +227,8 @@ tools:
             dir: &decostar_results_dir  !join [*dir_results, *decostar_name]
             files:
                 - &decostar_slurm_results_species_adjacencies !join [
-                     *decostar_results_dir, !concat ['${', *decostar_slurm_array_results_var, '}_adjacencies.txt']
+                     *decostar_results_dir,
+                     !concat ['${', *decostar_slurm_array_results_var, '}_adjacencies.txt']
                   ]
             other:
                 - &decostar_slurm_results_adjacencies_file !join [*decostar_results_dir, 'adjacencies.txt']
@@ -204,7 +236,7 @@ tools:
                 - &decostar_slurm_results_genes_file_2     !join [*decostar_results_dir, 'genes_reformatted.txt']
                 - &decostar_slurm_results_species_file     !join [*decostar_results_dir, 'species.txt']
          cmd:
-            - '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/bin/DeCoSTAR \'
+            - !concat [*decostar_exec, ' \']
             - !concat ['   species.file=', *generax_slurm_results_species_tree, ' \']
             - !concat ['   adjacencies.file=', *decostar_input_file_adjacencies, ' \']
             - !concat ['   gene.distribution.file=', *decostar_input_file_trees, ' \']
@@ -214,8 +246,8 @@ tools:
             - '   write.genes=true \'
             - '   already.reconciled=true \'
             - '   use.boltzmann=true \'
-            - '   boltzmann.temperature=0.1 \'
-            - '   nb.sample=1000 \'
+            - !concat ['   boltzmann.temperature=', *decostar_boltzmann_temperature, ' \']
+            - !concat ['   nb.sample=', *decostar_nb_sample, ' \']
             - '   dated.species.tree=false \'
             - '   rooted=true \'
             - '   with.transfer=false \'
@@ -232,57 +264,59 @@ tools:
             - !concat ['   ', *decostar_results_dir]
       stats:
          files:
-            - &decostar_stats_file  !join [*dir_stats, *decostar_name, !concat [*decostar_name, '.', *log_ext_stat]]
+            - &decostar_stats_file  !join [
+                 *dir_stats, *decostar_name,
+                 !concat [*decostar_name, '.', *log_ext_stat]
+              ]
          cmd:
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
             - !ref [*generax_slurm_results_species_tree]
             - !ref [*decostar_slurm_results_species_file]
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
-            - "0.5 0.6 0.7 0.8 0.9 1.0"
+            - !ref [*decostar_stats_thresholds]
             - !ref [*decostar_stats_file]
 
    # SPPDCJ_ILP: Writing the SPPDCJ ILP file
    SPPDCJ_ILP:
       name: &sppdcj_ilp_name 'SPPDCJ_ILP'
       input:
-         # Worked creating ILP file /scratch/chauvec/SPP/YGOB_test2_NT/results/SPPDCJ_ILP/YGOB_test2_NT_idmap_Cglabrata_Scerevisiae_0.75_0.25.txt
-         # species: &sppdcj_ilp_input_species 'Cglabrata Scerevisiae'
-         # suffix:  &sppdcj_ilp_input_suffix  'Cglabrata_Scerevisiae'
-         # Trying all species
-         species: &sppdcj_ilp_input_species 'all'
-         suffix:  &sppdcj_ilp_input_suffix  'all'
          dir:     &sppdcj_ilp_input_dir     !join [*dir_aux, *sppdcj_ilp_name]
          file:
-           - &sppdcj_ilp_input_file_species_tree !join [*sppdcj_ilp_input_dir, !concat ['species_tree_', *sppdcj_ilp_input_suffix, '.txt']]
-           - &sppdcj_ilp_input_file_adjacencies  !join [*sppdcj_ilp_input_dir, !concat ['adjacencies_', *sppdcj_ilp_input_suffix, '.txt']]
-         threshold: &sppdcj_ilp_input_threshold  '0.75'
-         beta:      &sppdcj_ilp_input_beta       '0.25'
+           - &sppdcj_ilp_input_file_species_tree !join [
+                *sppdcj_ilp_input_dir,
+                !concat ['species_tree_', *sppdcj_ilp_input_suffix, '.txt']
+             ]
+           - &sppdcj_ilp_input_file_adjacencies  !join [
+                *sppdcj_ilp_input_dir,
+                !concat ['adjacencies_', *sppdcj_ilp_input_suffix, '.txt']
+             ]
          script:
             - !join [*run_dir_scripts, 'SPPDCJ_create_input_files.py']
             - !ref [*data_adjacencies_path]
             - !ref [*generax_slurm_results_species_tree]
             - !ref [*sppdcj_ilp_input_species]
-            - !ref [*sppdcj_ilp_input_threshold]
+            - !ref [*sppdcj_ilp_threshold]
             - !ref [*sppdcj_ilp_input_file_species_tree]
             - !ref [*sppdcj_ilp_input_file_adjacencies]
       slurm:
-         options: &sppdcj_ilp_options ['--mem=256G', '--time=24:00:00']
-         modules: &sppdcj_ilp_modules []
+         options: !ref [*sppdcj_ilp_slurm_options]
          results:
             dir: &sppdcj_ilp_results_dir  !join [*dir_results, *sppdcj_ilp_name]
             other:
                 - &sppdcj_ilp_results_file !join [
-                  *sppdcj_ilp_results_dir,
-                  !concat [
-                     'idmap_', *sppdcj_ilp_input_suffix, '_',
-                     *sppdcj_ilp_input_threshold, '_', *sppdcj_ilp_input_beta, '.txt'
+                     *sppdcj_ilp_results_dir,
+                     !concat [
+                        'idmap_', *sppdcj_ilp_input_suffix, '_',
+                        *sppdcj_ilp_threshold, '_',
+                        *sppdcj_ilp_alpha, '_',
+                        *sppdcj_ilp_beta, '.txt'
+                     ]
                   ]
-               ]
          cmd:
-            - '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/bin/spp_dcj/scripts/spp_dcj.py \'
+            - !concat [*sppdcj_ilp_exec, ' \']
             - !concat ['   -m ', *sppdcj_ilp_results_file, ' \']
-            - !concat ['   -a ', *sppdcj_ilp_input_threshold, ' \']
-            - !concat ['   -b ', *sppdcj_ilp_input_beta, ' \']
+            - !concat ['   -a ', *sppdcj_ilp_alpha, ' \']
+            - !concat ['   -b ', *sppdcj_ilp_beta, ' \']
             - !concat ['   ', *sppdcj_ilp_input_file_species_tree, ' \']
             - !concat ['   ', *sppdcj_ilp_input_file_adjacencies]

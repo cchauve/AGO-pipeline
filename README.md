@@ -36,8 +36,10 @@ The YAML file is designed in blocks, each with a specific purpose. A
 quick description is provided below, and we refer to the comments in
 the file `parameters/YGOB_test2_NT.yaml` for more details.
 
-Block `run`: optional. Contains miscalleanous variables used in the
-other blocks.
+#### Block `run`: optional.
+Contains miscalleanous variables used in the other blocks.
+In the current file, it is used to set all values for parameters of tools
+in such a way that only this block needs to ne modified.
 
 #### Block `dir`: required.
 Contains the paths to the run experiments
@@ -102,7 +104,6 @@ Exactly one of `data.sequences`, `data.alignments`, `data.gene_trees`,
 and all other objects that follow in the AGO order must then be
 specified and will be computed.
 
-
 #### Block `slurm`: required.
 Slurm parameters; `slurm.account` is required
 and describes the account used to run the Slurm scripts.
@@ -143,7 +144,7 @@ For each tool, the following sub-blocks are required:
   the Slurm script that will run the tool. This includes.
 
   - `tools.TOOL.slurm.options`: non-array related Slurm parameters.
-  - `tools.TOOL.slurm.modules`: modules to load (`[]` if none).
+  - `tools.TOOL.slurm.modules`: modules to load . Can be omitted if none.
 
   - `tools.TOOL.slurm.array`: required if Slurm runs an array of jobs
     or if the creation of the output file requires an array-like

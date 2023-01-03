@@ -129,14 +129,25 @@ class Parameters:
     def get_slurm_err_file(self, tool):
         return self.get_slurm_log_file_ext(tool, 'err')
 
+    def _get_slurm_options(self, tool):
+        options = self.parameters['tools'][tool]['slurm']['options']
+        if isinstance(options, str):
+            options = options.split()
+        return options
+    
     def get_slurm_options(self, tool):
         return [f'--account={self.parameters["slurm"]["account"]}'] +\
-            self.parameters['tools'][tool]['slurm']['options'] +\
+            self._get_slurm_options(tool) +\
             [f'--output={self.get_slurm_log_file(tool)}'] +\
             [f'--error={self.get_slurm_err_file(tool)}']
 
     def get_slurm_modules(self, tool, concat=None):
-        modules = self.parameters['tools'][tool]['slurm']['modules']
+        if 'modules' in self.parameters['tools'][tool]['slurm'].keys():
+            modules = self.parameters['tools'][tool]['slurm']['modules']
+            if isinstance(modules, str):
+                modules = modules.split()
+        else:
+            modules = []
         if concat is None:
             return modules
         else:
