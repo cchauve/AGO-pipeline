@@ -38,12 +38,11 @@ run:
      - &sppdcj_ilp_threshold        '0.75'
      - &sppdcj_ilp_alpha            '0.5'     
      - &sppdcj_ilp_beta             '0.25'
-     # Worked creating ILP file idmap_Cglabrata_Scerevisiae_0.5_0.75_0.25.txt
-     # &sppdcj_ilp_input_species 'Cglabrata Scerevisiae'
-     # &sppdcj_ilp_input_suffix  'Cglabrata_Scerevisiae'
-     # Trying all species
-     - &sppdcj_ilp_input_species 'all'
-     - &sppdcj_ilp_input_suffix  'all'
+     - &sppdcj_ilp_input_species 'Cglabrata Scerevisiae'
+     - &sppdcj_ilp_input_suffix  'Cglabrata_Scerevisiae'
+     # Trying all species: did not work
+     # - &sppdcj_ilp_input_species 'all'
+     # - &sppdcj_ilp_input_suffix  'all'
 
 # AGO pipeline
 dir:
@@ -279,9 +278,10 @@ tools:
 
    # SPPDCJ_ILP: Writing the SPPDCJ ILP file
    SPPDCJ_ILP:
-      name: &sppdcj_ilp_name 'SPPDCJ_ILP'
+      name:   &sppdcj_ilp_name 'SPPDCJ_ILP'
+      suffix: !concat ['_', *sppdcj_ilp_input_suffix]
       input:
-         dir:     &sppdcj_ilp_input_dir     !join [*dir_aux, *sppdcj_ilp_name]
+         dir: &sppdcj_ilp_input_dir !join [*dir_aux, *sppdcj_ilp_name]
          file:
            - &sppdcj_ilp_input_file_species_tree !join [
                 *sppdcj_ilp_input_dir,

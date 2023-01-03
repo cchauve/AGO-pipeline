@@ -17,7 +17,8 @@ def create_slurm_script(parameters, tool):
     '''
     '''
     aux_dir = parameters.get_dir_aux(tool)
-    script_file = os.path.join(aux_dir, f'{tool}.sh')
+    script_name = f'{parameters.get_tool_name(tool, suffix=True)}.sh'
+    script_file = os.path.join(aux_dir, script_name)
     if parameters.check_tool_input_script(tool):
         subprocess.run(parameters.get_tool_input_script(tool))
     with open(script_file, 'w') as script:

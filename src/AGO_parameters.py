@@ -109,8 +109,11 @@ class Parameters:
     def get_sep_space(self):
         return ' '    
 
-    def get_tool_name(self, tool):
-        return self.parameters['tools'][tool]['name']
+    def get_tool_name(self, tool, suffix=False):
+        name = self.parameters['tools'][tool]['name']
+        if suffix and 'suffix' in self.parameters['tools'][tool].keys():
+            name += self.parameters['tools'][tool]['suffix']
+        return name
 
     def check_tool_input_script(self, tool):
         return ('script' in self.parameters['tools'][tool]['input'])
@@ -133,8 +136,7 @@ class Parameters:
         options = self.parameters['tools'][tool]['slurm']['options']
         if isinstance(options, str):
             options = options.split()
-        return options
-    
+        return options    
     def get_slurm_options(self, tool):
         return [f'--account={self.parameters["slurm"]["account"]}'] +\
             self._get_slurm_options(tool) +\
