@@ -308,7 +308,7 @@ DeCoSTAR ran without any issue. From the statistics file
 `/scratch/chauvec/SPP/YGOB_test2_NT/statistics/DeCoSTAR/DeCoSTAR.csv`
 we decide to create an ILP for adjacencies of weight at least 0.75.
 
-### SPPDCJ: creating the ILP
+### SPPDCJ
 
 We create it for a 3 nodes subtree with leaves **Cglabrata** and **Scerevisiae**.  
 
@@ -319,10 +319,19 @@ We create it for a 3 nodes subtree with leaves **Cglabrata** and **Scerevisiae**
 sbatch: NOTE: Your memory request of 262144M was likely submitted as 256G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
 Submitted batch job 55086512
 > python src/AGO.py parameters/YGOB_test2_NT.yaml check SPPDCJ_ILP
-        /scratch/chauvec/SPP/YGOB_test2_NT/log/SPPDCJ_ILP.log
+        /scratch/chauvec/SPP/YGOB_test2_NT/log/SPPDCJ_ILP_Cglabrata_Scerevisiae.log
         No output file is created
+ > cat /scratch/chauvec/SPP/YGOB_test2_NT/log/SPPDCJ_ILP_Cglabrata_Scerevisiae.log
+#status tool    index   message
+SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/YGOB_test2_NT/results/SPPDCJ_ILP/Cglabrata_Scerevisiae_0.75_0.5_0.25.idmap
+SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/YGOB_test2_NT/results/SPPDCJ_ILP/Cglabrata_Scerevisiae_0.75_0.5_0.25.ilp
 ```
 
-The ILP creation worked: `/scratch/chauvec/SPP/YGOB_test2_NT/results/SPPDCJ_ILP/idmap_Cglabrata_Scerevisiae_0.75_0.5_0.25.txt`
+The ILP creation worked. Trying again with all species: failed. We now try to solve the ILP.
 
-Trying again with all species: failed.
+```
+> python src/AGO.py parameters/YGOB_test2_NT.yaml script SPPDCJ
+        /scratch/chauvec/SPP/YGOB_test2_NT/aux/SPPDCJ/SPPDCJ_Cglabrata_Scerevisiae.sh
+> sbatch /scratch/chauvec/SPP/YGOB_test2_NT/aux/SPPDCJ/SPPDCJ_Cglabrata_Scerevisiae.sh
+Submitted batch job 55135484
+```
