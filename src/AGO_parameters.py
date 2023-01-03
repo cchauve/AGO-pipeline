@@ -82,10 +82,10 @@ class Parameters:
     def get_dir_results(self, tool=None):
         return self.get_dir('results', tool=tool)    
     
-    def get_log_file(self, tool):
+    def get_log_file(self, tool, suffix=False):
         return os.path.join(
             self.get_dir_log(),
-            f'{self.get_tool_name(tool)}.{self.get_log_ext()}'
+            f'{self.get_tool_name(tool, suffix=suffix)}.{self.get_log_ext()}'
         )
 
     def get_ext(self, key):
@@ -120,28 +120,29 @@ class Parameters:
     def get_tool_input_script(self, tool):
         return self.parameters['tools'][tool]['input']['script']
     
-    def get_slurm_log_file_ext(self, tool, key):
+    def get_slurm_log_file_ext(self, tool, key, suffix=False):
         array = self.check_slurm_array_input(tool)
         log_dir = self.get_dir_log(tool)
+        tool_name = self.get_tool_name(tool, suffix=suffix)
         LOG_ARRAY = {True: '_%a', False: ''}
         return os.path.join(
-            log_dir, f'{tool}{LOG_ARRAY[array]}.{self.get_ext(key)}'
+            log_dir, f'{tool_name}{LOG_ARRAY[array]}.{self.get_ext(key)}'
         )
-    def get_slurm_log_file(self, tool):
-        return self.get_slurm_log_file_ext(tool, 'log')
-    def get_slurm_err_file(self, tool):
-        return self.get_slurm_log_file_ext(tool, 'err')
+    def get_slurm_log_file(self, tool, suffix=False):
+        return self.get_slurm_log_file_ext(tool, 'log', suffix=suffix)
+    def get_slurm_err_file(self, tool, suffix=False):
+        return self.get_slurm_log_file_ext(tool, 'err', suffix=suffix)
 
     def _get_slurm_options(self, tool):
         options = self.parameters['tools'][tool]['slurm']['options']
         if isinstance(options, str):
             options = options.split()
         return options    
-    def get_slurm_options(self, tool):
+    def get_slurm_options(self, tool, suffix=False):
         return [f'--account={self.parameters["slurm"]["account"]}'] +\
             self._get_slurm_options(tool) +\
-            [f'--output={self.get_slurm_log_file(tool)}'] +\
-            [f'--error={self.get_slurm_err_file(tool)}']
+            [f'--output={self.get_slurm_log_file(tool, suffix=suffix)}'] +\
+            [f'--error={self.get_slurm_err_file(tool, suffix=suffix)}']
 
     def get_slurm_modules(self, tool, concat=None):
         if 'modules' in self.parameters['tools'][tool]['slurm'].keys():
@@ -228,7 +229,7 @@ class Parameters:
                     result_file = results_file_template.replace(array_var, var)
                     if result_file.endswith(suffix):
                         results_files.append([var, result_file])
-        else:
+        elif 'files' in all_results.keys():
             results_files += [
                 ['', results_file]
                 for results_file in all_results['files']

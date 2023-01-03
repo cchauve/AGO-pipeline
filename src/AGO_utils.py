@@ -9,6 +9,7 @@ __version__   = "0.99"
 __status__    = "Development"
 
 import os
+from collections import defaultdict
 import subprocess
 from AGO_parameters import Parameters
 
@@ -23,7 +24,7 @@ def create_slurm_script(parameters, tool):
         subprocess.run(parameters.get_tool_input_script(tool))
     with open(script_file, 'w') as script:
         script.write('#!/bin/bash\n')
-        slurm_options = parameters.get_slurm_options(tool)
+        slurm_options = parameters.get_slurm_options(tool, suffix=True)
         slurm_modules = parameters.get_slurm_modules(tool, concat=" ")
         slurm_cmd = parameters.get_slurm_cmd(tool, concat='\n')
         for option in slurm_options:
@@ -48,7 +49,7 @@ def create_slurm_script(parameters, tool):
 ''' Generic function to create a log file '''
 def create_slurm_log_file(parameters, tool):
     # File where to write the link to output files
-    log_file = parameters.get_log_file(tool)
+    log_file = parameters.get_log_file(tool, suffix=True)
     # Separators
     sep1 = parameters.get_sep_fields()
     sep2 = parameters.get_sep_space()
@@ -84,13 +85,23 @@ def create_slurm_log_file(parameters, tool):
 def create_slurm_output_file(parameters, tool):
     output_file = parameters.get_output_file(tool)
     if output_file is not None:
-        sep1 = parameters.get_sep_fields()
+        sep1 = parameters.get_sep_fields()        
         results_files = parameters.get_slurm_results_files(tool)
+        # Reading file if it does exist
+        res_dict = defaultdict(str)
+        if os.path.isfile(output_file):
+            with open(output_file, 'r') as output:
+                for result in output.readlines():
+                    res_index,res_path = result.rstrip().split(sep1)
+                    res_dict[res_index] = res_path
+        # Updating the results dictionary
+        for results_file in results_files:
+            res_index,res_path = results_file[0],results_file[1]
+            res_dict[res_index] = res_path
+        # Writing the results dictionary in the output file
         with open(output_file, 'w') as output:
-            for results_file in results_files:
-                res_index,res_path = results_file[0],results_file[1]        
-                if res_index != '':
-                    output.write(f'{res_index}{sep1}{res_path}\n')
+            for res_index,res_path in res_dict.items():
+                output.write(f'{res_index}{sep1}{res_path}\n')        
         return output_file
     else:
         return 'No output file is created'
