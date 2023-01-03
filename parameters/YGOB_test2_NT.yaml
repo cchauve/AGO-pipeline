@@ -289,12 +289,10 @@ tools:
          dir: &sppdcj_ilp_input_dir !join [*dir_aux, *sppdcj_ilp_name]
          file:
            - &sppdcj_ilp_input_file_species_tree !join [
-                *sppdcj_ilp_input_dir,
-                !concat ['species_tree_', *sppdcj_input_suffix, '.txt']
+                *sppdcj_ilp_input_dir, !concat ['species_tree_', *sppdcj_input_suffix, '.txt']
              ]
            - &sppdcj_ilp_input_file_adjacencies  !join [
-                *sppdcj_ilp_input_dir,
-                !concat ['adjacencies_', *sppdcj_input_suffix, '.txt']
+                *sppdcj_ilp_input_dir, !concat ['adjacencies_', *sppdcj_input_suffix, '.txt']
              ]
          script:
             - !join [*run_dir_scripts, 'SPPDCJ_create_input_files.py']
