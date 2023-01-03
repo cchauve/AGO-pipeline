@@ -294,6 +294,9 @@ tools:
            - &sppdcj_ilp_input_file_adjacencies  !join [
                 *sppdcj_ilp_input_dir, !concat ['adjacencies_', *sppdcj_input_suffix, '.txt']
              ]
+           - &sppdcj_ilp_input_file_conflicts !join [
+                *sppdcj_ilp_input_dir, !concat ['conflicts_', *sppdcj_input_suffix, '.txt']
+             ]
          script:
             - !join [*run_dir_scripts, 'SPPDCJ_create_input_files.py']
             - !ref [*data_adjacencies_path]
@@ -302,6 +305,15 @@ tools:
             - !ref [*sppdcj_ilp_threshold]
             - !ref [*sppdcj_ilp_input_file_species_tree]
             - !ref [*sppdcj_ilp_input_file_adjacencies]
+            - !concat [';']
+            - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
+            - !ref [*generax_slurm_results_species_tree]
+            - !ref [*decostar_slurm_results_species_file]
+            - !ref [*decostar_slurm_results_genes_file_2]
+            - !ref [*data_adjacencies_path]
+            - !ref [*sppdcj_ilp_threshold]
+            - !ref [*sppdcj_ilp_input_file_conflicts]
+
       slurm:
          options: !ref [*sppdcj_ilp_slurm_options]
          results:
@@ -327,7 +339,7 @@ tools:
             - !concat ['   ', *sppdcj_ilp_input_file_species_tree, ' \']
             - !concat ['   ', *sppdcj_ilp_input_file_adjacencies, ' \']
             - !concat ['   > ', *sppdcj_ilp_results_file_ilp ]
- 
+
    # SPPDCJ: Solving the SPPDCJ ILP
    SPPDCJ:
       name:   &sppdcj_name 'SPPDCJ'

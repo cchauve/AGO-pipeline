@@ -21,7 +21,8 @@ def create_slurm_script(parameters, tool):
     script_name = f'{parameters.get_tool_name(tool, suffix=True)}.sh'
     script_file = os.path.join(aux_dir, script_name)
     if parameters.check_tool_input_script(tool):
-        subprocess.run(parameters.get_tool_input_script(tool))
+        for cmd in parameters.get_tool_input_script(tool):
+            subprocess.run(cmd)
     with open(script_file, 'w') as script:
         script.write('#!/bin/bash\n')
         slurm_options = parameters.get_slurm_options(tool, suffix=True)
@@ -124,7 +125,6 @@ def clean_slurm_results(parameters, tool):
 
 ''' Generic function to compute a statistics file '''
 def compute_statistics(parameters, tool):
-    cmd = parameters.get_statistics_cmd(tool)
-    if cmd is not None:
+    for cmd in parameters.get_statistics_cmd(tool):
         subprocess.run(cmd)
     return parameters.get_statistics_files(tool)

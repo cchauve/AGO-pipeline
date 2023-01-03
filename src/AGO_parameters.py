@@ -117,8 +117,19 @@ class Parameters:
 
     def check_tool_input_script(self, tool):
         return ('script' in self.parameters['tools'][tool]['input'])
+    def _get_script(self, input_script):
+        result,current_script = [],[]
+        for i in range(len(input_script)):
+            if input_script[i] != ';':
+                current_script.append(input_script[i])
+            else:
+                result.append(current_script)
+                current_script = []
+        result.append(current_script)
+        return result
     def get_tool_input_script(self, tool):
-        return self.parameters['tools'][tool]['input']['script']
+        return self._get_script(self.parameters['tools'][tool]['input']['script'])
+        
     
     def get_slurm_log_file_ext(self, tool, key, suffix=False):
         array = self.check_slurm_array_input(tool)
@@ -258,6 +269,6 @@ class Parameters:
     def get_statistics_cmd(self, tool):
         stats = self.get_statistics_all(tool)
         if stats is None:
-            return None
+            return []
         else:
-            return stats['cmd']
+            return self._get_script(stats['cmd'])
