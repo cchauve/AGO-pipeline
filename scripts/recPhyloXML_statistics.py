@@ -140,7 +140,7 @@ def write_statistics_species(statistics_species, out_stats_file_species, sep1=':
 def write_statistics_families(statistics_families, out_stats_file_families, sep1=':', sep2='\t', sep3=' '):
     with open(out_stats_file_families, 'w') as stats_file:
         header1 = sep1.join(['nb_species', STATS_genes, STATS_dup, STATS_loss])
-        header2 = sep1.join(['species', header1])
+        header2 = sep1.join(['species', STATS_genes, STATS_dup, STATS_loss])
         header3 = f'#family{sep2}{header1}{sep2}{header2}'
         stats_file.write(header3)
         for fam_id,stats_all in statistics_families.items():
