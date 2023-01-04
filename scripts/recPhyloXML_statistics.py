@@ -13,7 +13,12 @@ STATS_genes = 'genes' # Number of genes
 STATS_dup = 'duplications' # Number of duplications
 STATS_loss = 'losses' # Number of losses
 # XML tags to corresponding statistics keys
-STATS_xmlkeys = {'leaf': STATS_genes, 'speciation': STATS_genes, 'duplication': STATS_dup, 'loss': STATS_loss}
+STATS_xmlkeys = {
+    'leaf': STATS_genes,
+    'speciation': STATS_genes,
+    'duplication': STATS_dup,
+    'loss': STATS_loss
+}
 STATS_keys = [STATS_genes, STATS_dup, STATS_loss]
 
 import sys
@@ -22,8 +27,9 @@ import xml.etree.ElementTree as ET
 def recPhyloXML_read_events(in_file):
     ''' 
     Read a recPhyloXML file and returns a dictionary indexed by species
-    and for each containing a dictionary recording number of genes, of duplications
-    and of losses with the keys STATS_genes, STATS_dup, STATS_loss
+    and for each containing a dictionary recording number of genes, 
+    of duplications and of losses with the keys STATS_genes, STATS_dup, 
+STATS_loss
     '''
 
     def get_tag(node):
@@ -39,7 +45,10 @@ def recPhyloXML_read_events(in_file):
         if node.text is not None: return((node.text).strip())
         else: return('')
     def get_name(node):
-        ''' Returns the name of a clade node; assumption: any clade node has a name '''
+        ''' 
+        Returns the name of a clade node
+        Assumption: any clade node has a name 
+'''
         return(get_text(node.find(f'{tag_pref}name')))
     def get_species(node):
         ''' Returns the species of a eventRec node '''
@@ -98,40 +107,67 @@ def recPhyloXML_read_events(in_file):
     return(recStats)
 
 
-def main():
-    in_reconciliations_file = sys.argv[1]
-    out_stats_file = sys.argv[2]
-    separator = ':'
-
-    statistics = {}
+def collect_statistics(in_reconciliations_file):
+    statistics_species = {}
+    statistics_families = {}
     with open(in_reconciliations_file, 'r') as reconciliations:
         for line in reconciliations.readlines():
             reconciliation = line.rstrip().split()
             fam_id = reconciliation[0]
             reconciliation_path = reconciliation[1]
-            stats_all = recPhyloXML_read_events(reconciliation_path)
-            for species,stats in stats_all.items():
-                if species not in statistics.keys():
-                    statistics[species] = {
+            statistics_families[fam_id] = recPhyloXML_read_events(reconciliation_path)            
+            for species,stats in statistics_families[fam_id].items():
+                if species not in statistics_species.keys():
+                    statistics_species[species] = {
                         STATS_genes: 0, STATS_dup: 0, STATS_loss: 0
                     }
                 for stats_key in STATS_keys:
-                    statistics[species][stats_key] += stats[stats_key]
-    with open(out_stats_file, 'w') as stats_file:
-        stats_file.write(
-            separator.join(
-                ['species', STATS_genes, STATS_dup, STATS_loss]
-            )
-        )
-        for species,stats in statistics.items():
-            stats_str = [
-                str(species),
-                str(stats[STATS_genes]),
-                str(stats[STATS_dup]),
-                str(stats[STATS_loss])
-            ]
-            stats_file.write(f'\n{separator.join(stats_str)}')
+                    statistics_species[species][stats_key] += stats[stats_key]
+    return (statistics_families,statistics_species)
 
+def _stats_str(stats, sp, sep=':'):
+    return sep.join(
+        [str(sp), str(stats[STATS_genes]), str(stats[STATS_dup]), str(stats[STATS_loss])]
+    )
+
+def write_statistics_species(statistics_species, out_stats_file_species, sep1=':', sep2='\t', sep3=' '):
+    with open(out_stats_file_species, 'w') as stats_file:
+        header1 = sep1.join(['#species', STATS_genes, STATS_dup, STATS_loss])
+        stats_file.write(header1)
+        for species,stats in statistics_species.items():
+            stats_file.write(f'\n{_stats_str(stats, species, sep=sep1)}')
+
+def write_statistics_families(statistics_families, out_stats_file_families, sep1=':', sep2='\t', sep3=' '):
+    with open(out_stats_file_families, 'w') as stats_file:
+        header1 = sep1.join(['nb_species', STATS_genes, STATS_dup, STATS_loss])
+        header2 = sep1.join(['species', header1])
+        header3 = f'#family{sep2}{header1}{sep2}{header2}'
+        stats_file.write(header3)
+        for fam_id,stats_all in statistics_families.items():
+            stats_file.write(f'\n{fam_id}{sep2}')
+            stats_fam = {STATS_genes: 0, STATS_dup: 0, STATS_loss: 0}
+            stats_str = []
+            nb_species = 0
+            for species,stats in stats_all.items():
+                if stats[STATS_genes] > 0:
+                    nb_species += 1
+                for stats_key in STATS_keys:
+                    stats_fam[stats_key] += stats[stats_key]
+                stats_str.append(_stats_str(stats, species, sep=sep1))
+            stats_file.write(f'{_stats_str(stats_fam, nb_species, sep=sep1)}{sep2}')
+            stats_file.write(f'{sep3.join(stats_str)}')
+
+def main():
+    in_reconciliations_file = sys.argv[1]
+    out_stats_file_species = sys.argv[2]
+    out_stats_file_families = sys.argv[3]
+
+    # Reading reconciliations and collecting statistics
+    (statistics_families,statistics_species) = collect_statistics(in_reconciliations_file)
+    # Writting species statistics
+    write_statistics_species(statistics_species, out_stats_file_species)
+    # Writting families statistics
+    write_statistics_families(statistics_families, out_stats_file_families)
 
 if __name__ == "__main__":
     main()

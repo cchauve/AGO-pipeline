@@ -259,8 +259,8 @@ Submitted batch job 54957315
         /scratch/chauvec/SPP/YGOB_test2_NT/log/GeneRax.log
         /scratch/chauvec/SPP/YGOB_test2_NT/data/reconciliations.txt
 > python src/AGO.py parameters/YGOB_test2_NT.yaml stats GeneRax
-        /scratch/chauvec/SPP/YGOB_test2_NT/statistics/GeneRax/GeneRax.csv
-
+        /scratch/chauvec/SPP/YGOB_test2_NT/statistics/GeneRax/GeneRax_species.csv
+        /scratch/chauvec/SPP/YGOB_test2_NT/statistics/GeneRax/GeneRax_families.csv
 ```
 
 Log and error files are available at

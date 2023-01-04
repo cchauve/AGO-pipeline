@@ -75,7 +75,7 @@ data:
       NT_ext: &data_alignments_NT_ext '_NT.fasta'
       AA_ext: &data_alignments_AA_ext '_AA.fasta'
    reconciliations:
-      path:  &data_reconciliations_path   !join [*dir_data, reconciliations.txt']
+      path:  &data_reconciliations_path   !join [*dir_data, 'reconciliations.txt']
       # [optional] extensions for reconciliations files created by AGO
       ext: &data_reconciliations_ext    '.recphyloxml'
    adjacencies:
@@ -194,14 +194,17 @@ tools:
             - !concat ['   ', *generax_slurm_results_species_file]
       stats:
          files:
-            - &generax_stats_file  !join [
-                 *dir_stats, *generax_name,
-                 !concat [*generax_name, '.', *log_ext_stat]
+            - &generax_stats_file_species  !join [
+                 *dir_stats, *generax_name, !concat [*generax_name, '_species.', *log_ext_stat]
+              ]
+            - &generax_stats_file_families  !join [
+                 *dir_stats, *generax_name, !concat [*generax_name, '_families.', *log_ext_stat]
               ]
          cmd:
             - !join [*run_dir_scripts, 'recPhyloXML_statistics.py']
             - !ref [*generax_output_file]
-            - !ref [*generax_stats_file]
+            - !ref [*generax_stats_file_species]
+            - !ref [*generax_stats_file_families]
 
    # DeCoSTAR: computing ancestral adjacencies
    DeCoSTAR:
