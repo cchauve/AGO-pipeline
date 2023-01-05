@@ -131,7 +131,6 @@ def decostar_reformat_adjacencies_file(
         in_species_map,
         in_genes_name,
         in_adjacencies_file,
-        out_adjacencies_file,
         out_adjacencies_dir
 ):
     '''
