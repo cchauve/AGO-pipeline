@@ -10,32 +10,7 @@ __status__    = "Development"
 
 import sys
 import os
-
-def recPhyloXML_format(in_file, out_file, start_id=0):
-    ''' Should be done using the XML libray '''
-    with open(in_file, 'r') as in_xml, \
-         open(out_file, 'w') as out_xml:
-        out_xml.write('<recPhylo>\n')
-        current_id = start_id
-        for line in in_xml.readlines()[1:]:
-            line1 = line.strip()
-            if line1[0]!='<': continue
-            if line1 == '<name></name>':
-                out_xml.write(line.replace('><', f'>{current_id}<'))
-                current_id += 1
-            elif line1.startswith('<speciation'):
-                out_xml.write(line.replace('/>', '></speciation>'))
-            elif line1.startswith('<leaf'):
-                out_xml.write(line.replace('/>', '></leaf>'))
-            elif line1.startswith('<duplication'):
-                out_xml.write(line.replace('/>', '></duplication>'))
-            elif line1.startswith('<loss'):
-                out_xml.write(line.replace('/>', '></loss>'))
-            elif line1.startswith('<speciationLoss'):
-                out_xml.write(line.replace('/>', '></speciationLoss>'))
-            else:
-                out_xml.write(line)
-    return(current_id)
+from recPhyloXML_utils import xml_reformat_file
 
 def main():
     families_file = sys.argv[1]
@@ -49,7 +24,7 @@ def main():
                 in_file = os.path.join(results_dir, 'reconciliations', f'{fam_id}_reconciliated.xml')
                 out_file = os.path.join(results_dir, 'reconciliations', f'{fam_id}{suffix}')
                 if os.path.isfile(in_file):
-                    current_id = recPhyloXML_format(in_file, out_file, start_id=current_id)
+                    current_id = xml_reformat_file(in_file, out_file, start_id=current_id)
 
 if __name__ == "__main__":
     main()

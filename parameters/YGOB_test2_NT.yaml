@@ -184,7 +184,7 @@ tools:
             - !concat ['   --rec-model ', *generax_rec_model, ' \']
             - !concat ['   --strategy ', *generax_strategy]
             - ' '
-            - !concat [!join [*run_dir_scripts, 'recPhyloXML_reformat.py'], ' \']
+            - !concat [!join [*run_dir_scripts, 'GeneRax_reformat.py'], ' \']
             - !concat ['   ', *generax_input_file, ' \']
             - !concat ['   ', *generax_results_dir, ' \']
             - !concat ['   ', *data_reconciliations_ext]
@@ -201,7 +201,7 @@ tools:
                  *dir_stats, *generax_name, !concat [*generax_name, '_families.', *log_ext_stat]
               ]
          cmd:
-            - !join [*run_dir_scripts, 'recPhyloXML_statistics.py']
+            - !join [*run_dir_scripts, 'GeneRax_statistics.py']
             - !ref [*generax_output_file]
             - !ref [*generax_stats_file_species]
             - !ref [*generax_stats_file_families]

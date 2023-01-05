@@ -15,14 +15,14 @@ import ete3
 from DeCoSTAR_create_input_files import read_families as decostar_genes_map
 
 ''' Creates a map from node names to list of descendant extant species '''
-def newick_get_leaves(tree_file):
+def newick_get_leaves(species_tree_file):
     '''
-    input: paths to a Newick tree file with internal nodes named
+    input: paths to a Newick species tree file with internal nodes named
     output:
     - dictionary dict(str->list(str)) indexed by names of nodes in tree_file
       each list is sorted in alphabetical order
     '''
-    tree = ete3.Tree(tree_file, format=1)
+    tree = ete3.Tree(species_tree_file, format=1)
     leaves = defaultdict(list)
     for node in tree.traverse():
         for leaf in node:
@@ -101,11 +101,16 @@ def decostar_reformat_genes(
     dict(str->str): mapping from DeCoSTAR gene names to reformated gene names
     of format family_name<char_sep>gene_name for ancestral genes
     '''
+    # Dictionary original extant gene name -> original family ID
     genes_map = decostar_genes_map(in_families_file)
+    # Dictionary original extant gene name -> name with family
     genes_name = {
         gene: f'{fam_id}{char_sep}{gene}'
         for gene,fam_id in genes_map.items()
     }
+    # Reconciled families in order where they appear prior to DeCoSTAR
+    # and in which they have been written in the gene trees distribution file
+    # in DeCoSTAR
     families = decostar_reconciled_families(in_reconciliations_file)
     with open(in_genes_file, 'r') as in_genes, \
          open(out_genes_file, 'w') as out_genes:
@@ -114,16 +119,22 @@ def decostar_reformat_genes(
             in_species,in_gene = line_split[0:2]
             out_species = in_species_map[in_species]
             if char_sep in in_gene:
+                # Ancestral gene: replace DeCoSTAR family name by original family name 
                 family,gene_id = in_gene.split(char_sep)
                 out_gene = f'{families[int(family)]}{char_sep}{gene_id}'
                 genes_name[in_gene] = out_gene
             else:
+                # Extant gene: name expandd with original family name
                 out_gene = genes_name[in_gene]
             out_gene_str = ' '.join(
                 [out_species, out_gene] +
                 [genes_name[gene] for gene in line_split[2:]]
             )
             out_genes.write(f'{out_gene_str}\n')
+    # Issue: the gene names do not match with the GeneRax gene names
+    # For every GeneRax pre-speciation gene we should have the list of its extant descendants
+    # Do the same for DeCoSTAR genes.
+    # Then use these lists + species to match gene names
     return(genes_name)
 
 ''' Reformat DeCoSTAR adjacencies file '''
