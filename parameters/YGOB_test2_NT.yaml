@@ -270,10 +270,12 @@ tools:
             - !concat ['   ', *decostar_slurm_results_genes_file_2, ' \']
             - !concat ['   ', *decostar_results_dir]
       stats:
-         files:
-            - &decostar_stats_file  !join [
-                 *dir_stats, *decostar_name,
-                 !concat [*decostar_name, '.', *log_ext_stat]
+         files: 
+            - &decostar_stats_file_species  !join [
+                 *dir_stats, *decostar_name, !concat [*decostar_name, '.', *log_ext_stat]
+              ]
+            - &decostar_stats_file_conflicts  !join [
+                 *dir_stats, *decostar_name, !concat [*decostar_name, '_', *sppdcj_ilp_threshold, '_conflicts.txt']
               ]
          cmd:
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
@@ -282,7 +284,15 @@ tools:
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
             - !ref [*decostar_stats_thresholds]
-            - !ref [*decostar_stats_file]
+            - !ref [*decostar_stats_file_species]
+            - ';'
+            - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
+            - !ref [*generax_slurm_results_species_tree]
+            - !ref [*decostar_slurm_results_species_file]
+            - !ref [*decostar_slurm_results_genes_file_2]
+            - !ref [*data_adjacencies_path]
+            - !ref [*sppdcj_ilp_threshold]
+            - !ref [*decostar_stats_file_conflicts]
 
    # SPPDCJ_ILP: Writing the SPPDCJ ILP file
    SPPDCJ_ILP:

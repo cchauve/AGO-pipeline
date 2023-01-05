@@ -302,6 +302,7 @@ Submitted batch job 54997458
         /scratch/chauvec/SPP/YGOB_test2_NT/aux/DeCoSTAR/dummy.txt
 > python src/AGO.py parameters/YGOB_test2_NT.yaml stats DeCoSTAR
         /scratch/chauvec/SPP/YGOB_test2_NT/statistics/DeCoSTAR/DeCoSTAR.csv
+        /scratch/chauvec/SPP/YGOB_test2_NT/statistics/DeCoSTAR/DeCoSTAR_conflicts.txt
 ```
 
 DeCoSTAR ran without any issue. From the statistics file
