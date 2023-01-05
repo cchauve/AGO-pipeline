@@ -159,7 +159,6 @@ def decostar_reformat_adjacencies_file(
         out_species_adjacencies_file = os.path.join(
             out_adjacencies_dir, f'{species}_adjacencies.txt'
         )
-        out_adjacencies.write(f'{species}\t{out_species_adjacencies_file}\n')
         with open(out_species_adjacencies_file, 'w') as out_species_adjacencies:
             for out_adjacency in species_adjacencies:
                 out_species_adjacencies.write(f'{out_adjacency}\n')
