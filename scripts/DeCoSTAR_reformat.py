@@ -11,33 +11,18 @@ __status__    = "Development"
 import sys
 import os
 from collections import defaultdict
-import ete3
-from DeCoSTAR_create_input_files import read_families as decostar_genes_map
+from newick_utils import newick_get_leaves
+from DeCoSTAR_create_input_files import read_families as decostar_read_families
 from recPhyloXML_utils import xml_get_gene_tree_root, xml_parse_tree
 
-''' Creates a map from node names to list of descendant extant species '''
-def newick_get_leaves(species_tree_file):
-    '''
-    input: paths to a Newick species tree file with internal nodes named
-    output:
-    - dictionary dict(str->list(str)) indexed by names of nodes in tree_file
-      each list is sorted in alphabetical order
-    '''
-    tree = ete3.Tree(species_tree_file, format=1)
-    leaves = defaultdict(list)
-    for node in tree.traverse():
-        for leaf in node:
-            leaves[node.name].append(leaf.name)
-        leaves[node.name].sort()
-    return(leaves)
-
-''' Reads the map from nodes to descendant leaves from DeCoSTAR output '''
-def decostar_get_leaves(in_species_file):
+''' Reads the DeCoSTAR map from nodes to descendant extant species '''
+def decostar_read_species_file(in_species_file):
     '''
     input:
     - DeCoSTAR species file
     output:
-    - dictionary dict(str->list(str)) indexed by names of nodes in tree_file
+    - dictionary dict(str->list(str)) indexed by names of nodes in 
+      in_species_file to list of extant descendants species
       each list is sorted in alphabetical order
     '''
     leaves = {}
@@ -46,29 +31,29 @@ def decostar_get_leaves(in_species_file):
             node_data = node.rstrip().split()
             leaves[node_data[0]] = node_data[1:]
             leaves[node_data[0]].sort()
-    return(leaves)
+    return leaves
 
-''' Returns a map of correspondance between species names of species tree and DeCoSTAR species '''
+''' Returns a map from DeCoSTAR species name to original species name '''
 def decostar_species_map(in_species_tree_file, in_species_file):
     '''
     input:
-    - original species tree file
+    - original Newick species tree file
     - DeCoSTAR species file
-    output: dict(str->str) indexd by DeCoSTAR species labels
+    output: dict(str->str) Decostar species name -> Newick species name
     '''
     newick_leaves_map = newick_get_leaves(in_species_tree_file)
-    decostar_leaves_map = decostar_get_leaves(in_species_file)
+    decostar_leaves_map = decostar_read_species_file(in_species_file)
     map_aux = defaultdict(list)
-    for species,leaves in newick_leaves_map.items():
-        map_aux[''.join(leaves)].append(species)
-    for species,leaves in decostar_leaves_map.items():
-        map_aux[''.join(leaves)].append(species)
+    for newick_species,leaves in newick_leaves_map.items():
+        map_aux[''.join(leaves)].append(newick_species)
+    for decostar_species,leaves in decostar_leaves_map.items():
+        map_aux[''.join(leaves)].append(decostar_species)
     species_map = {}
     for species_pair in map_aux.values():
         species_map[species_pair[1]] = species_pair[0]
     return(species_map)
 
-''' Returns a dictionary from reconciliation path to family '''
+''' Returns a dictionary from reconciliation paths to family ID '''
 def decostar_reconciliation2family(in_reconciliations_file):
     '''
     input: reconciliations access file
@@ -82,8 +67,42 @@ def decostar_reconciliation2family(in_reconciliations_file):
             reconciliation2family[rec_path] = fam_id
     return reconciliation2family
 
-''' Read DeCoSTAR genes file to compute a map from gene name to list of descendant extant leaves '''
+''' Returns a map from DeCoSTAR family ID to original family ID '''
+def decostar_family_map(in_gene_trees_file, in_reconciliations_file, add_path=False):
+    '''
+    input: 
+    - in_gene_trees_file: DeCoSTAR input files with paths to reconciliations
+    - in_reconciliations_file: map to original family ID to rec. path
+    - if add_path is True, adds the reconciliation path
+    output:
+    dict(str->str) from DeCoSTAR family ID to original family ID
+    '''
+    reconciliation2family = decostar_reconciliation2family(
+        in_reconciliations_file
+    )
+    family_map = {}
+    with open(in_gene_trees_file, 'r') as in_gene_trees:
+        decostar_fam_idx = 0
+        for reconciliation in in_gene_trees.readlines():
+            rec_path = reconciliation.rstrip()
+            decostar_fam_id = str(decostar_fam_idx)
+            original_fam_id = reconciliation2family[rec_path]
+            if add_path:
+                family_map[decostar_fam_id] = (original_fam_id,rec_path)
+            else:
+                family_map[decostar_fam_id] = original_fam_id
+            decostar_fam_idx += 1
+    return family_map
+
+''' 
+Read DeCoSTAR genes file to compute a map from gene name 
+to list of descendant (gene) leaves 
+'''
 def decostar_genes2leaves(in_genes_file, char_sep='|'):
+    '''
+    input: DeCoSTAR genes file, separator family/gene
+    output: dict(gene name -> list of descendant (gene) leaves)
+    '''
     gene2leaves = {}
     with open(in_genes_file, 'r') as in_genes:
         for gene_data in in_genes.readlines():
@@ -92,16 +111,44 @@ def decostar_genes2leaves(in_genes_file, char_sep='|'):
             gene2leaves[gene] = []
             if len(data) == 2:
                 gene2leaves[gene] = [gene]
-            else:
-                for child in data[2:]:
-                    if char_sep in child:
-                        gene2leaves[gene] += gene2leaves[child]
-                    else:
-                        gene2leaves[gene] += [child]
+            for child in data[2:]:
+                if char_sep in child:
+                    gene2leaves[gene] += gene2leaves[child]
+                else:
+                    gene2leaves[gene] += [child]
             gene2leaves[gene].sort()
     return gene2leaves
 
-''' Read DeCoSTAR genes file '''
+''' Returns a map from DeCoSTAR gene names to original gene names '''
+def decostar_gene_map(in_family_map, in_genes_file, char_sep='|'):
+    '''
+    input:
+    - dict(DeCoSTAR family ID -> (oiginal family ID, reconciliation path)
+    - DeCoSTAR genes file
+    - separator family/gene
+    output:
+    dict(DeCoSTAR gene name -> original gene name)
+    '''
+    # Dictionary (list of extant descendants genes -> original gene name)
+    leaves2gene_map = {}
+    for (fam_id,rec_path) in in_family_map.values():
+        rec_root,tag_pref = xml_get_gene_tree_root(rec_path)
+        _gene2leaves_map = xml_parse_tree(rec_root, tag_pref, output_type=2)
+        for gene,leaves in _gene2leaves_map.items():
+            if len(leaves) > 0:
+                leaves.sort()
+                leaves2gene_map[char_sep.join(leaves)] = gene
+    # Dictionary DeCoSTAR gene name -> list of descendant extant genes
+    gene2leaves_map = decostar_genes2leaves(in_genes_file, char_sep=char_sep)
+    # Mapping DeCoSTAR gene names to original names by identifying leaves sets
+    genes_map = {}
+    for decostar_gene,decostar_leaves in gene2leaves_map.items():
+        decostar_leaves_str = char_sep.join(decostar_leaves)
+        original_gene = leaves2gene_map[decostar_leaves_str]
+        genes_map[decostar_gene] = original_gene
+    return genes_map
+
+''' Reformat DeCoSTAR genes file '''
 def decostar_reformat_genes(
         in_species_map,
         in_families_file,
@@ -125,61 +172,43 @@ def decostar_reformat_genes(
     of format family_name<char_sep>gene_name for ancestral genes
     '''
     # Dictionary original extant gene name -> <name><char_sep><original family>
-    genes_name = {
+    original_fam_gene = {
         gene: f'{fam_id}{char_sep}{gene}'
-        for gene,fam_id in decostar_genes_map(in_families_file).items()
+        for gene,fam_id in decostar_read_families(in_families_file).items()
     }
-    # Dictionary reconciliation path -> family ID
-    reconciliation2family = decostar_reconciliation2family(in_reconciliations_file)
     # Mapping from DeCoSTAR family (integer) ID to original family ID
-    family_idx2id = {}
-    with open(in_gene_trees_file, 'r') as in_gene_trees:
-        fam_idx = 0
-        for reconciliation in in_gene_trees.readlines():
-            family_idx2id[str(fam_idx)] = reconciliation2family[reconciliation.rstrip()]
-            fam_idx += 1
-    # Dictionary list of extant descendants -> GeneRax gene name
-    leaves2gene_map = {}
-    for rec_path,fam_id in reconciliation2family.items():
-        rec_root,tag_pref = xml_get_gene_tree_root(rec_path)
-        _gene2leaves_map = xml_parse_tree(rec_root, tag_pref, output_type=2)
-        for gene,leaves in _gene2leaves_map.items():
-            if len(leaves) > 0:
-                leaves.sort()
-                leaves2gene_map[char_sep.join(leaves)] = gene
-    # Dictionary DeCoSTAR gene name -> list of descendant extant descendants
-    gene2leaves_map = decostar_genes2leaves(in_genes_file, char_sep=char_sep)
-    # Mapping DeCoSTAR gene names to original names by identifying leaves sets
-    gene_name_mapping = {}
-    for gene,leaves in gene2leaves_map.items():
-        leaves_str = char_sep.join(leaves)
-        gene_name = leaves2gene_map[leaves_str]
-        gene_name_mapping[gene] = gene_name
+    # and reconciliation path
+    family_map = decostar_family_map(
+        in_gene_trees_file, in_reconciliations_file, add_path=True
+    )
+    # Mapping DeCoSTAR gene names to original names
+    gene_map = decostar_gene_map(family_map, in_genes_file, char_sep=char_sep)
     # Reformatting genes
     with open(in_genes_file, 'r') as in_genes, \
          open(out_genes_file, 'w') as out_genes:
         for line in in_genes.readlines():
             line_split = line.rstrip().split()
-            in_species,in_gene = line_split[0:2]
+            in_species,in_fam_gene = line_split[0:2]
             out_species = in_species_map[in_species]
-            if char_sep in in_gene:
-                # Ancestral gene: replace DeCoSTAR family name by original family name 
-                family,gene_id = in_gene.split(char_sep)
-                out_gene = f'{family_idx2id[family]}{char_sep}{gene_id}'
-                genes_name[in_gene] = out_gene
+            if char_sep in in_fam_gene:
+                # Ancestral gene: replace DeCoSTAR family name by original family name
+                # and DeCoSTAR gene name by original gene name
+                in_fam,in_gene = in_fam_gene.split(char_sep)
+                out_fam = family_map[in_fam][0]
+                out_gene = gene_map[in_fam_gene]
+                out_fam_gene = f'{out_fam}{char_sep}{out_gene}'
+                original_fam_gene[in_fam_gene] = out_fam_gene
             else:
-                # Extant gene: name expandd with original family name
-                out_gene = genes_name[in_gene]
+                # Extant gene: no change
+                out_fam_gene = original_fam_gene[in_fam_gene]
+            # Assumption: non-leaf genes appear in in_genes_file in a
+            # bottom-up order: descendants appear before ancestors
             out_gene_str = ' '.join(
-                [out_species, out_gene] +
-                [genes_name[gene] for gene in line_split[2:]]
+                [out_species, out_fam_gene] +
+                [original_fam_gene[gene] for gene in line_split[2:]]
             )
             out_genes.write(f'{out_gene_str}\n')
-    # Issue: the gene names do not match with the GeneRax gene names
-    # For every GeneRax pre-speciation gene we should have the list of its extant descendants
-    # Do the same for DeCoSTAR genes.
-    # Then use these lists + species to match gene names
-    return(genes_name)
+    return(original_fam_gene)
 
 ''' Reformat DeCoSTAR adjacencies file '''
 def decostar_reformat_adjacencies_file(

@@ -318,7 +318,7 @@ We create it for a 3 nodes subtree with leaves **Cglabrata** and **Scerevisiae**
         /scratch/chauvec/SPP/YGOB_test2_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_Cglabrata_Scerevisiae.sh
 > sbatch  /scratch/chauvec/SPP/YGOB_test2_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_Cglabrata_Scerevisiae.sh
 sbatch: NOTE: Your memory request of 262144M was likely submitted as 256G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
-Submitted batch job 55086512
+Submitted batch job 55470827
 > python src/AGO.py parameters/YGOB_test2_NT.yaml check SPPDCJ_ILP
         /scratch/chauvec/SPP/YGOB_test2_NT/log/SPPDCJ_ILP_Cglabrata_Scerevisiae.log
         No output file is created
