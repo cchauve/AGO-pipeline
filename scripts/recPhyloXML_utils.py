@@ -37,13 +37,25 @@ def xml_get_rec_species(node):
     ''' Returns the species of a eventRec node '''
     return(node.get(f'speciesLocation'))
 
+def xml_get_tree_root(in_file, tree):
+    root = ET.parse(in_file).getroot()
+    tag_pref = xml_get_prefix(root)
+    tree_root = root.find(
+        f'{tag_pref}{tree}'
+    ).find(f'{tag_pref}phylogeny'
+    ).find(f'{tag_pref}clade')
+    return tree_root,tag_pref
+def xml_get_species_tree_root(in_file):
+    return xml_get_tree_root(in_file, 'spTree')
+def xml_get_gene_tree_root(in_file):
+    return xml_get_tree_root(in_file, 'recGeneTree')
 
 def xml_parse_tree(root, tag_pref, output_type=1):
     ''' 
     input: XML root node
     output: 
-    - 1: dict(species name(str) -> name of siblings (str/None))
-    - 2: dict(species name(str) -> name of descendant leaves (str/None))
+    - 1: dict(node name(str) -> name of siblings (str/None))
+    - 2: dict(node name(str) -> name of descendant leaves (str/None))
     '''
     def parse_clade_recursive(node, result, output_type):
         ''' Assumption: node is tagged <clade> '''
@@ -54,7 +66,7 @@ def xml_parse_tree(root, tag_pref, output_type=1):
         leaves = []
         for child in children:
             leaves += parse_clade_recursive(child, result, output_type)
-        if len(children) == 0: # Leaf
+        if len(children) == 0 and name != 'loss': # Extant leaf
             leaves += [name]
         # Update output
         if output_type == 1 and len(children) == 2:
@@ -62,12 +74,16 @@ def xml_parse_tree(root, tag_pref, output_type=1):
             child2 = xml_get_name(children[1], tag_pref=tag_pref)
             result[child1] = child2
             result[child2] = child1
-        elif output_type == 2:
+        elif output_type == 2 and name != 'loss':
             result[name] = leaves.copy()
         return leaves
-    result = {xml_get_name(root, tag_pref=tag_pref): None}
+    if output_type == 1:
+        result = {xml_get_name(root, tag_pref=tag_pref): None}
+    elif output_type == 2:
+        result = {}
     parse_clade_recursive(root, result, output_type)
     return(result)
+
 
 def xml_reformat_file(in_file, out_file, start_id=0):
     ''' Should be done using the XML libray '''
@@ -94,3 +110,35 @@ def xml_reformat_file(in_file, out_file, start_id=0):
             else:
                 out_xml.write(line)
     return(current_id)
+
+def xml_map_leaves(in_file, tree=1, fam_id=None):
+    '''
+    input:
+    in_file: recPhyloXML reconciliation
+    tree: 1 is for species tree, 2 for gene tree
+    fam_id: ID of the family
+    output:
+    map gene or (gene,fam_id) -> list of subtree leaves names
+    '''
+    root = ET.parse(in_file).getroot()
+    tag_pref = xml_get_prefix(root)
+    if tree == 1:
+        tree_root = root.find(
+            f'{tag_pref}spTree'
+        ).find(f'{tag_pref}phylogeny'
+        ).find(f'{tag_pref}clade')
+    else:
+         tree_root = root.find(
+            f'{tag_pref}recGeneTree'
+        ).find(f'{tag_pref}phylogeny'
+        ).find(f'{tag_pref}clade')
+         
+    leaves_map = xml_parse_tree(tree_root, tag_pref, output_type=2)
+    if fam_id is None:
+        result = leaves_map
+    else:
+        result = {
+            (gene,fam_ID): leaves_map[gene]
+            for gene in leaves_map.keys()
+        }
+    return result

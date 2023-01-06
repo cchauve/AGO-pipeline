@@ -265,6 +265,7 @@ tools:
             - !concat ['   ', *decostar_slurm_results_species_file, ' \']
             - !concat ['   ', *data_families_path, ' \']
             - !concat ['   ', *data_reconciliations_path, ' \']
+            - !concat ['   ', *decostar_input_file_trees, ' \']
             - !concat ['   ', *decostar_slurm_results_genes_file_1, ' \']
             - !concat ['   ', *decostar_slurm_results_adjacencies_file, ' \']
             - !concat ['   ', *decostar_slurm_results_genes_file_2, ' \']

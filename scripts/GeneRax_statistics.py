@@ -9,13 +9,14 @@ __version__   = "0.99"
 __status__    = "Development"
 
 import sys
-import xml.etree.ElementTree as ET
 from recPhyloXML_utils import (
     xml_get_tag,
     xml_get_prefix,
     xml_get_text,
     xml_get_name,
     xml_get_rec_species,
+    xml_get_species_tree_root,
+    xml_get_gene_tree_root,
     xml_parse_tree
 )
 
@@ -77,17 +78,10 @@ def recPhyloXML_read_events(in_file):
         parse_clade_recursive(root, tag_pref, stats)
         return(stats)
 
-    root = ET.parse(in_file).getroot()
-    tag_pref = xml_get_prefix(root)
-    siblings = parse_spTree(
-        root.find(f'{tag_pref}spTree').find(f'{tag_pref}phylogeny').find(f'{tag_pref}clade'),
-        tag_pref
-    )
-    recStats = parse_recGeneTree(
-        root.find(f'{tag_pref}recGeneTree').find(f'{tag_pref}phylogeny').find(f'{tag_pref}clade'),
-        tag_pref,
-        siblings
-    )
+    speciesTree_root,tag_pref = xml_get_species_tree_root(in_file)
+    siblings = parse_spTree(speciesTree_root, tag_pref)
+    geneTree_root,_ = xml_get_gene_tree_root(in_file)
+    recStats = parse_recGeneTree(geneTree_root, tag_pref, siblings)
     return(recStats)
 
 
@@ -175,7 +169,9 @@ def main():
     out_stats_file_families = sys.argv[3]
 
     # Reading reconciliations and collecting statistics
-    (statistics_families,statistics_species) = collect_statistics(in_reconciliations_file)
+    (statistics_families,statistics_species) = collect_statistics(
+        in_reconciliations_file
+    )
     # Writting species statistics
     write_statistics_species(statistics_species, out_stats_file_species)
     # Writting families statistics
