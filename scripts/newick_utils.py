@@ -44,3 +44,37 @@ def newick_get_species_status(tree_file):
         else:
             species[node.name] = NEWICK_ANCESTRAL
     return(species)
+
+''' Creates a map from node names to children '''
+def newick_get_children_map(tree_file):
+    '''
+    input: path to a Newick tree file with internal nodes named
+    output:
+    - dictionary dict(str->list(str)) indexed by names of nodes in tree_file
+    '''
+    tree = ete3.Tree(tree_file, format=1)
+    children = {}
+    for node in tree.traverse():
+        if not node.is_leaf():
+            children[node.name] = [ch.name for ch in node.children]
+    return(children)
+
+''' 
+Returns the list of species in the subtree rooted at 
+the LCA of leaves_list
+'''
+def newick_get_lca_species(tree_file, leaves_list):
+    '''
+    input: 
+    - path to a Newick tree file with internal nodes named
+    - list of extant species names
+    output:
+    list of names of the nodes in the smallest subtree 
+    containing all extant leaves from list
+    '''
+    tree = ete3.Tree(tree_file, format=1)
+    leaf1 = tree.get_leaves_by_name(leaves_list[0])[0]
+    leaves2 = [tree.get_leaves_by_name(leaf)[0] for leaf in leaves_list[1:]]
+    lca = leaf1.get_common_ancestor(*leaves2)
+    nodes_list = [lca] + lca.get_descendants()
+    return [node.name for node in nodes_list]

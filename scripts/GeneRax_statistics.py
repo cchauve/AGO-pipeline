@@ -9,6 +9,8 @@ __version__   = "0.99"
 __status__    = "Development"
 
 import sys
+
+from data_utils import data_family2reconciliation_path
 from recPhyloXML_utils import (
     xml_get_tag,
     xml_get_prefix,
@@ -63,7 +65,8 @@ def recPhyloXML_read_events(in_file):
             # If more than one, then speciationLoss ended by last event
             # Loop on speciationLoss events to add a loss to the sibling species
             for event in events[1:][::-1]:
-                stats[siblings[xml_get_rec_species(event)]][STATS_loss] += 1
+                sibling = siblings[xml_get_rec_species(event)]
+                stats[sibling][STATS_loss] += 1
             # Last event
             last_event_tag = xml_get_tag(events[-1])
             last_event_species = xml_get_rec_species(events[-1])
@@ -82,27 +85,32 @@ def recPhyloXML_read_events(in_file):
     siblings = parse_spTree(speciesTree_root, tag_pref)
     geneTree_root,_ = xml_get_gene_tree_root(in_file)
     recStats = parse_recGeneTree(geneTree_root, tag_pref, siblings)
-    return(recStats)
+    return recStats
 
 
+''' Collects statistics from a dataset reconciliations file '''
 def collect_statistics(in_reconciliations_file):
+    '''
+    input: dataset path family ID -> path to reconciliation file
+    output:
+    - dict(species -> {STATS_keys: value})
+    - dict(family ID -> {dict(species -> {STATS_keys: value})})
+    '''
+    family2reconciliation = data_family2reconciliation_path(
+        in_reconciliations_file
+    )
     statistics_species = {}
     statistics_families = {}
-    with open(in_reconciliations_file, 'r') as reconciliations:
-        for line in reconciliations.readlines():
-            reconciliation = line.rstrip().split()
-            fam_id = reconciliation[0]
-            reconciliation_path = reconciliation[1]
-            print(reconciliation_path)
-            events = recPhyloXML_read_events(reconciliation_path)
-            statistics_families[fam_id] = events
-            for species,stats in statistics_families[fam_id].items():
-                if species not in statistics_species.keys():
-                    statistics_species[species] = {
-                        STATS_genes: 0, STATS_dup: 0, STATS_loss: 0
-                    }
-                for stats_key in STATS_keys:
-                    statistics_species[species][stats_key] += stats[stats_key]
+    for fam_id,reconciliation_path in family2reconciliation:  
+        events = recPhyloXML_read_events(reconciliation_path)
+        statistics_families[fam_id] = events
+        for species,stats in statistics_families[fam_id].items():
+            if species not in statistics_species.keys():
+                statistics_species[species] = {
+                    STATS_genes: 0, STATS_dup: 0, STATS_loss: 0
+                }
+            for stats_key in STATS_keys:
+                statistics_species[species][stats_key] += stats[stats_key]
     return (statistics_families,statistics_species)
 
 def _stats_str(stats, sp, sep=':'):
@@ -115,26 +123,26 @@ def _stats_str(stats, sp, sep=':'):
     )
 
 def write_statistics_species(
-        statistics_species,
+        in_statistics_species,
         out_stats_file_species,
         sep1=':', sep2='\t', sep3=' '
 ):
-    with open(out_stats_file_species, 'w') as stats_file:
+    with open(out_stats_file_species, 'w') as out_stats_file:
         header1 = sep1.join(
             ['#species', STATS_genes, STATS_dup, STATS_loss]
         )
-        stats_file.write(header1)
-        for species,stats in statistics_species.items():
-            stats_file.write(
+        out_stats_file.write(header1)
+        for species,stats in in_statistics_species.items():
+            out_stats_file.write(
                 f'\n{_stats_str(stats, species, sep=sep1)}'
             )
 
 def write_statistics_families(
-        statistics_families,
+        in_statistics_families,
         out_stats_file_families,
         sep1=':', sep2='\t', sep3=' '
 ):
-    with open(out_stats_file_families, 'w') as stats_file:
+    with open(out_stats_file_families, 'w') as out_stats_file:
         header1 = sep1.join(
             ['nb_species', STATS_genes, STATS_dup, STATS_loss]
         )
@@ -142,9 +150,9 @@ def write_statistics_families(
             ['species', STATS_genes, STATS_dup, STATS_loss]
         )
         header3 = f'#family{sep2}{header1}{sep2}{header2}'
-        stats_file.write(header3)
-        for fam_id,stats_all in statistics_families.items():
-            stats_file.write(f'\n{fam_id}{sep2}')
+        out_stats_file.write(header3)
+        for fam_id,stats_all in in_statistics_families.items():
+            out_stats_file.write(f'\n{fam_id}{sep2}')
             stats_fam = {
                 STATS_genes: 0, STATS_dup: 0, STATS_loss: 0
             }
@@ -158,10 +166,10 @@ def write_statistics_families(
                 stats_str.append(
                     _stats_str(stats, species, sep=sep1)
                 )
-            stats_file.write(
+            out_stats_file.write(
                 f'{_stats_str(stats_fam, nb_species, sep=sep1)}{sep2}'
             )
-            stats_file.write(f'{sep3.join(stats_str)}')
+            out_stats_file.write(f'{sep3.join(stats_str)}')
 
 def main():
     in_reconciliations_file = sys.argv[1]
@@ -173,9 +181,13 @@ def main():
         in_reconciliations_file
     )
     # Writting species statistics
-    write_statistics_species(statistics_species, out_stats_file_species)
+    write_statistics_species(
+        statistics_species, out_stats_file_species
+    )
     # Writting families statistics
-    write_statistics_families(statistics_families, out_stats_file_families)
+    write_statistics_families(
+        statistics_families, out_stats_file_families
+    )
 
 if __name__ == "__main__":
     main()

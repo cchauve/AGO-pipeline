@@ -280,7 +280,6 @@ tools:
               ]
          cmd:
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
-            - !ref [*generax_slurm_results_species_tree]
             - !ref [*decostar_slurm_results_species_file]
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
@@ -288,7 +287,6 @@ tools:
             - !ref [*decostar_stats_file_species]
             - ';'
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
-            - !ref [*generax_slurm_results_species_tree]
             - !ref [*decostar_slurm_results_species_file]
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]

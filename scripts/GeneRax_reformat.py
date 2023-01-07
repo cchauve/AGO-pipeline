@@ -10,21 +10,31 @@ __status__    = "Development"
 
 import sys
 import os
+
 from recPhyloXML_utils import xml_reformat_file
 
 def main():
-    families_file = sys.argv[1]
+    in_GeneRax_families_file = sys.argv[1]
     results_dir = sys.argv[2]
     suffix = sys.argv[3]
-    with open(families_file, 'r') as families:
-        current_id = 0
+    
+    with open(in_GeneRax_families_file, 'r') as families:
+        current_gene_id = 0 # current gene number 
         for line in families.readlines():
             if line.startswith('- '):
                 fam_id = line.rstrip()[2:]
-                in_file = os.path.join(results_dir, 'reconciliations', f'{fam_id}_reconciliated.xml')
-                out_file = os.path.join(results_dir, 'reconciliations', f'{fam_id}{suffix}')
+                in_file = os.path.join(
+                    results_dir, 'reconciliations',
+                    f'{fam_id}_reconciliated.xml'
+                )
+                out_file = os.path.join(
+                    results_dir, 'reconciliations',
+                    f'{fam_id}{suffix}'
+                )
                 if os.path.isfile(in_file):
-                    current_id = xml_reformat_file(in_file, out_file, start_id=current_id)
+                    current_gene_id = xml_reformat_file(
+                        in_file, out_file, start_id=current_gene_id
+                    )
 
 if __name__ == "__main__":
     main()
