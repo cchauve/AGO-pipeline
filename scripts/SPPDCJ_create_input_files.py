@@ -19,7 +19,6 @@ from newick_utils import (
 from DeCoSTAR_reformat import decostar_read_adjacencies
 from DeCoSTAR_statistics import decostar_sign2extremity
 
-
 ''' Creates SPP-DCJ species tree file '''
 def sppdcj_species_trees(
         in_species_tree,
@@ -60,7 +59,7 @@ def sppdcj_adjacencies(
         (species,adj_path)
         for (species,adj_path) in data_species2adjacencies_path(
                 in_adjacencies_file
-        )
+        ).items()
         if (species_list is None or species in species_list)
     ]
     with open(out_adjacencies_file, 'w') as out_adjacencies:
@@ -74,7 +73,7 @@ def sppdcj_adjacencies(
             in_adjacencies = [
                 adj
                 for adj in decostar_read_adjacencies(
-                    in_adjacencies_path
+                        in_adjacencies_path, species=species
                 )
                 if float(adj[6]) >= in_weight_threshold
             ]

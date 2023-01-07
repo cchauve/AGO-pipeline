@@ -13,8 +13,14 @@ import os
 from collections import defaultdict
 
 from newick_utils import newick_get_leaves
-from data_utils import data_reconciliation_path2family
-from recPhyloXML_utils import xml_get_gene_tree_root, xml_parse_tree
+from data_utils import (
+    data_gene2family,
+    data_reconciliation_path2family
+)
+from recPhyloXML_utils import (
+    xml_get_gene_tree_root,
+    xml_parse_tree
+)
 
 ''' Reads the DeCoSTAR map from nodes to descendant extant species '''
 def decostar_read_species_file(in_species_file):
@@ -162,7 +168,7 @@ def decostar_reformat_genes(
     # Dictionary original extant gene name -> <name><char_sep><original family>
     original_fam_gene = {
         gene: f'{fam_id}{char_sep}{gene}'
-        for gene,fam_id in decostar_read_families(in_families_file).items()
+        for gene,fam_id in data_gene2family(in_families_file).items()
     }
     # Mapping from DeCoSTAR family (integer) ID to original family ID
     # and reconciliation path
@@ -196,18 +202,22 @@ def decostar_reformat_genes(
                 [original_fam_gene[gene] for gene in line_split[2:]]
             )
             out_genes.write(f'{out_gene_str}\n')
-    return(original_fam_gene)
+    return original_fam_gene
 
 ''' 
 Reads a DeCoSTAR adjacencies fiel and returns a list of
 adjacencies in form (species,gene1,gene2,extremity1,extremity2,weight1,weight2)
 '''
-def decostar_read_adjacencies(in_adjacencies_file):
+def decostar_read_adjacencies(in_adjacencies_file, species=None):
     adjacencies = []
     with open(in_adjacencies_file, 'r') as in_adjacencies:
         for line in in_adjacencies.readlines():
-            sp,g1,g2,sign1,sign2,w1,w2 = line.rstrip().split()
-        adjacencies.append([sp,g1,g2,ext1,ext2,w1,w2])
+            if species is None:
+                sp,g1,g2,sign1,sign2,w1,w2 = line.rstrip().split()
+                adjacencies.append([sp,g1,g2,sign1,sign2,w1,w2])
+            else:
+                g1,g2,sign1,sign2,w1,w2 = line.rstrip().split()
+                adjacencies.append([species,g1,g2,sign1,sign2,w1,w2])
     return adjacencies
             
 ''' Reformat DeCoSTAR adjacencies file '''
@@ -230,7 +240,9 @@ def decostar_reformat_adjacencies_file(
     species_adjacencies = {
         species: [] for species in in_species_map.values()
     }
-    adjacencies_list = decostar_read_adjacencies(in_adjacencies_file)
+    adjacencies_list = decostar_read_adjacencies(
+        in_adjacencies_file, species=None
+    )
     for (in_sp,in_g1,in_g2,in_sign1,in_sign2,w1,w2) in adjacencies_list:
         out_sp = in_species_map[in_sp]
         out_g1,out_g2 = in_genes_name[in_g1],in_genes_name[in_g2]
@@ -240,7 +252,7 @@ def decostar_reformat_adjacencies_file(
         species_adjacencies[out_sp].append(out_adjacency_str)
     for species,adjacencies in species_adjacencies.items():
         out_sp_adjacencies_file = os.path.join(
-            out_adjacencies_dir, f'{species}_{suffix}'
+            out_adjacencies_dir, f'{species}{suffix}'
         )
         with open(out_sp_adjacencies_file, 'w') as out_sp_adjacencies:
             for out_adjacency in adjacencies:
@@ -263,7 +275,8 @@ def main():
     )
     genes_map = decostar_reformat_genes(
         species_map,
-        in_families_file, in_reconciliations_file, in_gene_trees_file, in_genes_file,
+        in_families_file, in_reconciliations_file,
+        in_gene_trees_file, in_genes_file,
         out_genes_file
     )
     decostar_reformat_adjacencies_file(

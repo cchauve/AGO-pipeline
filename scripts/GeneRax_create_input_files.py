@@ -19,12 +19,13 @@ from data_utils import (
 
 ''' Write the GeneRax families file from paths to alignments '''
 def GeneRax_write_families_file(
-        in_family2genes, in_gene2species, in_family2alignment_file,
+        in_family2genes, in_gene2species, in_family2alignment,
+        in_subst_model,
         out_map_files_dir, out_families_file
 ):
     with open(out_families_file, 'w') as out_families:
         out_families.write('[FAMILIES]')
-        for fam_id in in_family2alignment.keys():
+        for fam_id,alignment_file in in_family2alignment.items():
             # Writing the gene to species map file
             out_map_file = os.path.join(
                 out_map_files_dir,
@@ -32,13 +33,15 @@ def GeneRax_write_families_file(
             )
             with open(out_map_file, 'w') as out_map:
                 for gene in in_family2genes[fam_id]:
-                    out_map.write(f'{gene}\t{gene2species[gene]}\n')
+                    out_map.write(
+                        f'{gene}\t{in_gene2species[gene]}\n'
+                    )
             # Updating the families file
             out_families.write(
                 f'\n- {fam_id}'
-                f'\nalignment = {in_family2alignment_file[fam_id]}'
+                f'\nalignment = {alignment_file}'
                 f'\nmapping = {out_map_file}'
-                f'\nmapping = {out_map_file}')
+                f'\nsubst_model = {in_subst_model}'
             )
 
 def main():
@@ -55,12 +58,12 @@ def main():
     # Read all genes
     gene2species = data_gene2species(in_gene_orders_file)
     # Read alignmed families
-    family2alignment_file = data_family2alignment_path(
+    family2alignment = data_family2alignment_path(
         in_alignments_file, in_suffix
     )
     # Create GeneRax input files
     GeneRax_write_families_file(
-        family2genes, gene2species, family2alignment_file,
+        family2genes, gene2species, family2alignment, in_subst_model,
         out_map_files_dir, out_families_file
     )
 

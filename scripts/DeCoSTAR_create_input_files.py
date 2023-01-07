@@ -12,8 +12,7 @@ import sys
 from data_utils import (
     data_gene2family,
     data_species2gene_order_path,
-    data_family2reconciliation_path,
-    data_gene_order2adjacencies
+    data_family2reconciliation_path
 )
 
 ''' Read a gene order file and returns an order list of adjacencies strings '''
@@ -30,12 +29,12 @@ def decostar_gene_order2adjacencies_str(
     '''
     orientation = {'1': '+', '0': '-'}
     adjacencies = []
-    with open(gene_order_file, 'r') as gene_order:
+    with open(in_gene_order_file, 'r') as gene_order:
         prev_gene = None
         for gene in gene_order.readlines():
             gene_data = gene.rstrip().split()
             gene_name = gene_data[0]
-            if in_gene2family[gene_name] in in_reconciled_families:
+            if in_gene2family_map[gene_name] in in_reconciled_families:
                 gene_chr,gene_sign = gene_data[5],gene_data[1]
                 gene_orientation = orientation[gene_sign]
                 if prev_gene is not None and prev_gene[1] == gene_chr:
@@ -87,7 +86,7 @@ def create_adjacencies_file(
     with open(out_adjacencies_file, 'w') as out_adjacencies:
         for species,gene_order_file in gene_order_files.items():
             species_adjacencies = decostar_gene_order2adjacencies_str(
-                gene_order_file, gene2family_map, reconciled_families            
+                gene_order_file, gene2family_map, in_reconciled_families            
             )
             for adjacency in species_adjacencies:
                 out_adjacencies.write(f'{adjacency}\n')

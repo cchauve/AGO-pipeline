@@ -99,19 +99,19 @@ def collect_statistics(in_reconciliations_file):
     family2reconciliation = data_family2reconciliation_path(
         in_reconciliations_file
     )
-    statistics_species = {}
-    statistics_families = {}
-    for fam_id,reconciliation_path in family2reconciliation:  
+    stats_species = {}
+    stats_families = {}
+    for fam_id,reconciliation_path in family2reconciliation.items():  
         events = recPhyloXML_read_events(reconciliation_path)
-        statistics_families[fam_id] = events
-        for species,stats in statistics_families[fam_id].items():
-            if species not in statistics_species.keys():
-                statistics_species[species] = {
+        stats_families[fam_id] = events
+        for species,stats in stats_families[fam_id].items():
+            if species not in stats_species.keys():
+                stats_species[species] = {
                     STATS_genes: 0, STATS_dup: 0, STATS_loss: 0
                 }
             for stats_key in STATS_keys:
-                statistics_species[species][stats_key] += stats[stats_key]
-    return (statistics_families,statistics_species)
+                stats_species[species][stats_key] += stats[stats_key]
+    return (stats_families,stats_species)
 
 def _stats_str(stats, sp, sep=':'):
     return sep.join(

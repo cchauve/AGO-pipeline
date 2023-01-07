@@ -23,11 +23,11 @@ def _data_create_map(in_file, sep1='\t', sep2=None):
     result_map = {}
     with open(in_file, 'r') as in_data:
         for index_data in in_data.readlines():
-            index,data = index_data.rstrip().split(sep)
+            index,data = index_data.rstrip().split(sep1)
             if sep2 is None:
                 result_map[index] = data
             else:
-                result[map] = data.split(sep2)
+                result_map[index] = data.split(sep2)
     return result_map
 
 ''' Creates an inverse map from a tabulated file '''
@@ -95,7 +95,7 @@ def data_family2reconciliation_path(in_reconciliations_file):
     return _data_create_map(in_reconciliations_file)
 
 ''' Creates a map from family to alignment file '''
-def data_family2alignment_path(in_ralignments_file, in_suffix):
+def data_family2alignment_path(in_alignments_file, in_suffix):
     '''
     input: path to dataset reconciliations file
     output: dict(family -> alignment path) if path ends by in_suffix
@@ -106,7 +106,7 @@ def data_family2alignment_path(in_ralignments_file, in_suffix):
             fam_id,alignment_file = family.rstrip().split('\t')
             if alignment_file.endswith(in_suffix):
                 family2alignment_path[fam_id] = alignment_file
-    return family2alignment
+    return family2alignment_path
 
 ''' Creates a map from reconciliation file to family '''
 def data_reconciliation_path2family(in_reconciliations_file):
@@ -116,7 +116,6 @@ def data_reconciliation_path2family(in_reconciliations_file):
     '''
     return _data_create_inverse_map(in_reconciliations_file)
 
-
 ''' Creates a list of species '''
 def data_species_list(in_file):
     '''
@@ -125,7 +124,7 @@ def data_species_list(in_file):
     '''
     return list(_data_create_map(in_file).keys())
 
-''' Creates a dict(gene -> species from gene orders files '''
+''' Creates a dict(gene -> species from gene orders files) '''
 def data_gene2species(in_gene_orders_file):
     gene2species = {}
     species2gene_order_file = _data_create_map(in_gene_orders_file)
@@ -133,5 +132,5 @@ def data_gene2species(in_gene_orders_file):
         with open(gene_order_file, 'r') as gene_order:            
             for gene_data in gene_order.readlines():
                 gene = gene_data.split('\t')[0]
-                gene2species[gene_name] = species
+                gene2species[gene] = species
     return gene2species

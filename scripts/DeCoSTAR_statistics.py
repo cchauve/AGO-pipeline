@@ -38,26 +38,28 @@ def decostar_read_results(in_genes_file, in_adjacencies_file, in_species_list):
     - dict(species -> gene1 -> ext1 -> (weight, gene2, ext2))
     '''
     # Reading reformatted genes file to create a dict(species -> list of genes)
-    genes_lists = {sp: [] for sp in species_list}
+    genes_lists = {sp: [] for sp in in_species_list}
     with open(in_genes_file, 'r') as in_genes:
         for gene_data in in_genes.readlines():
-            species,gene = gene.rstrip().split()[0:2]
+            species,gene = gene_data.rstrip().split()[0:2]
             genes_lists[species].append(gene)
     # Nested dict(species -> gene1 -> ext1 -> list((weight, gene2, ext2)))
-    species_gene = [(s,g) for s in species_list for g in genes_lists[s]]
+    species_gene = [(s,g) for s in in_species_list for g in genes_lists[s]]
     ## Initialize dictionaries
-    adjacencies_dicts = {s: {} for s in species_list}
+    adjacencies_dicts = {s: {} for s in in_species_list}
     for (species,gene) in species_gene:
         adjacencies_dicts[species][gene] = {'h': [], 't': []}
     ## Populate dictionaries from species to adjacency tabulated file
     species2adjacencies = data_species2adjacencies_path(in_adjacencies_file)
     for species,in_adjacencies_file in species2adjacencies.items():
-        in_adjacencies = decostar_read_adjacencies(in_adjacencies_file)
+        in_adjacencies = decostar_read_adjacencies(
+            in_adjacencies_file, species=species
+        )
         for (sp,g1,g2,sign1,sign2,w1,w2) in in_adjacencies:
             ext1,ext2 = decostar_sign2extremity[(sign1,sign2)]
             fw2 = float(w2)
-            adj_dicts[species][g1][ext1).append([fw2, g2, ext2])
-            adj_dicts[species][g2][ext2].append([fw2, g1, ext1])
+            adjacencies_dicts[sp][g1][ext1].append([fw2, g2, ext2])
+            adjacencies_dicts[sp][g2][ext2].append([fw2, g1, ext1])
     # Sorting by increasing weight for each gene extremity
     for (species,gene) in species_gene:
         adjacencies_dicts[species][gene]['h'].sort(key=lambda x: x[0])
@@ -88,9 +90,9 @@ def decostar_compute_statistics(
     output:
     dict(species -> str(threshold) -> dictionary of statistics with keys stats_keys)
     '''
-    statistics = {s: {} for species in in_species_list}
+    statistics = {s: {} for s in in_species_list}
     species_thresholds = [
-        (s,t) for s in in_species_list for threshold in in_thresholds
+        (s,t) for s in in_species_list for t in in_thresholds
     ]
     for (species,threshold) in species_thresholds:
         statistics[species]['genes'] = len(in_genes_lists[species])
@@ -123,9 +125,9 @@ def decostar_write_conflicts(
 ):
     # Filtering adjacencies with a weight below in_threshold
     species_gene = [
-        (s,g) for s in in_species_list for g in in_adj_dicts[species].keys()
+        (s,g) for s in in_species_list for g in in_adj_dicts[s].keys()
     ]
-    for (species,gene) in species_genes:
+    for (species,gene) in species_gene:
         adj_h = in_adj_dicts[species][gene]['h']
         adj_t = in_adj_dicts[species][gene]['t']
         in_adj_dicts[species][gene]['h'] = list(
@@ -137,7 +139,7 @@ def decostar_write_conflicts(
     # Writing conflicts adjacencies
     with open(out_conflicts_file, 'w') as out_conflicts:
         for (species,gene,ext) in [
-                (s,g,e) for (s,g) in species_genes for e in ['h','t']
+                (s,g,e) for (s,g) in species_gene for e in ['h','t']
         ]:
             adjacencies = in_adj_dicts[species][gene][ext]
             if len(adjacencies) > 1:
@@ -180,7 +182,7 @@ def main():
 
     species_list = data_species_list(in_species_file)
     genes_lists,adj_dicts = decostar_read_results(
-        in_genes_file, in_adjacencies_file, in_species_list
+        in_genes_file, in_adjacencies_file, species_list
     )
     if len(in_thresholds) > 1:
         # Computing statistics for several weight thresholds

@@ -98,11 +98,13 @@ def create_slurm_output_file(parameters, tool):
         # Updating the results dictionary
         for results_file in results_files:
             res_index,res_path = results_file[0],results_file[1]
-            res_dict[res_index] = res_path
+            if res_index != '':
+                res_dict[res_index] = res_path
         # Writing the results dictionary in the output file
         with open(output_file, 'w') as output:
             for res_index,res_path in res_dict.items():
-                output.write(f'{res_index}{sep1}{res_path}\n')        
+                if os.path.isfile(res_path):
+                    output.write(f'{res_index}{sep1}{res_path}\n')        
         return output_file
     else:
         return 'No output file is created'

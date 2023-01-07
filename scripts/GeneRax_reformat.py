@@ -19,22 +19,26 @@ def main():
     suffix = sys.argv[3]
     
     with open(in_GeneRax_families_file, 'r') as families:
-        current_gene_id = 0 # current gene number 
-        for line in families.readlines():
-            if line.startswith('- '):
-                fam_id = line.rstrip()[2:]
-                in_file = os.path.join(
-                    results_dir, 'reconciliations',
-                    f'{fam_id}_reconciliated.xml'
+        current_gene_id = 0 # current gene number
+        families = [
+            f.rstrip()[2:]
+            for f in families.readlines()
+            if f.startswith('- ')
+        ]
+        for fam_id in families:
+            in_file = os.path.join(
+                results_dir, 'reconciliations',
+                f'{fam_id}_reconciliated.xml'
+            )
+            out_file = os.path.join(
+                results_dir, 'reconciliations',
+                f'{fam_id}{suffix}'
+            )
+            if os.path.isfile(in_file):
+                current_gene_id = xml_reformat_file(
+                    in_file, out_file,
+                    start_id=current_gene_id
                 )
-                out_file = os.path.join(
-                    results_dir, 'reconciliations',
-                    f'{fam_id}{suffix}'
-                )
-                if os.path.isfile(in_file):
-                    current_gene_id = xml_reformat_file(
-                        in_file, out_file, start_id=current_gene_id
-                    )
 
 if __name__ == "__main__":
     main()
