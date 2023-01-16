@@ -16,7 +16,7 @@ run:
       - &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
    tools:
      # MUSCLE
-     ### is executor and allocations right
+     ### check allocation
      - &muscle_exec          'muscle'
      - &muscle_slurm_options '--mem=8G --time=02:00:00'
      # MACSE
@@ -105,8 +105,8 @@ log:
 
 tools:
    # MUSCLE: multiple sequence alignment
-   ### do i need separate output file location than macse alignments?
-   ### do we want to specify sequence type or let decide automatically?
+   ### specify AA
+   ### Fix gap difference
    ### understand array section and is it right?
    MUSCLE:
       name: &muscle_name 'MUSCLE'
