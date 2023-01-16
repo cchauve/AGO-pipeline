@@ -135,7 +135,7 @@ tools:
                      !concat ['${', *muscle_slurm_array_results_var, '}', *data_alignments_AA_ext]
                   ]
          cmd:
-            - !concat [*macse_exec, ' \']
+            - !concat [*muscle_exec, ' \']
             - !concat ['   -in ${', *muscle_slurm_array_input_var, '} \']
             - !concat ['   -out ', *muscle_slurm_results_file]
 
