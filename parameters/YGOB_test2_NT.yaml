@@ -18,6 +18,11 @@ run:
      # MACSE
      - &macse_exec          !join [*run_dir_bin, 'macse_v2.06.jar']
      - &macse_slurm_options '--mem=8G --time=02:00:00'
+     # Iqtree
+     ### Check allocation requirements (these are random guesses)
+     - &iqtree_exec           'iqtree'
+     - &iqtree_slurm_options  '--mem=8G --time=08:00:00'
+     - &iqtree_options        '-m MFP'
      # GeneRax
      - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
      - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
@@ -74,6 +79,8 @@ data:
       # [optional] Suffixes for nucleotides and amino-acids alignments files
       NT_ext: &data_alignments_NT_ext '_NT.fasta'
       AA_ext: &data_alignments_AA_ext '_AA.fasta'
+   tree_inference:
+      path: &tree_inference_path !join [*dir_data, 'tree_inference.txt']
    reconciliations:
       path:  &data_reconciliations_path   !join [*dir_data, 'reconciliations.txt']
       # [optional] extensions for reconciliations files created by AGO
@@ -137,6 +144,23 @@ tools:
             - !concat ['   -seq ${', *macse_slurm_array_input_var, '} \']
             - !concat ['   -out_NT ', *macse_slurm_results_file_1, ' \']
             - !concat ['   -out_AA ', *macse_slurm_results_file_2]
+   
+   # Iqtree: gene tree inference
+   Iqtree:
+      name: &iqtree_name 'Iqtree'
+      input:
+         dir: &iqtree_input_dir !ref [*macse_results_dir]
+      output: &iqtree_output_file !ref [*tree_inference_path]
+      slurm:
+         options: !ref [*iqtree_slurm_options]
+         results:
+            dir: &iqtree_results_dir !join [*dir_results, *iqtree_name]
+         cmd:
+            - !concat [*iqtree_exec, ' \']
+            - !concat ['   -s ',*iqtree_input_dir,' \']
+            - !concat ['   ',*iqtree_options,' \']
+            - !concat ['   -pre ',*iqtree_results_dir]
+            
 
    # GeneRax: computing reconciled gene trees
    GeneRax:
