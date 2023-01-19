@@ -22,7 +22,7 @@ run:
      ### Check allocation requirements (these are random guesses)
      - &iqtree_exec           'iqtree'
      - &iqtree_slurm_options  '--mem=8G --time=08:00:00'
-     - &iqtree_options        '-m MFP'
+     - &iqtree_options        '-m MFP -bb 1000 -wbt'
      # GeneRax
      - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
      - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
