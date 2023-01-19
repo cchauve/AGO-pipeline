@@ -153,6 +153,7 @@ tools:
       output: &iqtree_output_file !ref [*tree_inference_path]
       slurm:
          options: !ref [*iqtree_slurm_options]
+         modules: ['iq-tree/2.0.7']
          results:
             dir: &iqtree_results_dir !join [*dir_results, *iqtree_name]
          cmd:
