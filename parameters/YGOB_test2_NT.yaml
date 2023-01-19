@@ -160,7 +160,7 @@ tools:
             - !concat [*iqtree_exec, ' \']
             - !concat ['   -s ',*iqtree_input_dir,' \']
             - !concat ['   ',*iqtree_options,' \']
-            - !concat ['   -pre ',*iqtree_results_dir]
+            - !concat ['   -pre ',*iqtree_results_dir,'/result']
             
 
    # GeneRax: computing reconciled gene trees
