@@ -1,22 +1,23 @@
 # Parameters file to process YGOB data
-version: 2
 
 ### NOTE:need to change 4th -ref in generax script section from NT_ext to AA_ext since this is the MUSCLE ext
 
 
+
+version: 2
 # Specific run/tools parameters
 run:
    name: &run_name 'YGOB_test2_NT'
    dir:
       # Root directory for parameters and tool-specific scripts
-      - &run_dir_root    '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE'
+      - &run_dir_root    '/home/ecribbie/projects/ctb-chauvec/ecribbie/AGO-pipeline'
       - &run_dir_bin     !join [*run_dir_root, 'bin']
       # Tool-specific scripts
       - &run_dir_scripts !join [*run_dir_root, 'scripts']
       # YGOB data
       - &run_dir_data    !join [*run_dir_root, 'data/YGOB']
       # Directory for experiments scripts, results, log, statistics and auxiliary files
-      - &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
+      - &run_dir_exp     !join ['/scratch/ecribbie/SPP', *run_name]
    tools:
      # MUSCLE
      ### check allocation
