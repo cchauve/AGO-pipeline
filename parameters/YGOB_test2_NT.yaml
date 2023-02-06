@@ -149,18 +149,27 @@ tools:
    Iqtree:
       name: &iqtree_name 'Iqtree'
       input:
-         dir: &iqtree_input_dir !ref [*macse_results_dir]
+         file: &iqtree_input_file !ref [*data_alignments_path]
       output: &iqtree_output_file !ref [*tree_inference_path]
       slurm:
          options: !ref [*iqtree_slurm_options]
          modules: ['iq-tree/2.0.7']
+         array:
+            input:
+               file: &iqtree_slurm_array_input_file !ref [*iqtree_input_file]
+               field: &iqtree_slurm_array_input_field 2
+               var: &iqtree_slurm_array_input_var 'MSA_FILE'
+            results:
+               file: &iqtree_slurm_array_results_file !ref [*iqtree_input_file]
+               field: &iqtree_slurm_array_results_field 1
+               var: &iqtree_slurm_array_results_var 'FAM_ID'
          results:
             dir: &iqtree_results_dir !join [*dir_results, *iqtree_name]
          cmd:
             - !concat [*iqtree_exec, ' \']
-            - !concat ['   -s ',*iqtree_input_dir,' \']
+            - !concat ['   -s ${',*iqtree_slurm_array_input_var,'} \']
             - !concat ['   ',*iqtree_options,' \']
-            - !concat ['   -pre ',*iqtree_results_dir,'/result']
+            - !concat ['   -pre ',*iqtree_results_dir,'/${',*iqtree_slurm_array_results_var,'}']
             
 
    # GeneRax: computing reconciled gene trees
