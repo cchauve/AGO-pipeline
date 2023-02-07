@@ -23,7 +23,7 @@ run:
      - &iqtree_exec           'iqtree'
      - &iqtree_slurm_options  '--mem=1G --time=00:20:00'
      - &iqtree_options        '-m MFP -bb 1000 -wbtl'
-     - &iqtree-result_ext     '.ufboot'
+     - &iqtree_result_ext     '.ufboot'
      # GeneRax
      - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
      - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
