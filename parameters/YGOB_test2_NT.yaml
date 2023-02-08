@@ -23,7 +23,6 @@ run:
      - &iqtree_exec           'iqtree'
      - &iqtree_slurm_options  '--mem=1G --time=00:20:00'
      - &iqtree_options        '-m MFP -bb 1000 -wbtl'
-     - &iqtree_result_ext     '.ufboot'
      # GeneRax
      - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
      - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
@@ -82,6 +81,7 @@ data:
       AA_ext: &data_alignments_AA_ext '_AA.fasta'
    tree_inference:
       path: &tree_inference_path !join [*dir_data, 'tree_inference.txt']
+      ufboot_ext: &tree_inferrence_ufboot_ext '.ufboot'
    reconciliations:
       path:  &data_reconciliations_path   !join [*dir_data, 'reconciliations.txt']
       # [optional] extensions for reconciliations files created by AGO
@@ -165,9 +165,14 @@ tools:
                file: &iqtree_slurm_array_results_file !ref [*iqtree_input_file]
                field: &iqtree_slurm_array_results_field 1
                var: &iqtree_slurm_array_results_var 'FAM_ID'
-               ext:   &iqtree_slurm_array_results_ext   !ref [*iqtree_result_ext]
+               ext:   &iqtree_slurm_array_results_ext   !ref [*tree_inference_ufboot_ext]
          results:
             dir: &iqtree_results_dir !join [*dir_results, *iqtree_name]
+            files:
+                - &iqtree_slurm_results_file_ufboot !join [
+                     *iqtree_results_dir,
+                     !concat ['${', *iqtree_slurm_array_results_var, '}', *tree_inference_ufboot_ext]
+                  ]
          cmd:
             - !concat [*iqtree_exec, ' \']
             - !concat ['   -s ${',*iqtree_slurm_array_input_var,'} \']
