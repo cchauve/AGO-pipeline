@@ -1,9 +1,6 @@
 # Parameters file to process YGOB data
 version: 2
 
-### NOTE:need to change 4th -ref in generax script section from NT_ext to AA_ext since this is the MUSCLE ext
-
-
 # Specific run/tools parameters
 run:
    name: &run_name 'YGOB_test2_NT'
@@ -192,7 +189,7 @@ tools:
             - !ref [*data_families_path]
             - !ref [*data_gene_orders_path]
             - !ref [*data_alignments_path]
-            - !ref [*data_alignments_AA_ext]
+            - !ref [*data_alignments_NT_ext]
             - !ref [*generax_alignment_model]
             - !ref [*generax_input_file]
             - !ref [*generax_input_dir]
