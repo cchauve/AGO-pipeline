@@ -105,9 +105,6 @@ log:
 
 tools:
    # MUSCLE: multiple sequence alignment
-   ### specify AA
-   ### Fix gap difference
-   ### understand array section and is it right?
    MUSCLE:
       name: &muscle_name 'MUSCLE'
       input:
