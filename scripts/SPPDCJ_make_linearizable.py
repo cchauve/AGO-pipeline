@@ -107,9 +107,11 @@ if __name__ == '__main__':
     telomeric adjacencies to ensure that each degenerate genome is linearizable
     '''
     parser = ArgumentParser(formatter_class=ADHF, description=description)
-    parser.add_argument('adjacencies', type=open,
-            help='Adjacencies file')
-
+    parser.add_argument('in_adjacencies', type=open,
+            help='Input adjacencies file')
+    parser.add_argument('out_adjacencies', type=open,
+            help='Output adjacencies file')
+    
     args = parser.parse_args()
 
     out = stdout
@@ -122,7 +124,7 @@ if __name__ == '__main__':
 
 
     LOG.info(f'loading adjacency set from {args.adjacencies.name}')
-    df = pd.read_csv(args.adjacencies, sep='\t',  header=0)
+    df = pd.read_csv(args.in_adjacencies, sep='\t',  header=0)
     if 'penality' not in df.columns:
         df['penality'] = np.nan
 
@@ -139,4 +141,4 @@ if __name__ == '__main__':
                 i = df.index.max()+1
                 df.loc[i] = [s, g1, ext1, s, g2, ext2, 0, 1]
 
-    df.to_csv(stdout, sep='\t', index=False)
+    df.to_csv(args.out_adjacencies, sep='\t', index=False)
