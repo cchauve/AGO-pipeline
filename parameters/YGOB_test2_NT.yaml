@@ -303,8 +303,11 @@ tools:
            - &sppdcj_ilp_input_file_species_tree !join [
                 *sppdcj_ilp_input_dir, !concat ['species_tree_', *sppdcj_input_suffix, '.txt']
              ]
-           - &sppdcj_ilp_input_file_adjacencies  !join [
+           - &sppdcj_ilp_input_file_adjacencies_1  !join [
                 *sppdcj_ilp_input_dir, !concat ['adjacencies_', *sppdcj_input_suffix, '.txt']
+             ]
+           - &sppdcj_ilp_input_file_adjacencies_2  !join [
+                *sppdcj_ilp_input_dir, !concat ['adjacencies_complemented_', *sppdcj_input_suffix, '.txt']
              ]
            - &sppdcj_ilp_input_file_conflicts !join [
                 *sppdcj_ilp_input_dir, !concat ['conflicts_', *sppdcj_input_suffix, '.txt']
@@ -316,7 +319,11 @@ tools:
             - !ref [*sppdcj_input_species]
             - !ref [*sppdcj_ilp_threshold]
             - !ref [*sppdcj_ilp_input_file_species_tree]
-            - !ref [*sppdcj_ilp_input_file_adjacencies]
+            - !ref [*sppdcj_ilp_input_file_adjacencies_1]
+            - !concat [';']
+            - !join [*run_dir_scripts, 'SPPDCJ_make_linearizable.py']
+            - !ref [*sppdcj_ilp_input_file_adjacencies_1]
+            - !ref [*sppdcj_ilp_input_file_adjacencies_2]
             - !concat [';']
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
             - !ref [*generax_slurm_results_species_file]
@@ -347,8 +354,9 @@ tools:
             - !concat ['   -m ', *sppdcj_ilp_results_file_idmap, ' \']
             - !concat ['   -a ', *sppdcj_ilp_alpha, ' \']
             - !concat ['   -b ', *sppdcj_ilp_beta, ' \']
+            - !concat ['   -t ', ' \']
             - !concat ['   ', *sppdcj_ilp_input_file_species_tree, ' \']
-            - !concat ['   ', *sppdcj_ilp_input_file_adjacencies, ' \']
+            - !concat ['   ', *sppdcj_ilp_input_file_adjacencies_2, ' \']
             - !concat ['   > ', *sppdcj_ilp_results_file_ilp ]
 
    # SPPDCJ: Solving the SPPDCJ ILP
