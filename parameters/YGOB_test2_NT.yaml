@@ -15,6 +15,10 @@ run:
       # Directory for experiments scripts, results, log, statistics and auxiliary files
       - &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
    tools:
+     # MUSCLE
+     ### check allocation
+     - &muscle_exec          'muscle'
+     - &muscle_slurm_options '--mem=8G --time=02:00:00'
      # MACSE
      - &macse_exec          !join [*run_dir_bin, 'macse_v2.06.jar']
      - &macse_slurm_options '--mem=8G --time=02:00:00'
@@ -100,6 +104,39 @@ log:
       missing: &log_msg_missing 'file is missing'
 
 tools:
+   # MUSCLE: multiple sequence alignment
+   MUSCLE:
+      name: &muscle_name 'MUSCLE'
+      input:
+         file: &muscle_input_file !ref [*data_sequences_path]
+      output:
+         file: &muscle_output_file !ref [*data_alignments_path]
+      slurm:
+         options: !ref [*muscle_slurm_options]
+         modules: ['muscle']
+         array:
+            input:
+               file:  &muscle_slurm_array_input_file  !ref [*muscle_input_file]
+               field: &muscle_slurm_array_input_field 2
+               var:   &muscle_slurm_array_input_var   'SEQ_FILE'
+            results:
+               file:  &muscle_slurm_array_results_file  !ref [*muscle_input_file]
+               field: &muscle_slurm_array_results_field 1
+               var:   &muscle_slurm_array_results_var   'FAM_ID'
+               ext:   &muscle_slurm_array_results_ext   !ref [*data_alignments_AA_ext]
+         results:
+            dir: &muscle_results_dir  !join [*dir_results, *muscle_name]
+            files:
+                - &muscle_slurm_results_file !join [
+                     *muscle_results_dir,
+                     !concat ['${', *muscle_slurm_array_results_var, '}', *data_alignments_AA_ext]
+                  ]
+         cmd:
+            - !concat [*muscle_exec, ' \']
+            - !concat ['   -in ${', *muscle_slurm_array_input_var, '} \']
+            - !concat ['   -out ', *muscle_slurm_results_file]
+
+   
    # MACSE: multiple sequences alignment
    MACSE:
       name: &macse_name 'MACSE'
