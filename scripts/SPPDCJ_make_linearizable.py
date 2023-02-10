@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as ADHF
+from argparse import ArgumentParser, FileType, ArgumentDefaultsHelpFormatter as ADHF
 from itertools import chain
 from os.path import join
 from sys import stdout, stderr, exit
@@ -83,9 +83,9 @@ def complement_conflicting_adjacencies(G, c):
                 t = (f't_{c}', 'o')
                 for adj in ((ends[0], t), (ends[1], t)):
                     G.add_edge(*adj, complement=True)
-            else:
+            elif len(ends) > 0:
                 # component is of even length; all we gotta do is add 1
-                # conflicting adjacency to it to close the cycle 
+                # conflicting adjacency to it to close the cycle
                 G.add_edge(*ends, complement=True)
         else:
             LOG.info(f'computing maximum matching in component of ' + \
@@ -109,21 +109,23 @@ if __name__ == '__main__':
     parser = ArgumentParser(formatter_class=ADHF, description=description)
     parser.add_argument('in_adjacencies', type=open,
             help='Input adjacencies file')
-    parser.add_argument('out_adjacencies', type=open,
+    parser.add_argument('out_adjacencies', type=FileType('w'),
             help='Output adjacencies file')
+    parser.add_argument('log_file', type=FileType('w'),
+            help='Log file')    
     
     args = parser.parse_args()
 
     out = stdout
 
     # setup logging
-    ch = logging.StreamHandler(stderr)
+    ch = logging.FileHandler(args.log_file.name, mode='w')
     ch.setLevel(logging.INFO)
     ch.setFormatter(logging.Formatter('%(levelname)s\t%(asctime)s\t%(message)s'))
     LOG.addHandler(ch)
 
 
-    LOG.info(f'loading adjacency set from {args.adjacencies.name}')
+    LOG.info(f'loading adjacency set from {args.in_adjacencies.name}')
     df = pd.read_csv(args.in_adjacencies, sep='\t',  header=0)
     if 'penality' not in df.columns:
         df['penality'] = np.nan
@@ -141,4 +143,5 @@ if __name__ == '__main__':
                 i = df.index.max()+1
                 df.loc[i] = [s, g1, ext1, s, g2, ext2, 0, 1]
 
+    LOG.info(f'writing complemented adjacency set to {args.out_adjacencies.name}')
     df.to_csv(args.out_adjacencies, sep='\t', index=False)

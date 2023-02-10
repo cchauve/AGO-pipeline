@@ -391,6 +391,9 @@ tools:
            - &sppdcj_ilp_input_file_conflicts !join [
                 *sppdcj_ilp_input_dir, !concat ['conflicts_', *sppdcj_input_suffix, '.txt']
              ]
+           - &sppdcj_ilp_input_file_log !join [
+                *sppdcj_ilp_input_dir, !concat [*sppdcj_input_suffix, '.log']
+             ]
          script:
             - !join [*run_dir_scripts, 'SPPDCJ_create_input_files.py']
             - !ref [*data_adjacencies_path]
@@ -403,6 +406,7 @@ tools:
             - !join [*run_dir_scripts, 'SPPDCJ_make_linearizable.py']
             - !ref [*sppdcj_ilp_input_file_adjacencies_1]
             - !ref [*sppdcj_ilp_input_file_adjacencies_2]
+            - !ref [*sppdcj_ilp_input_file_log]
             - !concat [';']
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
             - !ref [*generax_slurm_results_species_file]
