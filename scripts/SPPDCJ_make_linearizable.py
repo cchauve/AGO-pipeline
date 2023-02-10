@@ -70,7 +70,17 @@ def complement_conflicting_adjacencies(G, c):
             continue
         degs = G.degree(C)
         deg_values = set(map(lambda x: x[1], degs))
-        if not deg_values.difference((1,2)):
+        if deg_values == set((2,)):
+            LOG.info(f'identified circular component of conflicting ' +\
+                    f'adjacencies of size {len(C)}')
+            # for even components we don't have to do anything, but for
+            # odds..
+            if len(C) %2:
+                # grab an arbitrary node from the cycle and append a
+                # telomere--that should do the trick.
+                c += 1
+                G.add_edge(next(iter(C)), (f't_{c}', 'o'), complement=True)
+        elif deg_values == set((1, 2)):
             LOG.info(f'identified linear component of conflicting ' + \
                     f'adjacencies of size {len(C)}')
             # component is linear 
