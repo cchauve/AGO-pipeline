@@ -392,7 +392,7 @@ tools:
                 *sppdcj_ilp_input_dir, !concat ['conflicts_', *sppdcj_input_suffix, '.txt']
              ]
            - &sppdcj_ilp_input_file_log !join [
-                *sppdcj_ilp_input_dir, !concat [*sppdcj_input_suffix, '.log']
+                *sppdcj_ilp_input_dir, !concat ['adjacencies_', *sppdcj_input_suffix, '.log']
              ]
          script:
             - !join [*run_dir_scripts, 'SPPDCJ_create_input_files.py']
