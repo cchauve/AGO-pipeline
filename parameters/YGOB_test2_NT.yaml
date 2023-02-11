@@ -442,6 +442,21 @@ tools:
             - !concat ['   ', *sppdcj_ilp_input_file_adjacencies_2, ' \']
             - !concat ['   > ', *sppdcj_ilp_results_file_ilp ]
 
+      stats:
+         dir: &sppdcj_ilp_stats_dir  !join [*dir_stats, *sppdcj_ilp_name]
+         files:
+            - &sppdcj_ilp_stats_file_log !join [
+                 *sppdcj_ilp_stats_dir,
+                 !concat ['components_', *sppdcj_input_suffix, '.log']
+              ]
+         cmd:
+            - !join [*run_dir_scripts, 'SPPDCJ_adjs_to_components.py']
+            - '-p'
+            - '-o'
+            - !ref [*sppdcj_ilp_stats_dir]
+            - !ref [*sppdcj_ilp_input_file_adjacencies_2]
+            - !ref [*sppdcj_ilp_stats_file_log]
+
    # SPPDCJ: Solving the SPPDCJ ILP
    SPPDCJ:
       name:   &sppdcj_name 'SPPDCJ'

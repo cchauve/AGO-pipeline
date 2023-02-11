@@ -318,7 +318,7 @@ We create it for a 3 nodes subtree with leaves **Cglabrata** and **Scerevisiae**
         /scratch/chauvec/SPP/YGOB_test2_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_Cglabrata_Scerevisiae.sh
 > sbatch  /scratch/chauvec/SPP/YGOB_test2_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_Cglabrata_Scerevisiae.sh
 sbatch: NOTE: Your memory request of 262144M was likely submitted as 256G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
-Submitted batch job 59311043
+Submitted batch job 59314054
 > python src/AGO.py parameters/YGOB_test2_NT.yaml check SPPDCJ_ILP
         /scratch/chauvec/SPP/YGOB_test2_NT/log/SPPDCJ_ILP_Cglabrata_Scerevisiae.log
         No output file is created
@@ -328,7 +328,15 @@ SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/YGOB_test2_NT/results/SPPDC
 SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/YGOB_test2_NT/results/SPPDCJ_ILP/Cglabrata_Scerevisiae_0.75_0.5_0.25.ilp
 ```
 
-The ILP creation worked. Trying again with all species: failed. We now try to solve the ILP.
+The ILP creation worked. Trying again with all species: failed.
+
+```
+>python src/AGO.py parameters/YGOB_test2_NT.yaml stats SPPDCJ_ILP
+/scratch/chauvec/SPP/YGOB_test2_NT/statistics/SPPDCJ_ILP/components_Cglabrata_Scerevisiae.log
+```
+
+
+We now try to solve the ILP.
 
 ```
 > python src/AGO.py parameters/YGOB_test2_NT.yaml script SPPDCJ

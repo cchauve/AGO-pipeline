@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter as ADHF
+from argparse import ArgumentParser, FileType, ArgumentDefaultsHelpFormatter as ADHF
 from sys import stdout, stderr, exit
-from os.path import join
+from os.path import join, isfile, exists, isdir
 import logging
 
 #
@@ -53,6 +53,8 @@ if __name__ == '__main__':
     parser = ArgumentParser(formatter_class=ADHF, description=description)
     parser.add_argument('adjacencies', type=open,
             help='Adjacencies file')
+    parser.add_argument('log_file', type=FileType('w'),
+            help='Log file')
     parser.add_argument('-c', '--contig', default=False, action='store_true', \
             help='Decompose into contigs, rather than components corresponding to conflicting adjacencies')
     parser.add_argument('-p', '--plots', default=False, action='store_true', \
@@ -62,14 +64,11 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    out = stdout
-
     # setup logging
-    ch = logging.StreamHandler(stderr)
+    ch = logging.FileHandler(args.log_file.name, mode='w')
     ch.setLevel(logging.INFO)
     ch.setFormatter(logging.Formatter('%(levelname)s\t%(asctime)s\t%(message)s'))
     LOG.addHandler(ch)
-
 
     LOG.info(f'loading adjacency set from {args.adjacencies.name}')
     df = pd.read_csv(args.adjacencies, sep='\t',  header=0)
