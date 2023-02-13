@@ -9,7 +9,7 @@ import sys
 import shutil
 
 # Evan data directory
-IN_DATA_DIR = '/home/ecribbie/projects/ctb-chauvec/ecribbie/USRA_2022/YGOB/DATA/'
+IN_DATA_DIR = '/home/chauvec/projects/ctb-chauvec/ecribbie/USRA_2022/YGOB/DATA/'
 # Data directory
 OUT_DATA_DIR = '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/YGOB'
 os.makedirs(OUT_DATA_DIR, exist_ok=True)
