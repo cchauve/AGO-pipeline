@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
+
 '''Importing data from the directory of Evan'''
 
 import os
@@ -36,38 +37,24 @@ def f_idx(f):
     if f == 351: return('10352')
     elif f == 352: return('353a')
     else: return(f'{f+1}')
-    
-# Step 3. Importing gene families, adding a label first, increasing from 1
+
+
+# Step 3. Creating gene families dictionary, with a label, increasing from 1
 IN_FAMILIES_FILE = os.path.join(IN_DATA_DIR, 'desired_pillar.txt')
-OUT_FAMILIES_FILE = os.path.join(OUT_DATA_DIR, 'families.txt')
-print(f'# Importing families\t{OUT_FAMILIES_FILE}')
+print(f'# Creating families')
 IN_FAMILIES = open(IN_FAMILIES_FILE, 'r').readlines()
 FAMILIES_NB = len(IN_FAMILIES)
 print(f'# Number of families\t{FAMILIES_NB}')
 FAMILIES_DICT = {}
-with open(OUT_FAMILIES_FILE, 'w') as f:
-    for idx in range(FAMILIES_NB):
-        family_idx = f_idx(idx)
-        family_str = IN_FAMILIES[idx]
-        family = family_str.rstrip().split()
-        FAMILIES_DICT[family_idx] = family
-        f.write(f'{family_idx}\t{family_str}')
-
-# Step 4. Importing gene (DNA) sequences for each family
-IN_DNA_DIR = os.path.join(IN_DATA_DIR, 'PILLAR_NT_FILES')
-OUT_DNA_DIR = os.path.join(OUT_DATA_DIR, 'genes')
-print(f'# Importing genes DNA sequences\t{OUT_DNA_DIR}')
-os.makedirs(OUT_DNA_DIR, exist_ok=True)
 for idx in range(FAMILIES_NB):
     family_idx = f_idx(idx)
-    in_DNA_file = os.path.join(IN_DNA_DIR, f'NT_{idx}.fsa')
-    out_DNA_file = os.path.join(OUT_DNA_DIR, f'{family_idx}.fasta')
-    with open(in_DNA_file, 'r') as f1, open(out_DNA_file, 'w') as f2:
-        for line in f1.readlines():
-            if line[0] == '>': f2.write(f'{line.split()[0]}\n')
-            else: f2.write(line)
+    family_str = IN_FAMILIES[idx]
+    family = family_str.rstrip().split()
+    FAMILIES_DICT[family_idx] = family
 
-# Step 5. Importing gene orders, filtering out genes that are not in families
+
+
+# Step 4. Importing gene orders, filtering out genes that are not in families
 GENES_LIST_ALL = []
 GENES_FAMILY_SPECIES = {}
 for family_idx,family in FAMILIES_DICT.items():
@@ -86,18 +73,55 @@ for species in SPECIES_LIST:
         for gene_data in open(IN_GENE_ORDER_FILE, 'r').readlines():
             gene_name = gene_data.split('\t')[0]
             if gene_name in GENES_LIST_ALL:
-                out_f.write(gene_data)
+                new_gene_name = '@'.join([species,gene_name])
+                remaining_info = '\t'.join(gene_data.split('\t')[1:])
+                out_f.write('\t'.join([new_gene_name,remaining_info]))
                 GENES_LISTS[species].append(gene_name)
                 GENES_FAMILY_SPECIES[gene_name]['species']=species
     print(f'# {species}\t{len(GENES_LISTS[species])}')
 
-# Step 6. Creating a gene,family,species mapping file
+
+# Step 5. Importing gene families, adding a label first, increasing from 1
+OUT_FAMILIES_FILE = os.path.join(OUT_DATA_DIR, 'families.txt')
+print(f'# Importing families\t{OUT_FAMILIES_FILE}')
+with open(OUT_FAMILIES_FILE, 'w') as f:
+    for idx in range(FAMILIES_NB):
+        family_idx = f_idx(idx)
+        family = FAMILIES_DICT[family_idx]
+        f.write(family_idx)
+        for gene in family:
+            specie = GENES_FAMILY_SPECIES[gene]['species']
+            new_gene_name = '@'.join([specie,gene])
+            f.write(''.join([' ',new_gene_name]))
+        if idx<FAMILIES_NB-1:
+            f.write("\n")
+
+# Step 6. Importing gene (DNA) sequences for each family
+IN_DNA_DIR = os.path.join(IN_DATA_DIR, 'PILLAR_NT_FILES')
+OUT_DNA_DIR = os.path.join(OUT_DATA_DIR, 'genes')
+print(f'# Importing genes DNA sequences\t{OUT_DNA_DIR}')
+os.makedirs(OUT_DNA_DIR, exist_ok=True)
+for idx in range(FAMILIES_NB):
+    family_idx = f_idx(idx)
+    in_DNA_file = os.path.join(IN_DNA_DIR, f'NT_{idx}.fsa')
+    out_DNA_file = os.path.join(OUT_DNA_DIR, f'{family_idx}.fasta')
+    with open(in_DNA_file, 'r') as f1, open(out_DNA_file, 'w') as f2:
+        for line in f1.readlines():
+            if line[0] == '>':
+                gene = line.split()[0].lstrip(">")
+                specie = GENES_FAMILY_SPECIES[gene]['species']
+                new_gene_name = '@'.join([specie,gene])
+                f2.write(''.join(['>',new_gene_name,'\n']))
+            else: f2.write(line)
+
+# Step 7. Creating a gene,family,species mapping file
 OUT_MAP_FILE = os.path.join(OUT_DATA_DIR, 'map.txt')
 with open(OUT_MAP_FILE, 'w') as map_file:
     map_file.write('#gene\tfamily\tspecies')
     for gene,data in GENES_FAMILY_SPECIES.items():
         family_idx = data['family']
         species = data['species']
-        map_file.write(f'\n{gene}\t{family_idx}\t{species}')
+        new_gene_name = '@'.join([species,gene])
+        map_file.write(f'\n{new_gene_name}\t{family_idx}\t{species}')
 
-                
+
