@@ -182,6 +182,10 @@ tools:
             - !concat ['   -seq ${', *macse_slurm_array_input_var, '} \']
             - !concat ['   -out_NT ', *macse_slurm_results_file_1, ' \']
             - !concat ['   -out_AA ', *macse_slurm_results_file_2]
+            - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_1]
+            - !concat ["sed -i 's/?/-/g' ",*macse_slurm_results_file_1]
+            - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_2]
+            - !concat ["sed -i 's/?/-/g' ",*macse_slurm_results_file_2]
    
    # Iqtree: gene tree inference
    Iqtree:
