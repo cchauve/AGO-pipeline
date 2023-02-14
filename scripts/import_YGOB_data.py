@@ -88,11 +88,12 @@ with open(OUT_FAMILIES_FILE, 'w') as f:
     for idx in range(FAMILIES_NB):
         family_idx = f_idx(idx)
         family = FAMILIES_DICT[family_idx]
-        f.write(family_idx)
+        fam_str=''
         for gene in family:
             specie = GENES_FAMILY_SPECIES[gene]['species']
             new_gene_name = '@'.join([specie,gene])
-            f.write(''.join([' ',new_gene_name]))
+            fam_str = ' '.join([fam_str,new_gene_name])
+        f.write('\t'.join([family_idx,fam_str.lstrip()]))
         if idx<FAMILIES_NB-1:
             f.write("\n")
 
