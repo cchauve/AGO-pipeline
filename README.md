@@ -22,6 +22,18 @@ The second script shoud be parameterized by a min/max thresholds for
 the size of gene families. It would then filter gene families to the
 ones not in the size range.  
 
+## Required Data Formats
+
+### Species Tree
+
+The species tree is to be a rooted species tree in newick format. The species names are to be the same names as those used in naming genes (see section on gene names). The species tree is also required to contain distances for each branch length.
+
+### Gene Names
+
+The gene names are to be in the format <specie><separator><gene>. This gene namming format is to be consistent among all files. The separator needs to fulfill certain criteria and should be specified in the parameter file. The separator should be a character that is recognized by Iq-tree (ex: "|" or "_"). It is important to note that the separator should not appear in any of the species names. Further in order to guarentee gene name consistency no characters that are unrecognized by Iq-tree should be used in any gene or species names as these will be converted to an "_" which could result in gene name inconsistencies. 
+  
+For testing purposes we use "|" as separator and ensured that the only non alpha-numeric characters in gene or specie names (other than the separator) were "_" as these are accepted by Iq-tree and no renamming will be done.
+
 ## Pipeline
 
 The principle of the pipeline is that all computations are specified in the
