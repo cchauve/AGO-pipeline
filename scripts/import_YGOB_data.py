@@ -73,7 +73,7 @@ for species in SPECIES_LIST:
         for gene_data in open(IN_GENE_ORDER_FILE, 'r').readlines():
             gene_name = gene_data.split('\t')[0]
             if gene_name in GENES_LIST_ALL:
-                new_gene_name = '@'.join([species,gene_name])
+                new_gene_name = '|'.join([species,gene_name])
                 remaining_info = '\t'.join(gene_data.split('\t')[1:])
                 out_f.write('\t'.join([new_gene_name,remaining_info]))
                 GENES_LISTS[species].append(gene_name)
@@ -91,7 +91,7 @@ with open(OUT_FAMILIES_FILE, 'w') as f:
         fam_str=''
         for gene in family:
             specie = GENES_FAMILY_SPECIES[gene]['species']
-            new_gene_name = '@'.join([specie,gene])
+            new_gene_name = '|'.join([specie,gene])
             fam_str = ' '.join([fam_str,new_gene_name])
         f.write('\t'.join([family_idx,fam_str.lstrip()]))
         if idx<FAMILIES_NB-1:
@@ -111,7 +111,7 @@ for idx in range(FAMILIES_NB):
             if line[0] == '>':
                 gene = line.split()[0].lstrip(">")
                 specie = GENES_FAMILY_SPECIES[gene]['species']
-                new_gene_name = '@'.join([specie,gene])
+                new_gene_name = '|'.join([specie,gene])
                 f2.write(''.join(['>',new_gene_name,'\n']))
             else: f2.write(line)
 
@@ -122,7 +122,7 @@ with open(OUT_MAP_FILE, 'w') as map_file:
     for gene,data in GENES_FAMILY_SPECIES.items():
         family_idx = data['family']
         species = data['species']
-        new_gene_name = '@'.join([species,gene])
+        new_gene_name = '|'.join([species,gene])
         map_file.write(f'\n{new_gene_name}\t{family_idx}\t{species}')
 
 
