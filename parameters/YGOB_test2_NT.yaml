@@ -23,10 +23,14 @@ run:
      - &macse_exec          !join [*run_dir_bin, 'macse_v2.06.jar']
      - &macse_slurm_options '--mem=8G --time=02:00:00'
      # Iqtree
-     ### Check allocation requirements (these are random guesses)
      - &iqtree_exec           'iqtree'
      - &iqtree_slurm_options  '--mem=1G --time=00:20:00'
      - &iqtree_options        '-m MFP -bb 1000 -wbtl'
+     # ALE
+     - &ALEobserve_exec       !join[*run_dir_bin,'ALE/bin/ALEobserve']
+     - &ALEml_undated_exec    !join[*run_dir_bin,'ALE/bin/ALEml_undated']
+     - &ale_slurm_options     '--mem=2G --time=02:00:00'
+     - &ale_options           'sample=1 tau=0 separators="|"'
      # GeneRax
      - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
      - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
@@ -89,6 +93,8 @@ data:
    reconciliations:
       path:  &data_reconciliations_path   !join [*dir_data, 'reconciliations.txt']
       # [optional] extensions for reconciliations files created by AGO
+      ext: &ale_ext              '.ale'
+      ext: &reconciliation_uml_rec_ext  '.uml_rec'
       ext: &data_reconciliations_ext    '.recphyloxml'
    adjacencies:
       path:  &data_adjacencies_path   !join [*dir_data, 'adjacencies.txt']
@@ -220,7 +226,49 @@ tools:
             - !concat ['   ',*iqtree_options,' \']
             - !concat ['   -pre ',*iqtree_results_dir,'/${',*iqtree_slurm_array_results_var,'}']
             
-
+   # ALE: gene tree reconcilliation from gene tree sample
+   ALE:
+      name: &ale_name 'ALE'
+      input:
+         file: 
+            - &ale_input_file !ref[*tree_inference_path]
+            - &ale_input_species_tree_file  !ref[*&data_species_tree_path]
+         
+      output:
+         file: &ale_output_file !ref[*data_reconciliations_path]
+      slurm:
+         options: !ref[*ale_slurm_options]
+         array:
+            input:
+               file: &ale_slurm_array_input_file !ref [*tree_inference_path]
+               field: &ale_slurm_array_input_field 2
+               var: &ale_slurm_array_input_var 'TREES_FILE'
+            results:
+               file:  &ale_slurm_array_results_file  !ref [*tree_inference_path]
+               field: &ale_slurm_array_results_field 1
+               var:   &ale_slurm_array_results_var   'FAM_ID'
+               ext:   &ale_slurm_array_results_ext   !ref [*reconciliation_uml_rec_ext]
+         results:
+            dir: &ale_results_dir !join [*dir_results, *ale_name]
+            files:
+                - &ale_object_slurm_result_file !join [
+                     *ale_results_dir,
+                     !concat ['${', *ale_slurm_array_input_var, '}',*ale_ext]
+                  ]
+                - &ale_slurm_results_file_uml_rec !join [
+                     *ale_results_dir,
+                     !concat [*&data_species_tree_path, '_', '${', *ale_slurm_array_input_var, '}',*ale_ext,*reconciliation_uml_rec_ext]
+                  ]
+            cmd:
+               - !concat [*ALEobserve_exec, ' \']
+               - !concat [' ${',*ale_slurm_array_input_var,'}']
+               - ' '
+               - !concat [*ALEml_undated_exec, ' \']
+               - !concat [*ale_object_slurm_result_file, ' \']
+               - !concat ['   ',*ale_options]
+         
+               
+            
    # GeneRax: computing reconciled gene trees
    GeneRax:
       name: &generax_name 'GeneRax'
