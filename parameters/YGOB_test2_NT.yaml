@@ -257,7 +257,7 @@ tools:
                   ]
                 - &ale_slurm_results_file_uml_rec !join [
                      *ale_results_dir,
-                     !concat [*&data_species_tree_path, '_', '${', *ale_slurm_array_input_var, '}',*ale_ext,*reconciliation_uml_rec_ext]
+                     !concat [*data_species_tree_path, '_', '${', *ale_slurm_array_input_var, '}',*ale_ext,*reconciliation_uml_rec_ext]
                   ]
             cmd:
                - !concat [*ALEobserve_exec, ' \']
