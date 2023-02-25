@@ -261,6 +261,7 @@ tools:
             - !concat [' ${',*ale_slurm_array_input_var,'}']
             - ' '
             - !concat [*ALEml_undated_exec, ' \']
+            - !concat [*data_species_tree_path,' \']
             - !concat [*ale_object_slurm_result_file, ' \']
             - !concat ['   ',*ale_options]
          
