@@ -259,13 +259,13 @@ tools:
                      *ale_results_dir,
                      !concat [*data_species_tree_path, '_', '${', *ale_slurm_array_input_var, '}',*ale_ext,*reconciliation_uml_rec_ext]
                   ]
-            cmd:
-               - !concat [*ALEobserve_exec, ' \']
-               - !concat [' ${',*ale_slurm_array_input_var,'}']
-               - ' '
-               - !concat [*ALEml_undated_exec, ' \']
-               - !concat [*ale_object_slurm_result_file, ' \']
-               - !concat ['   ',*ale_options]
+         cmd:
+            - !concat [*ALEobserve_exec, ' \']
+            - !concat [' ${',*ale_slurm_array_input_var,'}']
+            - ' '
+            - !concat [*ALEml_undated_exec, ' \']
+            - !concat [*ale_object_slurm_result_file, ' \']
+            - !concat ['   ',*ale_options]
          
                
             
