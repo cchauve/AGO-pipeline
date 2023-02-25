@@ -27,8 +27,8 @@ run:
      - &iqtree_slurm_options  '--mem=1G --time=00:20:00'
      - &iqtree_options        '-m MFP -bb 1000 -wbtl'
      # ALE
-     - &ALEobserve_exec       !join[*run_dir_bin,'ALE/bin/ALEobserve']
-     - &ALEml_undated_exec    !join[*run_dir_bin,'ALE/bin/ALEml_undated']
+     - &ALEobserve_exec       !join [*run_dir_bin,'ALE/bin/ALEobserve']
+     - &ALEml_undated_exec    !join [*run_dir_bin,'ALE/bin/ALEml_undated']
      - &ale_slurm_options     '--mem=2G --time=02:00:00'
      - &ale_options           'sample=1 tau=0 separators="|"'
      # GeneRax
