@@ -251,10 +251,7 @@ tools:
          results:
             dir: &ale_results_dir !join [*dir_results, *ale_name]
             files:
-                - &ale_object_slurm_result_file !join [
-                     *ale_results_dir,
-                     !concat ['${', *ale_slurm_array_input_var, '}',*ale_ext]
-                  ]
+                - &ale_object_slurm_result_file !concat ['${', *ale_slurm_array_input_var, '}',*ale_ext]
                 - &ale_slurm_results_file_uml_rec !join [
                      *ale_results_dir,
                      !concat [*data_species_tree_path, '_', '${', *ale_slurm_array_input_var, '}',*ale_ext,*reconciliation_uml_rec_ext]
