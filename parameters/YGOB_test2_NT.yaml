@@ -232,7 +232,7 @@ tools:
       input:
          file: 
             - &ale_input_file !ref [*tree_inference_path]
-            - &ale_input_species_tree_file  !ref [*&data_species_tree_path]
+            - &ale_input_species_tree_file  !ref [*data_species_tree_path]
          
       output:
          file: &ale_output_file !ref [*data_reconciliations_path]
