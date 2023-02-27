@@ -15,6 +15,7 @@ run:
       # Directory for experiments scripts, results, log, statistics and auxiliary files
       - &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
    tools:
+     - &specie_gene_name_seperator '|'
      # MUSCLE
      ### check allocation
      - &muscle_exec          'muscle'
@@ -71,8 +72,6 @@ dir:
    results: &dir_results !join [*run_dir_exp, 'results']
 
 data:
-   seperator:
-      sep: &specie_gene_name_seperator '|'
    species_tree:
       name: &species_tree_file_name 'species_tree.newick'
       path: &data_species_tree_path  !join [*run_dir_data, *species_tree_file_name]
