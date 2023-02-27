@@ -71,6 +71,8 @@ dir:
    results: &dir_results !join [*run_dir_exp, 'results']
 
 data:
+   seperator:
+      sep: &specie_gene_name_seperator '|'
    species_tree:
       path: &data_species_tree_path  !join [*run_dir_data, 'species_tree.newick']
    families:
@@ -247,7 +249,7 @@ tools:
                file:  &ale_slurm_array_results_file  !ref [*tree_inference_path]
                field: &ale_slurm_array_results_field 1
                var:   &ale_slurm_array_results_var   'FAM_ID'
-               ext:   &ale_slurm_array_results_ext   !ref [*reconciliation_uml_rec_ext]
+               ext:   &ale_slurm_array_results_ext   !ref [*data_reconciliations_ext]
          results:
             dir: &ale_results_dir !join [*dir_results, *ale_name]
             files:
@@ -256,7 +258,10 @@ tools:
                      *ale_results_dir,
                      !concat [*data_species_tree_path, '_', '${', *ale_slurm_array_input_var, '}',*ale_ext,*reconciliation_uml_rec_ext]
                   ]
+                - &ale_recphyloxml_result_file !join [*ale_results_dir, !concat ['${', *ale_slurm_array_results_var, '}',*data_reconciliations_ext]]
          cmd:
+            - !concat ['cd ',*ale_results_dir]
+            - ' '
             - !concat [*ALEobserve_exec, ' \']
             - !concat [' ${',*ale_slurm_array_input_var,'}']
             - ' '
@@ -264,6 +269,12 @@ tools:
             - !concat [*data_species_tree_path,' \']
             - !concat [*ale_object_slurm_result_file, ' \']
             - !concat ['   ',*ale_options]
+            - ' '
+            - !concat ['grep "1 reconciled G-s:" -A 2', *ale_slurm_results_file_uml_rec ,' | tail -1 > temp.nhx']
+            - ' '
+            - !concat ['python ALEtoRecXML.py -g temp.nhx -o ', *ale_recphyloxml_result_file  ,' -s ', *specie_gene_name_seperator]
+            - ' '
+            - 'rm temp.nhx'
          
                
             
