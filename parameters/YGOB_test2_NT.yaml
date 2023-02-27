@@ -30,7 +30,7 @@ run:
      - &ALEobserve_exec       !join [*run_dir_bin,'ALE/bin/ALEobserve']
      - &ALEml_undated_exec    !join [*run_dir_bin,'ALE/bin/ALEml_undated']
      - &ale_slurm_options     '--mem=2G --time=02:00:00'
-     - &ale_options           'sample=1 tau=0 separators="|"'
+     - &ale_options           !concat ['sample=1 tau=0 separators="',*specie_gene_name_seperator,'"']
      # GeneRax
      - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
      - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
@@ -74,7 +74,8 @@ data:
    seperator:
       sep: &specie_gene_name_seperator '|'
    species_tree:
-      path: &data_species_tree_path  !join [*run_dir_data, 'species_tree.newick']
+      name: &species_tree_file_name 'species_tree.newick'
+      path: &data_species_tree_path  !join [*run_dir_data, *species_tree_file_name]
    families:
       path: &data_families_path  !join [*run_dir_data, 'families.txt']
    gene_orders:
@@ -253,10 +254,10 @@ tools:
          results:
             dir: &ale_results_dir !join [*dir_results, *ale_name]
             files:
-                - &ale_object_slurm_result_file !concat ['${', *ale_slurm_array_input_var, '}',*ale_ext]
+                - &ale_object_slurm_result_file !concat [*ale_results_dir,'${', *ale_slurm_array_input_var, '##*/}',*ale_ext]
                 - &ale_slurm_results_file_uml_rec !join [
                      *ale_results_dir,
-                     !concat [*data_species_tree_path, '_', '${', *ale_slurm_array_input_var, '}',*ale_ext,*reconciliation_uml_rec_ext]
+                     !concat [*species_tree_file_name, '_', '${', *ale_slurm_array_input_var, '##*/}',*ale_ext,*reconciliation_uml_rec_ext]
                   ]
                 - &ale_recphyloxml_result_file !join [*ale_results_dir, !concat ['${', *ale_slurm_array_results_var, '}',*data_reconciliations_ext]]
          cmd:
