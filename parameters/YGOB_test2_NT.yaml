@@ -270,11 +270,11 @@ tools:
             - !concat [*ale_object_slurm_result_file, ' \']
             - !concat ['   ',*ale_options]
             - ' '
-            - !concat ['grep "1 reconciled G-s:" -A 2', *ale_slurm_results_file_uml_rec ,' | tail -1 > temp.nhx']
+            - !concat ['grep "1 reconciled G-s:" -A 2', *ale_slurm_results_file_uml_rec ,' | tail -1 > temp${', *ale_slurm_array_results_var, '}.nhx']
             - ' '
             - !concat ['python ', !join [*run_dir_scripts, 'ALEtoRecXML.py'],' -g temp.nhx -o ', *ale_recphyloxml_result_file  ,' -s ', *specie_gene_name_seperator]
             - ' '
-            - 'rm temp.nhx'
+            - 'rm temp${', *ale_slurm_array_results_var, '}.nhx'
          
                
             
