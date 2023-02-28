@@ -274,7 +274,7 @@ tools:
             - ' '
             - !concat ['grep "1 reconciled G-s:" -A 2 ', *ale_slurm_results_file_uml_rec ,' | tail -1 > temp${', *ale_slurm_array_results_var, '}.nhx']
             - ' '
-            - !concat ['python ', !join [*run_dir_scripts, 'ALEtoRecXML.py'],' -g temp${', *ale_slurm_array_results_var, '}.nhx -o ', *ale_recphyloxml_result_file  ,' -s ', *specie_gene_name_seperator]
+            - !concat ['python ', !join [*run_dir_scripts, 'ALEtoRecXML.py'],' -g temp${', *ale_slurm_array_results_var, '}.nhx -o ', *ale_recphyloxml_result_file  ,' -s "', *specie_gene_name_seperator,'"']
             - ' '
             - !concat ['rm temp${', *ale_slurm_array_results_var, '}.nhx']
             - ' '
