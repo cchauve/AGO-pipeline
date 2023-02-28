@@ -274,7 +274,8 @@ tools:
             - ' '
             - !concat ['python ', !join [*run_dir_scripts, 'ALEtoRecXML.py'],' -g temp.nhx -o ', *ale_recphyloxml_result_file  ,' -s ', *specie_gene_name_seperator]
             - ' '
-            - 'rm temp${', *ale_slurm_array_results_var, '}.nhx'
+            - !concat ['rm temp${', *ale_slurm_array_results_var, '}.nhx']
+            - ' '
          
                
             
