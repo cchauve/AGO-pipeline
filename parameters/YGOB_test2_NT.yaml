@@ -260,6 +260,8 @@ tools:
                   ]
                 - &ale_recphyloxml_result_file !join [*ale_results_dir, !concat ['${', *ale_slurm_array_results_var, '}',*data_reconciliations_ext]]
          cmd:
+            - !concat ['cd ',*ale_results_dir]
+            - ' '
             - !concat [*ALEobserve_exec, ' \']
             - !concat [' ${',*ale_slurm_array_input_var,'}']
             - ' '
