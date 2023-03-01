@@ -45,7 +45,7 @@ run:
      - &sppdcj_bin_dir              !join [*run_dir_bin, 'spp_dcj', 'scripts']
      - &sppdcj_ilp_exec             !join [*sppdcj_bin_dir, 'spp_dcj.py']
      - &sppdcj_ilp_slurm_options    '--mem=256G --time=24:00:00'
-     - &sppdcj_ilp_threshold        '0.75'
+     - &sppdcj_ilp_threshold        '0.5'
      - &sppdcj_ilp_alpha            '0.5'     
      - &sppdcj_ilp_beta             '0.25'
      - &sppdcj_input_species        'Cglabrata Scerevisiae'

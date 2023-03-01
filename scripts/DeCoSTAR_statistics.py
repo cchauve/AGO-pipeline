@@ -21,7 +21,17 @@ decostar_sign2extremity = {
     ('+','-'): ['h','h'],('+','+'): ['h','t']
 }
 
-
+# Recorded statistics
+# key_genes: number of genes with at least one extremity in at least one adjacency
+# key_adj: number of adjacencies
+# key_conflict: number of gene extremities in a conflict
+# key_free: number of gene extremities in no adjacencies
+key_genes = 'genes_in_adj'
+key_adj = 'adjacencies'
+key_conflict = 'ext_in_conflict'
+key_free = 'free_ext'
+stats_keys = [key_genes, key_adj, key_conflict, key_free]
+    
 ''' 
 Reads genes and adjacencies 
 Creates dict(species -> list of genes in species)
@@ -66,8 +76,6 @@ def decostar_read_results(in_genes_file, in_adjacencies_file, in_species_list):
         adjacencies_dicts[species][gene]['t'].sort(key=lambda x: x[0])            
     return genes_lists,adjacencies_dicts
     
-stats_keys = ['genes', 'adj', 'conflict', 'free']
-
 '''
 Compute statistics per species for various weight thresholds
 Creates for each species s and weight threshold w statistics are recorded
@@ -95,7 +103,7 @@ def decostar_compute_statistics(
         (s,t) for s in in_species_list for t in in_thresholds
     ]
     for (species,threshold) in species_thresholds:
-        statistics[species]['genes'] = len(in_genes_lists[species])
+        statistics[species][key_genes] = len(in_genes_lists[species])
         statistics[species][f'{threshold}'] = {k: 0 for k in stats_keys}
         for gene in in_adj_dicts[species].keys():
             # Number of adjacencies of weight >= threshold over both extremities
@@ -105,17 +113,17 @@ def decostar_compute_statistics(
             nb_adj_t = len(list(
                 filter(lambda k: k[0]>=threshold, in_adj_dicts[species][gene]['t'])
             ))
-            statistics[species][f'{threshold}']['adj'] += (nb_adj_h + nb_adj_t)/2
+            statistics[species][f'{threshold}'][key_adj] += (nb_adj_h + nb_adj_t)/2
             if nb_adj_h == 0:
-                statistics[species][f'{threshold}']['free'] += 1
+                statistics[species][f'{threshold}'][key_free] += 1
             if nb_adj_t == 0:
-                statistics[species][f'{threshold}']['free'] += 1
+                statistics[species][f'{threshold}'][key_free] += 1
             if nb_adj_h > 1:
-                statistics[species][f'{threshold}']['conflict'] += 1
+                statistics[species][f'{threshold}'][key_conflict] += 1
             if nb_adj_t > 1:
-                statistics[species][f'{threshold}']['conflict'] += 1
+                statistics[species][f'{threshold}'][key_conflict] += 1
             if nb_adj_h+nb_adj_t >= 1:
-                statistics[species][f'{threshold}']['genes'] += 1
+                statistics[species][f'{threshold}'][key_genes] += 1
     return statistics
 
 ''' Write conflicting adjacencies '''
@@ -154,24 +162,24 @@ def decostar_write_conflicts(
 ''' Write statistics for a set of thresholds '''
 def decostar_write_statistics(
         in_statistics, in_thresholds,
-        out_statistics_file
+        out_statistics_file,
+        out_sep=':'
 ):
     with open(out_statistics_file, 'w') as out_stats:
-        out_stats.write(f'#species:nb_genes:min_weight')        
-        out_stats.write(
-            f'\tnb_adjacencies:nb_genes_in_adjacencies:'
-            f'nb_extremities_in_conflict:nb_free_extremities'
-        )
+        header_pref = f'#species{out_sep}nb_{key_genes}:min_weight'
+        header_stats = out_sep.join([f'nb_{k}' for k in stats_keys])
+        header = f'{header_pref}\t{header_stats}'
+        out_stats.write(header)    
         for species in in_statistics.keys():
             out_stats.write(f'\n#{species}')
-            nb_genes = in_statistics[species]['genes']
+            nb_genes = in_statistics[species][key_genes]
             for threshold in in_thresholds:
                 stats = in_statistics[species][f'{threshold}']
-                header = f'\n{species}:{nb_genes}:{threshold}'
-                stats_str = ':'.join(
+                pref_str = f'\n{species}:{nb_genes}:{threshold}'
+                stats_str = out_sep.join(
                     [str(int(stats[k])) for k in stats_keys]
                 )                        
-                out_stats.write(f'{header}\t{stats_str}')
+                out_stats.write(f'{pref_str}\t{stats_str}')
 
 def main():
     in_species_file = sys.argv[1]
