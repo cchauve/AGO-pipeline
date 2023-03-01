@@ -40,7 +40,7 @@ run:
      - &decostar_slurm_options         '--mem=4G --time=24:00:00'
      - &decostar_nb_sample             '1000'
      - &decostar_boltzmann_temperature '0.1'
-     - &decostar_stats_thresholds      "0.5 0.6 0.7 0.8 0.9 1.0"
+     - &decostar_stats_thresholds      "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0"
      # SPP-DCJ
      - &sppdcj_bin_dir              !join [*run_dir_bin, 'spp_dcj', 'scripts']
      - &sppdcj_ilp_exec             !join [*sppdcj_bin_dir, 'spp_dcj.py']
