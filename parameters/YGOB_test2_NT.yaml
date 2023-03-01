@@ -94,6 +94,8 @@ data:
       ufboot_ext: &tree_inference_ufboot_ext '.ufboot'
    reconciliations:
       path:  &data_reconciliations_path   !join [*dir_data, 'reconciliations.txt']
+      path:  &data_reconciliations_species_tree !join [*dir_data, 'reconciled_species_tree.newick'
+      path:  &data_reconciliations_species_file !join [*dir_data, 'reconciled_species_file.txt'
       # [optional] extensions for reconciliations files created by AGO
       ext: &ale_ext              '.ale'
       ext: &reconciliation_uml_rec_ext  '.uml_rec'
@@ -259,7 +261,6 @@ tools:
                      !concat [*species_tree_file_name, '_', '${', *ale_slurm_array_input_var, '##*/}',*ale_ext,*reconciliation_uml_rec_ext]
                   ]
                 - &ale_recphyloxml_result_file !join [*ale_results_dir, !concat ['${', *ale_slurm_array_results_var, '}',*data_reconciliations_ext]]
-                - &ale_results_species_tree !join [*ale_results_dir, 'ale_species_tree.newick']
          cmd:
             - !concat ['cd ',*ale_results_dir]
             - ' '
@@ -281,7 +282,11 @@ tools:
             - ' '
             - !concat ['str=$(find ',*ale_results_dir,' -maxdepth 1 -type f -name "*',*reconciliation_uml_rec_ext,'" | head -1)']
             - 'tree=$(grep -h "S:" ${str} | cut -f 2)'
-            - !concat ['echo ${tree} > ',*ale_results_species_tree]
+            - !concat ['echo ${tree} > ',*data_reconciliations_species_tree]
+            - ' '
+            - !concat [!join [*run_dir_scripts, 'GeneRax_create_species_file.py'], ' \']
+            - !concat ['   ', *data_reconciliations_species_tree, ' \']
+            - !concat ['   ', *data_reconciliations_species_file]
 
          
                
