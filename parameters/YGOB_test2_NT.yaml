@@ -94,8 +94,8 @@ data:
       ufboot_ext: &tree_inference_ufboot_ext '.ufboot'
    reconciliations:
       path:  &data_reconciliations_path   !join [*dir_data, 'reconciliations.txt']
-      path:  &data_reconciliations_species_tree !join [*dir_data, 'reconciled_species_tree.newick'
-      path:  &data_reconciliations_species_file !join [*dir_data, 'reconciled_species_file.txt'
+      path:  &data_reconciliations_species_tree !join [*dir_data, 'reconciled_species_tree.newick']
+      path:  &data_reconciliations_species_file !join [*dir_data, 'reconciled_species_file.txt']
       # [optional] extensions for reconciliations files created by AGO
       ext: &ale_ext              '.ale'
       ext: &reconciliation_uml_rec_ext  '.uml_rec'
