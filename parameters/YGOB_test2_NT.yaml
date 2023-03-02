@@ -80,8 +80,6 @@ data:
    gene_orders:
       path: &data_gene_orders_path  !join [*run_dir_data, 'gene_orders.txt']
    # [optional] 
-   species:
-      path: &data_species_path  !join [*dir_data, 'species.txt']
    sequences:
       path: &data_sequences_path  !join [*run_dir_data, 'sequences.txt']
    alignments:
@@ -323,7 +321,7 @@ tools:
                 - &generax_slurm_results_species_tree !join [
                      *generax_results_dir, 'species_trees', 'starting_species_tree.newick'
                   ]
-                - &generax_slurm_results_species_file !ref [*data_species_path]
+                - &generax_slurm_results_species_file !ref [*data_reconciliations_species_file]
          cmd:
             - !concat ['mpiexec -np 48 ', *generax_exec, ' \']
             - !concat ['   -f ', *generax_input_file, ' \']
@@ -342,6 +340,8 @@ tools:
             - !concat [!join [*run_dir_scripts, 'GeneRax_create_species_file.py'], ' \']
             - !concat ['   ', *generax_slurm_results_species_tree, ' \']
             - !concat ['   ', *generax_slurm_results_species_file]
+            - ' '
+            - !concat ['cat ',*generax_slurm_results_species_tree,' > ',*data_reconciliations_species_tree]
       stats:
          files:
             - &generax_stats_file_species  !join [
