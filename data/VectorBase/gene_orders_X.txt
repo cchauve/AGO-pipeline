@@ -1,0 +1,7 @@
+Anopheles_albimanus_STECLA	/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase/gene_orders_X/Anopheles_albimanus_STECLA.txt
+Anopheles_atroparvus_EBRO	/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase/gene_orders_X/Anopheles_atroparvus_EBRO.txt
+Anopheles_coluzzii_Ngousso	/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase/gene_orders_X/Anopheles_coluzzii_Ngousso.txt
+Anopheles_farauti_FAR1	/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase/gene_orders_X/Anopheles_farauti_FAR1.txt
+Anopheles_funestus_FUMOZ	/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase/gene_orders_X/Anopheles_funestus_FUMOZ.txt
+Anopheles_gambiae_PEST	/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase/gene_orders_X/Anopheles_gambiae_PEST.txt
+Anopheles_minimus_MINIMUS1	/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase/gene_orders_X/Anopheles_minimus_MINIMUS1.txt

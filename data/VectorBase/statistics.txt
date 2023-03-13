@@ -1,0 +1,171 @@
+#Target ['X'] Min size 2 Min size on target 1
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5026
+Absent    	89
+Off target	9754
+Ambiguous 	291
+Small2    	0
+On target 	697	697
+#Target ['X'] Min size 2 Min size on target 2
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5026
+Absent    	89
+Off target	9754
+Ambiguous 	291
+Small2    	85
+On target 	612	612
+#Target ['X'] Min size 3 Min size on target 1
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5837
+Absent    	11
+Off target	9091
+Ambiguous 	288
+Small2    	0
+On target 	630	630
+#Target ['X'] Min size 3 Min size on target 2
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5837
+Absent    	11
+Off target	9091
+Ambiguous 	288
+Small2    	24
+On target 	606	606
+#Target ['2', '2L', '2R'] Min size 2 Min size on target 1
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5026
+Absent    	89
+Off target	3149
+Ambiguous 	6806
+Small2    	0
+On target 	787	787
+#Target ['2', '2L', '2R'] Min size 2 Min size on target 2
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5026
+Absent    	89
+Off target	3149
+Ambiguous 	6806
+Small2    	386
+On target 	401	401
+#Target ['2', '2L', '2R'] Min size 3 Min size on target 1
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5837
+Absent    	11
+Off target	2743
+Ambiguous 	6778
+Small2    	0
+On target 	488	488
+#Target ['2', '2L', '2R'] Min size 3 Min size on target 2
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5837
+Absent    	11
+Off target	2743
+Ambiguous 	6778
+Small2    	109
+On target 	379	379
+#Target ['3', '3L', '3R'] Min size 2 Min size on target 1
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5026
+Absent    	89
+Off target	2118
+Ambiguous 	6788
+Small2    	0
+On target 	1836	1836
+#Target ['3', '3L', '3R'] Min size 2 Min size on target 2
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5026
+Absent    	89
+Off target	2118
+Ambiguous 	6788
+Small2    	397
+On target 	1439	1439
+#Target ['3', '3L', '3R'] Min size 3 Min size on target 1
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5837
+Absent    	11
+Off target	1711
+Ambiguous 	6761
+Small2    	0
+On target 	1537	1537
+#Target ['3', '3L', '3R'] Min size 3 Min size on target 2
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5837
+Absent    	11
+Off target	1711
+Ambiguous 	6761
+Small2    	115
+On target 	1422	1422
+#Target ['2', '3', '2L', '2R', '3L', '3R'] Min size 2 Min size on target 1
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5026
+Absent    	89
+Off target	966
+Ambiguous 	562
+Small2    	0
+On target 	9214	9214
+#Target ['2', '3', '2L', '2R', '3L', '3R'] Min size 2 Min size on target 2
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5026
+Absent    	89
+Off target	966
+Ambiguous 	562
+Small2    	804
+On target 	8410	8410
+#Target ['2', '3', '2L', '2R', '3L', '3R'] Min size 3 Min size on target 1
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5837
+Absent    	11
+Off target	867
+Ambiguous 	559
+Small2    	0
+On target 	8583	8583
+#Target ['2', '3', '2L', '2R', '3L', '3R'] Min size 3 Min size on target 2
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	5837
+Absent    	11
+Off target	867
+Ambiguous 	559
+Small2    	238
+On target 	8345	8345
+#Target ['2', '3', '2L', '2R', '3L', '3R'] Min size 5 Min size on target 3
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	6652
+Absent    	3
+Off target	796
+Ambiguous 	535
+Small2    	339
+On target 	7532	7532
+#Target ['2', '3', '2L', '2R', '3L', '3R'] Min size 5 Min size on target 4
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	6652
+Absent    	3
+Off target	796
+Ambiguous 	535
+Small2    	1856
+On target 	6015	6015
+#Target ['2', '3', '2L', '2R', '3L', '3R'] Min size 4 Min size on target 4
+Filter    	ambiguous:711	included:5716
+All       	15857
+Small1    	6186
+Absent    	5
+Off target	835
+Ambiguous 	552
+Small2    	2263
+On target 	6016	6016
