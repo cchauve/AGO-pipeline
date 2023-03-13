@@ -5,6 +5,8 @@ The file `genes_20230311.txt.gz` was downloaded from VectorBase (https://vectorb
 Genes assigned to no orthology group (NA) or to no chrn=omosme (UNKN) or to the Y chromosome (Y_unplaced) are discarded.
 Genes included into another gene are discarded.
 
+The branch lengths on the species tree are estimated in million years.
+
 ```
 cd /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase
 gunzip genes_20230311.txt.gz
