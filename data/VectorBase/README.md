@@ -1,6 +1,6 @@
 # Anopheles data from VectorBase
 
-The file 'genes_20230311.txt' was downloaded from VectorBase (https://vectorbase.org/vectorbase/app/) on 2023-03-11
+The file `genes_20230311.txt.gz` was downloaded from VectorBase (https://vectorbase.org/vectorbase/app/) on 2023-03-11
 
 Genes assigned to no orthology group (NA) or to no chrn=omosme (UNKN) or to the Y chromosome (Y_unplaced) are discarded.
 Genes included into another gene are discarded.
