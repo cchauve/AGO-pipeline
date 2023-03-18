@@ -37,31 +37,41 @@ The output root directory is `/scratch/chauvec/SPP`.
 sbatch: NOTE: Your memory request of 8192M was likely submitted as 8G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
 Submitted batch job 62862555
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check MACSE
-```
-```
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/MACSE.log
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/alignments.txt
 > grep -c "ERROR" /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/MACSE.log
+1
 ```
 
 ### GeneRax
 
 ```
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml script GeneRax
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/GeneRax/GeneRax.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/GeneRax/GeneRax.sh
+sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 62872666
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check GeneRax
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/GeneRax.log
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/reconciliations.txt
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats GeneRax
-```
-```
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/GeneRax/GeneRax_species.csv
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/GeneRax/GeneRax_families.csv
 > grep -c "ERROR" /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/GeneRax.log
-```
-```
+0
 > wc -l /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/reconciliations.txt
+
+605 /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/reconciliations.txt
 ```
 
 ### DeCoSTAR
 
 ```
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml script DeCoSTAR
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/DeCoSTAR/DeCoSTAR.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/DeCoSTAR/DeCoSTAR.sh
+sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 62873215
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check DeCoSTAR
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats DeCoSTAR
 ```
@@ -73,11 +83,7 @@ Submitted batch job 62862555
 > sbatch  /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_all_species.sh
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check SPPDCJ_ILP
 > cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP_all_species.log
-```
-```
->python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats SPPDCJ_ILP
-```
-```
+> python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats SPPDCJ_ILP
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml script SPPDCJ
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ/SPPDCJ_all_species.sh
 ```
