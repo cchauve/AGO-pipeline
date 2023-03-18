@@ -1,5 +1,5 @@
 
-Sat Mar 18 09:16:35 PDT 2023
+`Sat Mar 18 09:16:35 PDT 2023`
 
 The parameters file is `parameters/Anopheles_GeneRax_NT.yaml`.
 The output root directory is `/scratch/chauvec/SPP`.
