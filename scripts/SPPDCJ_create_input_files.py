@@ -53,8 +53,11 @@ def sppdcj_adjacencies(
     - list of species to consider (None means all)
     output: out_adjacencies_file
     '''
-    sppdcj_sep = '\t'
-    decostar_sep = '|'
+    sppdcj_sep,decostar_sep = '\t','|'
+    def split_gene(gene):
+        gene_split = gene.split(decostar_sep)
+        return gene_split[0],decostar_sep.join(gene_split[1:])
+    
     species2adjacencies_file = [
         (species,adj_path)
         for (species,adj_path) in data_species2adjacencies_path(
@@ -79,10 +82,8 @@ def sppdcj_adjacencies(
             ]
             for (sp,g1,g2,sign1,sign2,w1,w2) in in_adjacencies:
                 exts = decostar_sign2extremity[(sign1,sign2)]
-                g1a = g1.split(decostar_sep)
-                fam1,gene1 = g1a[0],decostar_sep.join(g1a[1:])
-                g2a = g2.split(decostar_sep)
-                fam2,gene2 = g2a[0],decostar_sep.join(g2a[1:])
+                fam1,gene1 = split_gene(g1)
+                fam2,gene2 = split_gene(g2)
                 adj_str = [
                     sp,f'{fam1}_{gene1}',exts[0],
                     sp,f'{fam2}_{gene2}',exts[1],
