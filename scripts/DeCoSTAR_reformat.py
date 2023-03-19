@@ -98,7 +98,6 @@ An ancestral gene is of the form <integer>|<integer>
 def decostar_test_ancestral(gene):
     gene1 = gene.split(decostar_sep)
     return len(gene1)==2 and gene1[0].isdigit() and gene1[1].isdigit()
-    
 
 ''' 
 Read DeCoSTAR genes file to compute a map from gene name 
