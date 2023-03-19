@@ -246,7 +246,8 @@ if command == 'stats':
     print(f'On target \t{stats[5]}\t{len(selected_families)}')
 elif command == 'build':
     out_dir = sys.argv[6]
-    out_suffix = '_'.join(target_chr)
+    if len(sys.argv) == 7: out_suffix = '_'.join(target_chr)
+    else: out_suffix = f'_{sys.argv[7]}'
     build_families(data_df_by_family, selected_families, out_dir, out_suffix)
     build_sequences(data_df_by_family, selected_families, out_dir, out_suffix)
     data_df_by_species = group_by_species(data_df)
