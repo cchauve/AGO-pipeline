@@ -59,7 +59,16 @@ def split_location(data_df):
     data_df['start'] = data_df['coordinates'].map(lambda s: split_entry(s,1))
     data_df['end'] = data_df['coordinates'].map(lambda s: split_entry(s,2))
     data_df['strand'] = data_df['coordinates'].map(lambda s: split_entry(s,3))
-    data_df.drop(labels=['coordinates'], axis=1, inplace=True)  
+    data_df.drop(labels=['coordinates'], axis=1, inplace=True)
+
+def delete_species(data_df, target_species):
+    all_species = data_df['species'].unique()
+    discarded_species = [s for s in all_species if s not in target_species]
+    data_df.drop(data_df[data_df['species'].isin(discarded_species)].index, inplace = True)
+    for species in discarded_species:
+        if species in ASSEMBLED_SPECIES:
+            ASSEMBLED_SPECIES.remove(species)
+    return len(discarded_species)
 
 def delete_ambiguous_data(data_df):
     nb_rows_before = len(data_df.index)
@@ -82,18 +91,22 @@ def delete_included_genes(data_df):
     data_df.drop(index=idx_to_discard, inplace=True)
     return len(idx_to_discard)
 
-def read_data(tsv_file, read_seq=False):
+def read_data(tsv_file, target_species, read_seq=False):
     columns = ['Gene ID', 'Organism', 'Genomic Location (Gene)', 'Chromosome', 'Ortholog Group']
     if read_seq:
         columns.append('Coding Sequence')
     data_df = pd.read_table(tsv_file, delimiter='\t', usecols=columns)
     rename_columns(data_df, read_seq=read_seq)
     rename_species(data_df)
+    if target_species != ['all']:
+        nb_discarded_species = delete_species(data_df, target_species)
+    else:
+        nb_discarded_species = 0
     split_location(data_df)
     nb_ambiguous_genes = delete_ambiguous_data(data_df)
     data_df.sort_values(by=['species','scaffold','start'], ascending=True, inplace=True)
     nb_included_genes = delete_included_genes(data_df)
-    return data_df,nb_ambiguous_genes,nb_included_genes
+    return data_df,nb_discarded_species,nb_ambiguous_genes,nb_included_genes
 
 ''' Selecting data '''
 
@@ -227,12 +240,18 @@ command = sys.argv[1]
 read_seq = {'stats': False, 'build': True, 'test': False}
 genes_file = sys.argv[2]
 target_chr = sys.argv[3].split()
-min_on_target = int(sys.argv[4])
-min_size = int(sys.argv[5])
+# if 'all', all species are considered
+target_species = sys.argv[4].split()
+min_on_target = int(sys.argv[5])
+min_size = int(sys.argv[6])
 
-data_df,nb_ambiguous_genes,nb_included_genes = read_data(genes_file, read_seq=read_seq[command])
+data_df,nb_ambiguous_genes,nb_included_genes,nb_discarded_species = read_data(
+    genes_file, target_species, read_seq=read_seq[command]
+)
 data_df_by_family = group_by_OG(data_df)
-selected_families,nb_families,stats = select_families(data_df_by_family, min_size, target_chr, min_on_target)
+selected_families,nb_families,stats = select_families(
+    data_df_by_family, min_size, target_chr, min_on_target
+)
 
 if command == 'stats':
     print(f'#Target {target_chr} Min size {min_size} Min size on target {min_on_target}')
@@ -245,9 +264,11 @@ if command == 'stats':
     print(f'Small2    \t{stats[4]}')
     print(f'On target \t{stats[5]}\t{len(selected_families)}')
 elif command == 'build':
-    out_dir = sys.argv[6]
-    if len(sys.argv) == 7: out_suffix = '_'.join(target_chr)
-    else: out_suffix = f'_{sys.argv[7]}'
+    out_dir = sys.argv[7]
+    if len(sys.argv) == 8:
+        out_suffix = f'{"_".join(target_chr)}.{"__".join(target_species)}.{min_size}.{min_on_target}.txt'
+    else:
+        out_suffix = sys.argv[8]
     build_families(data_df_by_family, selected_families, out_dir, out_suffix)
     build_sequences(data_df_by_family, selected_families, out_dir, out_suffix)
     data_df_by_species = group_by_species(data_df)
