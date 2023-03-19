@@ -336,6 +336,7 @@ tools:
             - '   write.genes=true \'
             - '   already.reconciled=true \'
             - '   use.boltzmann=true \'
+            - '   char.sep="|" \'
             - !concat ['   boltzmann.temperature=', *decostar_boltzmann_temperature, ' \']
             - !concat ['   nb.sample=', *decostar_nb_sample, ' \']
             - '   dated.species.tree=false \'

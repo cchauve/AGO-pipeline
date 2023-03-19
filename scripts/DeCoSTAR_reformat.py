@@ -88,6 +88,15 @@ def decostar_family_map(
             decostar_fam_idx += 1
     return family_map
 
+'''=
+Test if a string is the name of an ancestral gene
+An ancestral gene is of the form <integer>|<integer>
+'''
+def decostar_test_ancestral(gene):
+    gene1 = gene.split('|')
+    return len(gene1)==2 and gene1[0].isdigit() and gene1[1].isdigit()
+    
+
 ''' 
 Read DeCoSTAR genes file to compute a map from gene name 
 to list of descendant (gene) leaves 
@@ -106,7 +115,7 @@ def decostar_genes2leaves(in_genes_file, char_sep='|'):
             if len(data) == 2: # Extant leaf
                 gene2leaves[gene] = [gene]
             for child in data[2:]:
-                if char_sep in child: # Ancestral gene
+                if decostar_test_ancestral(child): # Ancestral gene
                     gene2leaves[gene] += gene2leaves[child]
                 else: # Extant leaf, no descendant
                     gene2leaves[gene] += [child]
@@ -117,7 +126,7 @@ def decostar_genes2leaves(in_genes_file, char_sep='|'):
 def decostar_gene_map(in_family_map, in_genes_file, char_sep='|'):
     '''
     input:
-    - dict(DeCoSTAR family ID -> (original family ID, reconciliation path)
+    - dict(DeCoSTAR family ID -> (original family ID, reconciliation path))
     - DeCoSTAR genes file
     - separator family/gene
     output:
@@ -165,7 +174,7 @@ def decostar_reformat_genes(
     dict(str->str): mapping from DeCoSTAR gene names to reformated gene names
     of format family_name<char_sep>gene_name for ancestral genes
     '''
-    # Dictionary original extant gene name -> <name><char_sep><original family>
+    # Dictionary (original extant gene name) -> <name><char_sep><original family>
     original_fam_gene = {
         gene: f'{fam_id}{char_sep}{gene}'
         for gene,fam_id in data_gene2family(in_families_file).items()
@@ -184,7 +193,7 @@ def decostar_reformat_genes(
             line_split = line.rstrip().split()
             in_species,in_fam_gene = line_split[0:2]
             out_species = in_species_map[in_species]
-            if char_sep in in_fam_gene:
+            if decostar_test_ancestral(in_fam_gene):
                 # Ancestral gene: replace DeCoSTAR family name by original 
                 # family name and DeCoSTAR gene name by original gene name
                 in_fam,in_gene = in_fam_gene.split(char_sep)

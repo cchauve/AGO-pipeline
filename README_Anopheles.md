@@ -60,7 +60,6 @@ Submitted batch job 62872666
 > grep -c "ERROR" /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/GeneRax.log
 0
 > wc -l /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/reconciliations.txt
-
 605 /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/reconciliations.txt
 ```
 
@@ -71,8 +70,10 @@ Submitted batch job 62872666
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/DeCoSTAR/DeCoSTAR.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/DeCoSTAR/DeCoSTAR.sh
 sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
-Submitted batch job 62873215
+Submitted batch job 62883101
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check DeCoSTAR
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/DeCoSTAR.log
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/adjacencies.txt
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats DeCoSTAR
 ```
 
