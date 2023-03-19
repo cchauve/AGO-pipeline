@@ -1,0 +1,7 @@
+Anopheles_gambiae_PEST	extant
+Anopheles_funestus_FUMOZ	extant
+node_0	ancestral
+Anopheles_atroparvus_EBRO	extant
+node_1	ancestral
+Anopheles_albimanus_STECLA	extant
+node_2	ancestral
