@@ -81,7 +81,10 @@ Submitted batch job 62883101
 
 ```
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml script SPPDCJ_ILP
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_all_species.sh
 > sbatch  /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_all_species.sh
+sbatch: NOTE: Your memory request of 262144M was likely submitted as 256G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 62889614
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check SPPDCJ_ILP
 > cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP_all_species.log
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats SPPDCJ_ILP

@@ -79,8 +79,10 @@ def sppdcj_adjacencies(
             ]
             for (sp,g1,g2,sign1,sign2,w1,w2) in in_adjacencies:
                 exts = decostar_sign2extremity[(sign1,sign2)]
-                fam1,gene1 = g1.split(decostar_sep)
-                fam2,gene2 = g2.split(decostar_sep)
+                g1a = g1.split(decostar_sep)
+                fam1,gene1 = g1a[0],decostar_sep.join(g1a[1:])
+                g2a = g2.split(decostar_sep)
+                fam2,gene2 = g2a[0],decostar_sep.join(g2a[1:])
                 adj_str = [
                     sp,f'{fam1}_{gene1}',exts[0],
                     sp,f'{fam2}_{gene2}',exts[1],
