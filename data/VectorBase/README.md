@@ -10,7 +10,10 @@ The branch lengths on the species tree are estimated in million years.
 ```
 cd /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase
 gunzip genes_20230311.txt.gz
-./get_statistics.sh
+```
+
+```
+./get_statistics_all.sh
 ```
 
 ```
@@ -26,7 +29,7 @@ On target       606     606
 ```
 
 ```
-python ../../scripts/VectorBase_utils.py build genes_20230311.txt X 2 3 /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase
+python ../../scripts/VectorBase_utils.py build genes_20230311.txt X all 2 3 /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase X
 ```
 
 ```
@@ -73,6 +76,26 @@ Off target      835
 Ambiguous       552
 Small2          2263
 On target       6016    6016
+```
+
+```
+./get_statistics_assembled.sh
+```
+
+```
+#Target ['X'] Min size 3 Min size on target 2
+Filter          ambiguous:3     included:711
+All             13603
+Small1          4488
+Absent          0
+Off target      8278
+Ambiguous       274
+Small2          4
+On target       559     559
+```
+
+```
+python ../../scripts/VectorBase_utils.py build genes_20230311.txt X 'Anopheles_gambiae_PEST Anopheles_atroparvus_EBRO Anopheles_funestus_FUMOZ Anopheles_albimanus_STECLA' 2 3 /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase X_4
 ```
 
 ```
