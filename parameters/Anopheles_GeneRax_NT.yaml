@@ -50,9 +50,6 @@ run:
      - &sppdcj_ilp_beta             '0.25'
      - &sppdcj_input_species        'all'
      - &sppdcj_input_suffix         'all_species'
-     # Trying all species: did not work
-     # - &sppdcj_input_species 'all'
-     # - &sppdcj_input_suffix  'all'
      - &sppdcj_gurobi_exec         'gurobi_cl'
      - &sppdcj_gurobi_options      'MIPGap=0.05'
      - &sppdcj_slurm_options       '--mem=2000G --time=48:00:00'
