@@ -37,14 +37,14 @@ run:
      - &generax_alignment_model 'GTR+G'
      # DeCoSTAR
      - &decostar_exec                  !join [*run_dir_bin, 'DeCoSTAR']
-     - &decostar_slurm_options         '--mem=4G --time=72:00:00'
+     - &decostar_slurm_options         '--mem=4G --time=24:00:00'
      - &decostar_nb_sample             '1000'
      - &decostar_boltzmann_temperature '0.1'
      - &decostar_stats_thresholds      "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0"
      # SPP-DCJ
      - &sppdcj_bin_dir              !join [*run_dir_bin, 'spp_dcj', 'scripts']
      - &sppdcj_ilp_exec             !join [*sppdcj_bin_dir, 'spp_dcj.py']
-     - &sppdcj_ilp_slurm_options    '--mem=256G --time=24:00:00'
+     - &sppdcj_ilp_slurm_options    '--mem=256G --time=72:00:00'
      - &sppdcj_ilp_threshold        '0.4'
      - &sppdcj_ilp_alpha            '0.5'     
      - &sppdcj_ilp_beta             '0.25'
