@@ -469,6 +469,7 @@ tools:
            - &sppdcj_input_file_idmap !ref [*sppdcj_ilp_results_file_idmap]
       slurm:
          options: !ref [*sppdcj_slurm_options]
+         modules: ['gurobi']
          results:
             dir: &sppdcj_results_dir  !join [*dir_results, *sppdcj_name]
             other:

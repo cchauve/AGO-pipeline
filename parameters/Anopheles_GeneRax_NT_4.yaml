@@ -50,10 +50,10 @@ run:
      - &sppdcj_ilp_beta             '0.25'
      - &sppdcj_input_species        'all'
      - &sppdcj_input_suffix         'all_species'
-     - &sppdcj_gurobi_exec         'gurobi_cl'
-     - &sppdcj_gurobi_options      'MIPGap=0.05'
-     - &sppdcj_slurm_options       '--mem=2000G --time=72:00:00'
-     - &sppdcj_writesol_exec       !join [*sppdcj_bin_dir, 'sol2adjacencies.py']
+     - &sppdcj_gurobi_exec          'gurobi_cl'
+     - &sppdcj_gurobi_options       'MIPGap=0.05'
+     - &sppdcj_slurm_options        '--mem=2000G --time=72:00:00'
+     - &sppdcj_writesol_exec        !join [*sppdcj_bin_dir, 'sol2adjacencies.py']
 
 # AGO pipeline
 dir:
@@ -466,6 +466,7 @@ tools:
            - &sppdcj_input_file_idmap !ref [*sppdcj_ilp_results_file_idmap]
       slurm:
          options: !ref [*sppdcj_slurm_options]
+         modules: ['gurobi']
          results:
             dir: &sppdcj_results_dir  !join [*dir_results, *sppdcj_name]
             other:
