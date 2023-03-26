@@ -321,7 +321,7 @@ tools:
                 - &generax_slurm_results_species_tree !join [
                      *generax_results_dir, 'species_trees', 'starting_species_tree.newick'
                   ]
-                - &generax_slurm_results_species_file !ref [*data_reconciliations_species_file]
+                - &generax_slurm_results_species_file !ref [*data_species_path]
          cmd:
             - !concat ['mpiexec -np 48 ', *generax_exec, ' \']
             - !concat ['   -f ', *generax_input_file, ' \']
@@ -340,8 +340,7 @@ tools:
             - !concat [!join [*run_dir_scripts, 'GeneRax_create_species_file.py'], ' \']
             - !concat ['   ', *generax_slurm_results_species_tree, ' \']
             - !concat ['   ', *generax_slurm_results_species_file]
-            - ' '
-            - !concat ['cat ',*generax_slurm_results_species_tree,' > ',*data_reconciliations_species_tree]
+
       stats:
          files:
             - &generax_stats_file_species  !join [
@@ -377,7 +376,7 @@ tools:
          options: !ref [*decostar_slurm_options]
          array:
             results:
-               file:  &decostar_slurm_array_results_file  !ref [*data_reconciliations_species_file]
+               file:  &decostar_slurm_array_results_file  !ref [*generax_slurm_results_species_file]
                field: &decostar_slurm_array_results_field 1
                var:   &decostar_slurm_array_results_var   'SPECIES'      
          results:
@@ -394,7 +393,7 @@ tools:
                 - &decostar_slurm_results_species_file     !join [*decostar_results_dir, 'species.txt']
          cmd:
             - !concat [*decostar_exec, ' \']
-            - !concat ['   species.file=', *data_reconciliations_species_tree, ' \']
+            - !concat ['   species.file=', *generax_slurm_results_species_tree, ' \']
             - !concat ['   adjacencies.file=', *decostar_input_file_adjacencies, ' \']
             - !concat ['   gene.distribution.file=', *decostar_input_file_trees, ' \']
             - !concat ['   output.dir=', *decostar_results_dir, ' \']
@@ -411,7 +410,7 @@ tools:
             - '   verbose=2'
             - ' '
             - !concat [!join [*run_dir_scripts, 'DeCoSTAR_reformat.py'], ' \']
-            - !concat ['   ', *data_reconciliations_species_tree, ' \']
+            - !concat ['   ', *generax_slurm_results_species_tree, ' \']
             - !concat ['   ', *decostar_slurm_results_species_file, ' \']
             - !concat ['   ', *data_families_path, ' \']
             - !concat ['   ', *data_reconciliations_path, ' \']
@@ -430,14 +429,14 @@ tools:
               ]
          cmd:
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
-            - !ref [*data_reconciliations_species_file]
+            - !ref [*generax_slurm_results_species_file]
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
             - !ref [*decostar_stats_thresholds]
             - !ref [*decostar_stats_file_species]
             - ';'
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
-            - !ref [*data_reconciliations_species_file]
+            - !ref [*generax_slurm_results_species_file]
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
             - !ref [*sppdcj_ilp_threshold]
@@ -468,7 +467,7 @@ tools:
          script:
             - !join [*run_dir_scripts, 'SPPDCJ_create_input_files.py']
             - !ref [*data_adjacencies_path]
-            - !ref [*data_reconciliations_species_tree]
+            - !ref [*generax_slurm_results_species_tree]
             - !ref [*sppdcj_input_species]
             - !ref [*sppdcj_ilp_threshold]
             - !ref [*sppdcj_ilp_input_file_species_tree]
@@ -480,7 +479,7 @@ tools:
             - !ref [*sppdcj_ilp_input_file_log]
             - !concat [';']
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
-            - !ref [*data_reconciliations_species_file]
+            - !ref [*generax_slurm_results_species_file]
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
             - !ref [*sppdcj_ilp_threshold]
