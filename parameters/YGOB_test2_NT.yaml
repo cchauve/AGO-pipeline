@@ -87,9 +87,9 @@ data:
       # [optional] Suffixes for nucleotides and amino-acids alignments files
       NT_ext: &data_alignments_NT_ext '_NT.fasta'
       AA_ext: &data_alignments_AA_ext '_AA.fasta'
-   tree_inference:
-      path: &tree_inference_path !join [*dir_data, 'tree_inference.txt']
-      ufboot_ext: &tree_inference_ufboot_ext '.ufboot'
+   gene_tree:
+      path: &gene_tree_path !join [*dir_data, 'gene_trees.txt']
+      ufboot_ext: &gene_tree_ufboot_ext '.ufboot'
    reconciliations:
       path:  &data_reconciliations_path   !join [*dir_data, 'reconciliations.txt']
       path:  &data_reconciliations_species_tree !join [*dir_data, 'reconciled_species_tree.newick']
@@ -201,7 +201,7 @@ tools:
       input:
          file: &iqtree_input_file !ref [*data_alignments_path]
       output: 
-         file: &iqtree_output_file !ref [*tree_inference_path]
+         file: &iqtree_output_file !ref [*gene_tree_path]
       slurm:
          options: !ref [*iqtree_slurm_options]
          modules: ['iq-tree/2.0.7']
@@ -214,13 +214,13 @@ tools:
                file: &iqtree_slurm_array_results_file !ref [*iqtree_input_file]
                field: &iqtree_slurm_array_results_field 1
                var: &iqtree_slurm_array_results_var 'FAM_ID'
-               ext:   &iqtree_slurm_array_results_ext   !ref [*tree_inference_ufboot_ext]
+               ext:   &iqtree_slurm_array_results_ext   !ref [*gene_tree_ufboot_ext]
          results:
             dir: &iqtree_results_dir !join [*dir_results, *iqtree_name]
             files:
                 - &iqtree_slurm_results_file_ufboot !join [
                      *iqtree_results_dir,
-                     !concat ['${', *iqtree_slurm_array_results_var, '}', *tree_inference_ufboot_ext]
+                     !concat ['${', *iqtree_slurm_array_results_var, '}', *gene_tree_ufboot_ext]
                   ]
          cmd:
             - !concat [*iqtree_exec, ' \']
@@ -233,7 +233,7 @@ tools:
       name: &ale_name 'ALE'
       input:
          file: 
-            - &ale_input_file !ref [*tree_inference_path]
+            - &ale_input_file !ref [*gene_tree_path]
             - &ale_input_species_tree_file  !ref [*data_species_tree_path]
          
       output:
@@ -242,11 +242,11 @@ tools:
          options: !ref [*ale_slurm_options]
          array:
             input:
-               file: &ale_slurm_array_input_file !ref [*tree_inference_path]
+               file: &ale_slurm_array_input_file !ref [*gene_tree_path]
                field: &ale_slurm_array_input_field 2
                var: &ale_slurm_array_input_var 'TREES_FILE'
             results:
-               file:  &ale_slurm_array_results_file  !ref [*tree_inference_path]
+               file:  &ale_slurm_array_results_file  !ref [*gene_tree_path]
                field: &ale_slurm_array_results_field 1
                var:   &ale_slurm_array_results_var   'FAM_ID'
                ext:   &ale_slurm_array_results_ext   !ref [*data_reconciliations_ext]
