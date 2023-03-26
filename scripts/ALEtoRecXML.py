@@ -1,9 +1,10 @@
 #!/usr/bin/python
 
 #########################################
-##  Author:         Wandrille Duchemin
+##  Original Author:         Wandrille Duchemin
+##  Modifications Author: Evan Cribbie
 ##  Created:        20-June-2016
-##  Last modified:  10-Apr-2018
+##  Last modified:  26-Apr-2023
 ##
 ##  Decribes functions to transform a reconciled tree in
 ##  NHX format into a tree in the recPhyloXML format
@@ -11,12 +12,11 @@
 ##  requires : ete3 ( http://etetoolkit.org/ )
 ##             ReconciledTree , and ete3-based representation of a reconciled tree
 ##
-##  developped for python2.7
-##
 #########################################
 
 from ete3 import Tree, TreeNode
 from ReconciledTree import RecEvent, ReconciledTree, myBasicTreeXMLLines
+
 
 def completeTreeNames(tree, useBS = False ) :
     """
@@ -32,51 +32,13 @@ def completeTreeNames(tree, useBS = False ) :
 
     for i,n in enumerate(tree.traverse('postorder')):
         if n.name == "":
-            print (n.support)
+            #print (n.support)
             if useBS:
                 n.name = str(int(n.support))
             else:
                 n.name = str(i)
     return tree
 
-#def treatLossEvent(node, LossEvent , keptChildNameSuffix = ".c"):
-#    """
-#    Takes:
-#        - node (ReconciledTree)
-#        - LossEvent (recEvent)
-#        - keptChildNameSuffix (str) [default = ".c"] : suffix to add to the name of the new child of node that is NOT a loss
-#    """
-#
-#
-#    # 1. create the loss child
-#
-#    #determining ts if there is one
-#    lostTS = LossEvent.timeSlice
-#    if not lostTS is None:
-#        lostTS -= 1 # one TS more recent than the parent
-#
-#    lossNode = ReconciledTree()
-#    lossNode.addEvent( RecEvent("loss" , "", ts= lostTS ) )
-#    lossNode.name="LOSS"
-#
-#    # 2. create the kept child
-#
-#    keptNode = ReconciledTree()
-#    keptNode.name = node.name + keptChildNameSuffix
-#
-#    # 4. branching loss and kept to original node
-#
-#    node.add_child(lossNode)
-#    node.add_child(keptNode)
-#
-#    # 5. editing the event and adding to node
-#
-#    e = LossEvent.eventCode
-#    LossEvent.eventCode = e.rpartition("L")[0]
-#
-#    node.addEvent(LossEvent)
-#
-#    return keptNode
 
 
 def parse_node_annotation(node_annotation, isLeaf = False, isDead = False, isUndated = False):
@@ -90,8 +52,8 @@ def parse_node_annotation(node_annotation, isLeaf = False, isDead = False, isUnd
     #print("annot : ",node_annotation , isUndated)
 
     l_events = []
-
-    if len(node_annotation) != 0:
+    print(node_annotation)
+    if len(node_annotation) != 0 and "|LOSS" not in node_annotation:
 
         if node_annotation.startswith("."):
             node_annotation = node_annotation[1:]
@@ -100,6 +62,7 @@ def parse_node_annotation(node_annotation, isLeaf = False, isDead = False, isUnd
         ##further splitting multiple transfer
         s_ann = []
         for ann in tmp_ann:
+
             if ann.count("@") < 1:
                 s_ann.append(ann)
                 continue
@@ -111,8 +74,7 @@ def parse_node_annotation(node_annotation, isLeaf = False, isDead = False, isUnd
             for a in new_anns[2:]:##for each transfer after that (should be only one)
                 s_ann.append("@" + a)
 
-
-        for ann in s_ann:
+        for ann in reversed(s_ann):
             if len(ann) == 0:
                 raise Exception( "empty annotation" )
 
@@ -126,7 +88,7 @@ def parse_node_annotation(node_annotation, isLeaf = False, isDead = False, isUnd
                         ts = None
 
                     l_events.append( RecEvent( "S" , target , ts ) )
-                    continue
+                    break
 
 
             if ann.startswith("T@"): ##Transfer out
@@ -144,7 +106,7 @@ def parse_node_annotation(node_annotation, isLeaf = False, isDead = False, isUnd
 
                 ##adding the event
                 l_events.append( RecEvent( "bro" , source_sp , source_ts ) )
-
+                break
 
             if ann.startswith("@"): # or ann.startswith("Tb@"):##transfer in or back
 
@@ -156,16 +118,17 @@ def parse_node_annotation(node_annotation, isLeaf = False, isDead = False, isUnd
 
                 ##adding the event
                 l_events.append( RecEvent( "Tb" , target_sp, int(target_ts) ) )
-
+                break
 
 
             if ann.startswith("Tb@"):
                 l_events.append( RecEvent("Bo", "-1" ) )
-
+                break
             if ann.startswith("D@"):##Duplication
 
                 ts = None
                 sp = None
+                isUndated = True
                 if isUndated:
                     sp = ann[2:]
                 else:
@@ -173,7 +136,7 @@ def parse_node_annotation(node_annotation, isLeaf = False, isDead = False, isUnd
                     ts = int(ts)
 
                 l_events.append( RecEvent( "D" , sp, ts ) )
-
+                break
 
     if isLeaf and ( len(l_events)==0 or l_events[-1].eventCode !="C" ) :
         ts = 0
@@ -190,12 +153,8 @@ def parse_node_annotation(node_annotation, isLeaf = False, isDead = False, isUnd
 
             l_events.insert(0, RecEvent( "Tb" , target_sp , target_ts ) )
 
-
-    ##adding loss labels
-    for i in range(len(l_events)-1):##all events but the last one
-        if l_events[i].eventCode in ["bro","S"]:
-            l_events[i].eventCode += "L"
-
+    if "|LOSS" in node_annotation:
+        l_events.append(RecEvent("L",node_annotation.split("|")[0],None))
 
     return l_events
 
@@ -261,14 +220,15 @@ def ALEtreeToReconciledTree(ALEtree, isDead = False, isUndated = False , sepSp =
 
     annotation = None
     name = ALEtree.name
-    if isLeaf:
+    if isLeaf and "|LOSS" not in ALEtree.name:
         name , annotation = separateLeafNameFromLeafAnnotation(ALEtree.name, sepSp=sepSp)
         #print("leaf parsing :", name , annotation)
     else:
         annotation = ALEtree.name
 
     #print "name : ",ALEtree.name
-
+    if "|LOSS" in ALEtree.name:
+        isLeaf=False
     events = parse_node_annotation(annotation, isLeaf, isDead = isDead, isUndated = isUndated )
 
 
@@ -290,12 +250,6 @@ def ALEtreeToReconciledTree(ALEtree, isDead = False, isUndated = False , sepSp =
     current = RT
 
     for e in events:
-#        if e.eventCode.endswith("L"):
-#            #print "plep"
-#            current = treatLossEvent(current, e , ".c")
-#        else:
-#            current.addEvent(e)
-#
         current.addEvent(e)
 
     for c in ALEtree.children: ##recursion on successors
@@ -304,158 +258,7 @@ def ALEtreeToReconciledTree(ALEtree, isDead = False, isUndated = False , sepSp =
     return RT
 
 
-def refineReconciledTreeWithTransferBack(RT):
-    """
-    adds transferBack events where they were omitted
 
-    Takes:
-        - RT (ReconciledTree) : a reconciled tree obtained from an ale string
-
-    """
-
-    for n in RT.traverse():
-        if n.is_root():
-            continue
-
-        lastEventParent = n.up.getEvent(-1)
-
-        if lastEventParent.eventCode in ["branchingOut", "bro"]:
-            ## parent is an outgoing transfer
-
-            firstEvent = n.getEvent(0)
-
-            if firstEvent.species == lastEventParent.species:
-                continue ## this is the "kept" child --> continue
-
-            if firstEvent.eventCode in ["Tb", "transferBack","Bo","bifurcationOut"]:
-                continue ## already the correct annotation
-
-            TbEvent = RecEvent("Tb" ,  species = firstEvent.species)
-
-            n.addEvent( TbEvent , append = False)
-
-def refineReconciledTreeLosses(RT, spTree):
-    """
-    adds species to the losses
-
-    Takes:
-        - RT (ReconciledTree) : a reconciled tree obtained from an ale string
-        - spTree (ete3.Tree) : a species tree
-
-    """
-
-    for n in RT.traverse():
-        if n.is_root():
-            continue
-
-        firstEvent = n.getEvent(0)
-
-        if first.eventCode in ["L", "loss"]:
-            ## loss!
-
-            lastEventParent = n.up.getEvent(-1)
-
-            if firstEvent.species == lastEventParent.species:
-                continue ## this is the "kept" child --> continue
-
-            if firstEvent.eventCode in ["Tb", "transferBack","Bo","bifurcationOut"]:
-                continue ## already the correct annotation
-
-            TbEvent = RecEvent("Tb" ,  species = firstEvent.species)
-
-            n.addEvent( TbEvent , append = False)
-
-
-def ConvertRTtoLossIndepVersion(RT , speciesTree = None, keptChildNameSuffix = ".c"):
-    """
-    *modifies RT*
-    *RECURSIVE*
-
-    Takes:
-        - RT (ReconciledTree): reconciled tree or subtree to convert
-        - speciesTree (ete3.Tree) [default = None] : species tree
-        - keptChildNameSuffix (str) [default = ".c"] : suffix to add to the name of the new child of node that is NOT a loss
-    """
-
-    for i, e in enumerate(RT.eventRecs):
-
-        if len(e.eventCode)>1 and e.eventCode.endswith("L"):
-
-            species = ""
-
-            if not speciesTree is None:
-                species = RT.getLostSpecies( i , speciesTree)
-
-
-            lostTS = e.timeSlice
-            if not lostTS is None:
-                lostTS -= 1
-
-            MakeLossIndependentNode( RT , i , lostSpecies = species, lostTS = lostTS, keptChildNameSuffix = keptChildNameSuffix)
-
-    for c in RT.children:
-        ConvertRTtoLossIndepVersion(c , speciesTree , keptChildNameSuffix)
-
-    return
-
-def MakeLossIndependentNode( node , LossIndex , lostSpecies = "", lostTS = None, lostAdditional = {} , keptChildNameSuffix = ".c"):
-    """
-    *modifies node*
-
-    Takes:
-         - node (ReconciledTree): reconciled node where the *Loss event occurs
-         - LossIndex (int): index of the speciationLoss or branchingOutLoss event
-         - lostSpecies (str) [default = ""] : species of the loss
-         - lostTS (int) [default = None]: timeSlice is the loss
-         - lostAdditional [default = {}]: additional information to give to the new loss event
-         - keptChildNameSuffix (str) [default = ".c"] : suffix to add to the name of the new child of node that is NOT a loss
-    """
-
-    #print( MakeLossIndependentNode , node , lostTS )
-
-    # 1. create the loss child
-
-    lossNode = ReconciledTree()
-    lossNode.addEvent( RecEvent("loss" , lostSpecies, ts= lostTS , additionnalInfo = lostAdditional) )
-    lossNode.name="LOSS"
-
-    # 2. create the kept child
-
-    keptNode = ReconciledTree()
-    keptNode.name= node.name + keptChildNameSuffix
-
-    while len(node.eventRecs) >  (LossIndex+1):
-        #print LossIndex, LossIndex+1 , len(node.eventRecs)
-        keptNode.addEvent( node.popEvent(LossIndex+1) )
-
-    # 3. link children to kept child
-
-    while len(node.children) > 0:
-        c = node.children[0]
-        c.detach()
-        keptNode.add_child(c)
-
-
-    # 4. branching loss and kept to original node
-
-    node.add_child(lossNode)
-    node.add_child(keptNode)
-
-    # 5. editing the event
-
-    e = node.eventRecs[LossIndex].eventCode
-    node.eventRecs[LossIndex].eventCode = e[:-1]
-
-    return
-
-
-
-TESTING_SPECIES_TREE_NEWICK = "(((a,b)2,(c,d)1)4,((e,f)3,g)5)6;"
-TESTING_GENE_TREE_NEWICK = "((a_a1,b_b1@0|b).4.2.T@1|a,((((d_d1@0|d,e_e2.3)Tb@3|3,g_g2)T@4|g,g_g3.T@4|3@1|g).5,(e_e1.3,g_g1).5)D@5|5).6;"
-
-
-#undated ex with a duplication : ((A:0.1,B:0.2).5:0.3,(C:0.3,(E:0.4,(D_1:0.5,D_2:0.5).D@D:0.5).6:0.05).7:0.3).8:0;
-#undated transfer ((B:0.2,A_1:0.1).5:0.3,(C:0.3,(E:0.4,(D:0.5,A_2:0.5).T@D->A:0.5).6:0.05).7:0.3).8:0;
 
 if __name__ == "__main__":
 
@@ -478,17 +281,18 @@ if __name__ == "__main__":
 #                            (-s speciesFileIn    : (optional) name of the species tree file
 #                            (--include.species   : (optional) whether the species tree should be included in the XML file (using the <spTree> tag)
 
-
     OK = True
 
     nextKEY = None
     params = {
                             "-g"    : None ,#name of the file containing NHX reconciliations
                             "-o"    : None, #(optional) name of the output file (default is geneFileIn + ".xml" )
-                            "-s"    : "_" #sepparator
+                            "-s"    : "_", #sepparator
+                            "-st"   : None #newick species tree
             }
 
     flagArgs = ["--include.species"]
+
 
     for i in range(1,len(sys.argv)):
 
@@ -548,11 +352,10 @@ if __name__ == "__main__":
         params["-o"] = params["-g"] + defaultOutputSuffix
 
 
-
-
     OUT = open(params["-o"],"w")
 
     OUT.write( "<recPhylo>" + "\n" )
+
 
     indentLevel = 1
     indentChar = "  "
@@ -561,8 +364,28 @@ if __name__ == "__main__":
 
     print ("reading input reconciled trees.")
 
-    spTree = None
-    isUndated = False
+    spTree = params["-st"]
+    isUndated = True
+
+    if spTree != None:
+        f=open(spTree,"r")
+        tree_f=f.readlines()
+        f.close()
+        if len(tree_f)!=1:
+                print("ERROR: Species Tree not one line, species tree is, ",len(tree_f)," lines" )
+                exit()
+        treeLine=tree_f[0]
+        ## found a species tree!
+        spTree = Tree(treeLine)
+        spTree = completeTreeNames( spTree , True)
+        OUT.write( indentLevel * indentChar + "<spTree>" + "\n")
+        indentLevel += 1
+        lines = myBasicTreeXMLLines(spTree)
+        for xmlline in lines:
+                OUT.write( indentLevel * indentChar + xmlline + "\n" )
+        indentLevel -= 1
+        OUT.write( indentLevel * indentChar + "</spTree>" + "\n")
+
 
     IN = open(params["-g"],"r")
 
@@ -575,9 +398,55 @@ if __name__ == "__main__":
             if l.startswith("("):##special ignore white lines
 
                 ALEtree = Tree( l, format = 1 )
+                not_done=True
+                while(not_done):
+                    count=0
+                    for node in ALEtree.traverse("postorder"):
+                        if "." in node.name and "@" not in node.name and not node.name.startswith(".") and not node.name.endswith(".c"):
+                            spl=node.name.split(".")
+                            tmp=node.add_child(child=node.copy())
+                            locals()[''.join([node.name,".c"])] = node.add_child(name=''.join([node.name,'.c']))
+                            locals()['.'.join(spl[:-1])]=locals()[''.join([node.name,".c"])].add_child(child=tmp.copy(),name='.'.join(spl[:-1]))
+                            tmp.delete()
+                            node.delete()
+                            count=1
+                            break
+                    if count==0:
+                        not_done=False
+
+                while(not_done):
+                    count=0
+                    for node in ALEtree.traverse("postorder"):
+                        if "." in node.name[1:] and "@" not in node.name and node.name.startswith(".") and not node.name.endswith(".c"):
+                            spl=node.name[1:].split(".")
+                            tmp=node.add_child(child=node.copy())
+                            locals()[''.join([node.name,".c"])] = node.add_child(name=''.join([node.name,'.c']))
+                            locals()['.'.join(spl[:-1])]=locals()[''.join([node.name,".c"])].add_child(child=tmp.copy(),name='.'.join(spl[:-1]))
+                            tmp.delete()
+                            node.delete()
+                            count=1
+                            break
+                    if count==0:
+                        not_done=False
+
+                if not spTree is None:
+                    sister_dict={}
+                    for node_test in spTree.iter_descendants("postorder"):
+                        sister_dict[node_test.name]=getattr(node_test.get_sisters()[0],"name")
+
+                not_done=True
+                while(not_done):
+                    count=0
+                    for node in ALEtree.traverse("postorder"):
+                        if len(node.get_children())==1:
+                            node.add_child(name='|'.join([sister_dict[node.name.split(".")[-3].split("|")[0]],"LOSS"]))
+                            count=1
+                            break
+                    if count==0:
+                        not_done=False
+
 
                 while True:
-
                     try:
                         RT = ALEtreeToReconciledTree(ALEtree, isUndated = isUndated , sepSp= params["-s"])
                     except ValueError as v:
@@ -597,12 +466,6 @@ if __name__ == "__main__":
                     else:
                         print("Reconciled tree successfuly read.")
                         break
-
-
-                if isUndated:
-                    refineReconciledTreeWithTransferBack(RT)
-
-                ConvertRTtoLossIndepVersion(RT , speciesTree = spTree, keptChildNameSuffix = ".c")
 
 
                 XMLlines = RT.getTreeRecPhyloXMLLines()

@@ -272,18 +272,18 @@ tools:
             - !concat [*ale_object_slurm_result_file, ' \']
             - !concat ['   ',*ale_options]
             - ' '
-            - !concat ['grep "1 reconciled G-s:" -A 2 ', *ale_slurm_results_file_uml_rec ,' | tail -1 > temp${', *ale_slurm_array_results_var, '}.nhx']
-            - ' '
-            - !concat ['python ', !join [*run_dir_scripts, 'ALEtoRecXML.py'],' -g temp${', *ale_slurm_array_results_var, '}.nhx -o ', *ale_recphyloxml_result_file  ,' -s "', *specie_gene_name_seperator,'"']
-            - ' '
-            - !concat ['rm temp${', *ale_slurm_array_results_var, '}.nhx']
-            - ' '
             - 'if [ ${SLURM_ARRAY_TASK_ID} == "1" ]'
             - 'then'
             - !concat ['   tree=$(grep -h "S:" ',*ale_slurm_results_file_uml_rec,' | cut -f 2)']
             - !concat ['   echo ${tree} > ',*data_reconciliations_species_tree]
             - !concat ['   ',!join [*run_dir_scripts, 'GeneRax_create_species_file.py'], ' ',*data_reconciliations_species_tree, ' ',*data_reconciliations_species_file]
             - 'fi'
+            - ' '
+            - !concat ['grep "1 reconciled G-s:" -A 2 ', *ale_slurm_results_file_uml_rec ,' | tail -1 > temp${', *ale_slurm_array_results_var, '}.nhx']
+            - ' '
+            - !concat ['python ', !join [*run_dir_scripts, 'ALEtoRecXML.py'],' -g temp${', *ale_slurm_array_results_var, '}.nhx -o ', *ale_recphyloxml_result_file  ,' -s "', *specie_gene_name_seperator,'"',' -st ',*data_reconciliations_species_tree]
+            - ' '
+            - !concat ['rm temp${', *ale_slurm_array_results_var, '}.nhx']
             - ' '     
             
    # GeneRax: computing reconciled gene trees
