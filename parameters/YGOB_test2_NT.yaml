@@ -33,7 +33,7 @@ run:
      - &ale_slurm_options  '--mem=2G --time=02:00:00'
      - &ale_options        !concat ['sample=1 tau=0 separators="',*specie_gene_name_seperator,'"']
      - &ale_ext            '.ale'
-     - &ale_uml_rec_ext  '.uml_rec'
+     - &ale_uml_rec_ext    '.uml_rec'
      # GeneRax
      - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
      - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
