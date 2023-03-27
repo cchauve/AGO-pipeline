@@ -1,4 +1,4 @@
-# SPP-DCJ Pipeline
+# Ancestral Gene Orders Pipeline
 ### Evan Cribbie, Cedric Chauve.
 
 ## Data
