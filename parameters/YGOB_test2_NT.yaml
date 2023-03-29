@@ -269,7 +269,7 @@ tools:
          cmd:
             - !concat ['cd ',*ale_results_dir]
             - ' '
-            - !concat [*ALEobserve_exec, ${',*ale_slurm_array_input_var,'}']
+            - !concat [*ALEobserve_exec, '${',*ale_slurm_array_input_var,'}']
             - ' '
             - !concat ['mv  ${',*ale_slurm_array_input_var,'}.ale ', *ale_results_dir]
             - ' '
