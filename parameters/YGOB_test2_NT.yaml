@@ -259,7 +259,7 @@ tools:
                      !concat [
                          *data_species_tree_name, '_',
                          '${', *ale_slurm_array_input_var, '##*/}',
-                         *ale_ext,*reconciliation_uml_rec_ext
+                         *ale_ext,*ale_uml_rec_ext
                      ]
                   ]
                 - &ale_result_file_recphyloxml !join [
