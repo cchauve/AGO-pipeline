@@ -83,19 +83,19 @@ On target       6016    6016
 ```
 
 ```
-#Target ['X'] Min size 3 Min size on target 2
+#Target ['X'] Min size 4 Min size on target 4
 Filter          ambiguous:3     included:711
 All             13603
-Small1          4488
+Small1          6133
 Absent          0
-Off target      8278
-Ambiguous       274
-Small2          4
-On target       559     559
+Off target      6758
+Ambiguous       245
+Small2          16
+On target       451     451
 ```
 
 ```
-python ../../scripts/VectorBase_utils.py build genes_20230311.txt X 'Anopheles_gambiae_PEST Anopheles_atroparvus_EBRO Anopheles_funestus_FUMOZ Anopheles_albimanus_STECLA' 2 3 /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase X_4
+python ../../scripts/VectorBase_utils.py build genes_20230311.txt X 'Anopheles_gambiae_PEST Anopheles_atroparvus_EBRO Anopheles_funestus_FUMOZ Anopheles_albimanus_STECLA' 4 4 /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase X_4
 ```
 
 ```
