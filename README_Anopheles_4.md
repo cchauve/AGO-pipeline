@@ -92,10 +92,52 @@ We consider only the three ingroup species as node_0 has almost no signal.
 sbatch: NOTE: Your memory request of 262144M was likely submitted as 256G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
 Submitted batch job 63925788
 > python src/AGO.py parameters/Anopheles_GeneRax_NT_4.yaml check SPPDCJ_ILP
-> cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/log/SPPDCJ_ILP_all_species.log
-> cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/log/SPPDCJ_ILP/SPPDCJ_ILP_all_species.err
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/log/SPPDCJ_ILP_ingroups.log
+        No output file is created
+> cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/log/SPPDCJ_ILP_ingroups.log
+#status tool    index   message
+SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/results/SPPDCJ_ILP/ingroups_0.5_0.5_0.25.idmap
+SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/results/SPPDCJ_ILP/ingroups_0.5_0.5_0.25.ilp
+> cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/log/SPPDCJ_ILP/SPPDCJ_ILP_ingroups.err
+INFO    2023-04-01 08:39:28,145 loading species tree from /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/aux/SPPDCJ_ILP/species_tree_ingroups.txt
+INFO    2023-04-01 08:39:28,159 loading candidate adjacencies from /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/aux/SPPDCJ_ILP/adjacencies_complemented_ingroups.txt
+INFO    2023-04-01 08:39:28,204 identified 210 candidate telomeres in genome node_1
+INFO    2023-04-01 08:39:28,205 identified 116 candidate telomeres in genome node_0
+INFO    2023-04-01 08:39:28,205 identified 2 candidate telomeres in genome Anopheles_atroparvus_EBRO
+INFO    2023-04-01 08:39:28,206 identified 2 candidate telomeres in genome Anopheles_gambiae_PEST
+INFO    2023-04-01 08:39:28,206 identified 2 candidate telomeres in genome Anopheles_funestus_FUMOZ
+INFO    2023-04-01 08:39:28,206 constructing relational diagrams for all 4 branches of the tree
+INFO    2023-04-01 11:55:44,068 identified 1 circular singleton candidates
+INFO    2023-04-01 12:03:13,764 identified 0 circular singleton candidates
+INFO    2023-04-01 12:03:33,132 identified 1 circular singleton candidates
+INFO    2023-04-01 12:03:52,528 identified 1 circular singleton candidates
+INFO    2023-04-01 12:03:52,531 writing objective over all graphs
+INFO    2023-04-01 12:04:01,957 writing constraints...
+INFO    2023-04-01 12:04:01,957 writing constraints for relational diagram of node_0 and Anopheles_funestus_FUMOZ
+INFO    2023-04-01 12:04:18,179 writing constraints for relational diagram of node_0 and Anopheles_gambiae_PEST
+INFO    2023-04-01 12:04:34,422 writing constraints for relational diagram of node_1 and Anopheles_atroparvus_EBRO
+INFO    2023-04-01 12:04:52,207 writing constraints for relational diagram of node_1 and node_0
+INFO    2023-04-01 12:05:09,034 writing domains...
+INFO    2023-04-01 12:05:09,034 writing domains for relational diagram of node_0 and Anopheles_funestus_FUMOZ
+INFO    2023-04-01 12:05:09,036 writing domains for relational diagram of node_0 and Anopheles_gambiae_PEST
+INFO    2023-04-01 12:05:09,038 writing domains for relational diagram of node_1 and Anopheles_atroparvus_EBRO
+INFO    2023-04-01 12:05:09,040 writing domains for relational diagram of node_1 and node_0
+INFO    2023-04-01 12:05:09,043 writing variables...
+INFO    2023-04-01 12:05:09,043 writing general variables for relational diagram of node_0 and Anopheles_funestus_FUMOZ
+INFO    2023-04-01 12:05:09,044 writing general variables for relational diagram of node_0 and Anopheles_gambiae_PEST
+INFO    2023-04-01 12:05:09,046 writing general variables for relational diagram of node_1 and Anopheles_atroparvus_EBRO
+INFO    2023-04-01 12:05:09,048 writing general variables for relational diagram of node_1 and node_0
+INFO    2023-04-01 12:05:09,050 writing binary variables for relational diagram of node_0 and Anopheles_funestus_FUMOZ
+INFO    2023-04-01 12:05:10,739 writing binary variables for relational diagram of node_0 and Anopheles_gambiae_PEST
+INFO    2023-04-01 12:05:12,434 writing binary variables for relational diagram of node_1 and Anopheles_atroparvus_EBRO
+INFO    2023-04-01 12:05:14,332 writing binary variables for relational diagram of node_1 and node_0
+INFO    2023-04-01 12:05:17,387 writing ID-to-gene extremity mapping to /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/results/SPPDCJ_ILP/ingroups_0.5_0.5_0.25.idmap
+INFO    2023-04-01 12:05:17,398 DONE
 > python src/AGO.py parameters/Anopheles_GeneRax_NT_4.yaml stats SPPDCJ_ILP
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/statistics/SPPDCJ_ILP/components_ingroups.log
 > python src/AGO.py parameters/Anopheles_GeneRax_NT_4.yaml script SPPDCJ
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/aux/SPPDCJ/SPPDCJ_ingroups.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT_4/aux/SPPDCJ/SPPDCJ_ingroups.sh
+Submitted batch job 63953145
 ```
 
