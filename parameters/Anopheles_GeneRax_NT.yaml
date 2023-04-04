@@ -1,7 +1,21 @@
-# Parameters file to process Anopheles VectorBase data, for 4 assembled species and X chroosome
+# Parameters file to process Anopheles VectorBase data, for 4 assembled species and X chromosome
 version: 1
 
-# Data
+# Specific run parameters
+run:
+   name: &run_name 'Anopheles_GeneRax_NT'
+   dir:
+      # Root directory for parameters and tool-specific scripts
+      - &run_dir_root    '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
+      - &run_dir_bin     !join [*run_dir_root, 'bin']
+      # Tool-specific scripts
+      - &run_dir_scripts !join [*run_dir_root, 'scripts']
+      # VectorBase data
+      - &run_dir_data    !join [*run_dir_root, 'data/VectorBase']
+      # Directory for experiments scripts, results, log, statistics and auxiliary files
+      - &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
+
+# Data and results directories and files
 dir:
    data:    &dir_data    !join [*run_dir_exp, 'data']
    aux:     &dir_aux     !join [*run_dir_exp, 'aux']
@@ -11,11 +25,11 @@ dir:
 
 data:
    species_tree:
-      path: &data_species_tree_path  !join [*run_dir_data, 'species_tree_4.newick']
-   genes:
-      sep: &specie_gene_name_seperator '|'
+      name: &data_species_tree_name  'species_tree_4.newick'
+      path: &data_species_tree_path  !join [*run_dir_data, *data_species_tree_name]
    families:
       path: &data_families_path  !join [*run_dir_data, 'families_X_4.txt']
+      sep: &specie_gene_name_separator '|'
    gene_orders:
       path: &data_gene_orders_path  !join [*run_dir_data, 'gene_orders_X_4.txt']
    # [optional] 
@@ -38,72 +52,56 @@ data:
    adjacencies:
       path:  &data_adjacencies_path   !join [*dir_data, 'adjacencies_X_4.txt']
 
-# Specific run/tools parameters
-run:
-   name: &run_name 'Anopheles_GeneRax_NT_4'
-   dir:
-      # Root directory for parameters and tool-specific scripts
-      - &run_dir_root    '/home/chauvec/projects/ctb-chauvec/SPP-PIPELINE'
-      - &run_dir_bin     !join [*run_dir_root, 'bin']
-      # Tool-specific scripts
-      - &run_dir_scripts !join [*run_dir_root, 'scripts']
-      # VectorBase data
-      - &run_dir_data    !join [*run_dir_root, 'data/VectorBase']
-      # Directory for experiments scripts, results, log, statistics and auxiliary files
-      - &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
-   tools:
-     # MUSCLE
-     - &muscle_exec          'muscle'
-     - &muscle_slurm_options '--mem=8G --time=02:00:00'
-     # MACSE
-     - &macse_exec          !join [*run_dir_bin, 'macse_v2.06.jar']
-     - &macse_slurm_options '--mem=8G --time=02:00:00'
-     # Iqtree
-     - &iqtree_exec          'iqtree'
-     - &iqtree_slurm_options '--mem=1G --time=00:20:00'
-     - &iqtree_options       '-m MFP -bb 1000 -wbtl'
-     - &iqtree_ufboot_ext    '.ufboot'
-     # ALE
-     - &ALEobserve_exec    !join [*run_dir_bin,'ALE/bin/ALEobserve']
-     - &ALEml_undated_exec !join [*run_dir_bin,'ALE/bin/ALEml_undated']
-     - &ale_slurm_options  '--mem=2G --time=02:00:00'
-     - &ale_options        !concat ['sample=1 tau=0 separators="',*specie_gene_name_separator,'"']
-     - &ale_ext            '.ale'
-     - &ale_uml_rec_ext    '.uml_rec'
-     # GeneRax
-     - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
-     - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
-     - &generax_options         '--per-family-rates --si-quartet-support'
-     - &generax_seed            '123'
-     - &generax_rec_model       'UndatedDL'
-     - &generax_strategy        'SPR'
-     - &generax_alignment_model 'GTR+G'
-     # DeCoSTAR
-     - &decostar_exec                  !join [*run_dir_bin, 'DeCoSTAR']
-     - &decostar_slurm_options         '--mem=4G --time=24:00:00'
-     - &decostar_nb_sample             '1000'
-     - &decostar_boltzmann_temperature '0.1'
-     - &decostar_stats_thresholds      "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0"
-     # SPP-DCJ
-     - &sppdcj_bin_dir              !join [*run_dir_bin, 'spp_dcj', 'scripts']
-     - &sppdcj_ilp_exec             !join [*sppdcj_bin_dir, 'spp_dcj.py']
-     - &sppdcj_ilp_slurm_options    '--mem=256G --time=24:00:00'
-     - &sppdcj_ilp_threshold        '0.5'
-     - &sppdcj_ilp_alpha            '0.5'     
-     - &sppdcj_ilp_beta             '0.25'
-     - &sppdcj_input_species        'Anopheles_gambiae_PEST Anopheles_funestus_FUMOZ Anopheles_atroparvus_EBRO'
-     - &sppdcj_input_suffix         'ingroups'
-     - &sppdcj_gurobi_exec          'gurobi_cl'
-     - &sppdcj_gurobi_options       'MIPGap=0.05'
-     - &sppdcj_slurm_options        '--mem=2000G --time=72:00:00'
-     - &sppdcj_writesol_exec        !join [*sppdcj_bin_dir, 'sol2adjacencies.py']
+# Tools options
+tools:
+   # MACSE
+   - &macse_exec          !join [*run_dir_bin, 'macse_v2.06.jar']
+   - &macse_slurm_options '--mem=8G --time=02:00:00'
+   # IQ-TREE
+   - &iqtree_exec          'iqtree'
+   - &iqtree_slurm_options '--mem=1G --time=00:20:00'
+   - &iqtree_options       '-m MFP -bb 1000 -wbtl'
+   - &iqtree_ufboot_ext    '.ufboot'
+   # ALE
+   - &ALEobserve_exec    !join [*run_dir_bin,'ALE/bin/ALEobserve']
+   - &ALEml_undated_exec !join [*run_dir_bin,'ALE/bin/ALEml_undated']
+   - &ale_slurm_options  '--mem=2G --time=02:00:00'
+   - &ale_options        !concat ['sample=1 tau=0 separators="',*specie_gene_name_separator,'"']
+   - &ale_ext            '.ale'
+   - &ale_uml_rec_ext    '.uml_rec'
+   # GeneRax
+   - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
+   - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
+   - &generax_options         '--per-family-rates --si-quartet-support'
+   - &generax_seed            '123'
+   - &generax_rec_model       'UndatedDL'
+   - &generax_strategy        'SPR'
+   - &generax_alignment_model 'GTR+G'
+   # DeCoSTAR
+   - &decostar_exec                  !join [*run_dir_bin, 'DeCoSTAR']
+   - &decostar_slurm_options         '--mem=4G --time=24:00:00'
+   - &decostar_nb_sample             '1000'
+   - &decostar_boltzmann_temperature '0.1'
+   - &decostar_stats_thresholds      "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0"
+   # SPP-DCJ
+   - &sppdcj_bin_dir              !join [*run_dir_bin, 'spp_dcj', 'scripts']
+   - &sppdcj_ilp_exec             !join [*sppdcj_bin_dir, 'spp_dcj.py']
+   - &sppdcj_ilp_slurm_options    '--mem=256G --time=24:00:00'
+   - &sppdcj_ilp_threshold        '0.5'
+   - &sppdcj_ilp_alpha            '0.5'     
+   - &sppdcj_ilp_beta             '0.25'
+   - &sppdcj_input_species        'all'
+   - &sppdcj_input_suffix         'all'
+   - &sppdcj_gurobi_exec          'gurobi_cl'
+   - &sppdcj_gurobi_options       'MIPGap=0.05'
+   - &sppdcj_slurm_options        '--mem=2000G --time=72:00:00'
+   - &sppdcj_writesol_exec        !join [*sppdcj_bin_dir, 'sol2adjacencies.py']
 
-# AGO pipeline
-
-
+# SLURM account
 slurm:
    account: &slurm_account 'def-chauvec'
 
+# AGO pipeline: DO NOT CHANGE
 log:
    ext:
       log:  &log_ext_log  'log'
@@ -116,40 +114,7 @@ log:
       warning: &log_msg_warning 'WARNING'
       missing: &log_msg_missing 'file is missing'
 
-tools:
-   # MUSCLE: multiple sequence alignment
-   MUSCLE:
-      name: &muscle_name 'MUSCLE'
-      input:
-         file: &muscle_input_file !ref [*data_sequences_path]
-      output:
-         file: &muscle_output_file !ref [*data_alignments_path]
-      slurm:
-         options: !ref [*muscle_slurm_options]
-         modules: ['muscle']
-         array:
-            input:
-               file:  &muscle_slurm_array_input_file  !ref [*muscle_input_file]
-               field: &muscle_slurm_array_input_field 2
-               var:   &muscle_slurm_array_input_var   'SEQ_FILE'
-            results:
-               file:  &muscle_slurm_array_results_file  !ref [*muscle_input_file]
-               field: &muscle_slurm_array_results_field 1
-               var:   &muscle_slurm_array_results_var   'FAM_ID'
-               ext:   &muscle_slurm_array_results_ext   !ref [*data_alignments_AA_ext]
-         results:
-            dir: &muscle_results_dir  !join [*dir_results, *muscle_name]
-            files:
-                - &muscle_slurm_results_file !join [
-                     *muscle_results_dir,
-                     !concat ['${', *muscle_slurm_array_results_var, '}', *data_alignments_AA_ext]
-                  ]
-         cmd:
-            - !concat [*muscle_exec, ' \']
-            - !concat ['   -in ${', *muscle_slurm_array_input_var, '} \']
-            - !concat ['   -out ', *muscle_slurm_results_file]
-
-   
+tools:   
    # MACSE: multiple sequences alignment
    MACSE:
       name: &macse_name 'MACSE'
@@ -192,25 +157,25 @@ tools:
             - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_2]
             - !concat ["sed -i 's/?/-/g' ",*macse_slurm_results_file_2]
    
-   # Iqtree: gene tree inference
-   Iqtree:
-      name: &iqtree_name 'Iqtree'
+   # IQ-TREE: gene trees inference
+   IQ-TREE:
+      name: &iqtree_name 'IQ-TREE'
       input:
          file: &iqtree_input_file !ref [*data_alignments_path]
       output: 
-         file: &iqtree_output_file !ref [*gene_trees_path]
+         file: &iqtree_output_file !ref [*data_gene_trees_path]
       slurm:
          options: !ref [*iqtree_slurm_options]
          modules: ['iq-tree/2.0.7']
          array:
             input:
-               file:  &iqtree_slurm_array_input_file !ref [*iqtree_input_file]
+               file:  &iqtree_slurm_array_input_file  !ref [*iqtree_input_file]
                field: &iqtree_slurm_array_input_field 2
-               var:   &iqtree_slurm_array_input_var 'MSA_FILE'
+               var:   &iqtree_slurm_array_input_var   'MSA_FILE'
             results:
-               file:  &iqtree_slurm_array_results_file !ref [*iqtree_input_file]
+               file:  &iqtree_slurm_array_results_file  !ref [*iqtree_input_file]
                field: &iqtree_slurm_array_results_field 1
-               var:   &iqtree_slurm_array_results_var 'FAM_ID'
+               var:   &iqtree_slurm_array_results_var   'FAM_ID'
                ext:   &iqtree_slurm_array_results_ext   !ref [*iqtree_ufboot_ext]
          results:
             dir: &iqtree_results_dir !join [*dir_results, *iqtree_name]
@@ -225,6 +190,78 @@ tools:
             - !concat ['   ',*iqtree_options,' \']
             - !concat ['   -pre ',*iqtree_results_dir,'/${',*iqtree_slurm_array_results_var,'}']
             
+   # ALE: gene tree reconcilliation from gene tree sample
+   ALE:
+      name: &ale_name 'ALE'
+      input:
+         file: 
+            - &ale_input_file              !ref [*data_gene_trees_path]
+            - &ale_input_species_tree_file !ref [*data_species_tree_path]
+         
+      output:
+         file: &ale_output_file !ref [*data_reconciliations_path]
+      slurm:
+         options: !ref [*ale_slurm_options]
+         array:
+            input:
+               file:  &ale_slurm_array_input_file  !ref [*data_gene_trees_path]
+               field: &ale_slurm_array_input_field 2
+               var:   &ale_slurm_array_input_var   'TREES_FILE'
+            results:
+               file:  &ale_slurm_array_results_file  !ref [*data_gene_trees_path]
+               field: &ale_slurm_array_results_field 1
+               var:   &ale_slurm_array_results_var   'FAM_ID'
+               ext:   &ale_slurm_array_results_ext   !ref [*data_reconciliations_ext]
+         results:
+            dir: &ale_results_dir !join [*dir_results, *ale_name]
+            files:
+                - &ale_slurm_result_file_ale_object !join [
+                     *ale_results_dir,
+                     !concat ['${', *ale_slurm_array_input_var, '##*/}',*ale_ext]
+                  ]
+                - &ale_slurm_results_file_uml_rec !join [
+                     *ale_results_dir,
+                     !concat [
+                         *data_species_tree_name, '_',
+                         '${', *ale_slurm_array_input_var, '##*/}',
+                         *ale_ext,*ale_uml_rec_ext
+                     ]
+                  ]
+                - &ale_result_file_recphyloxml !join [
+                     *ale_results_dir,
+                     !concat ['${', *ale_slurm_array_results_var, '}',*data_reconciliations_ext]
+                  ]
+         cmd:
+            - !concat ['cd ',*ale_results_dir]
+            - ' '
+            - !concat [*ALEobserve_exec, '${',*ale_slurm_array_input_var,'}']
+            - ' '
+            - !concat ['mv  ${',*ale_slurm_array_input_var,'}.ale ', *ale_results_dir]
+            - ' '
+            - !concat [*ALEml_undated_exec, ' \']
+            - !concat ['   ', *data_species_tree_path,' \']
+            - !concat ['   ', *ale_slurm_result_file_ale_object, ' \']
+            - !concat ['   ', *ale_options]
+            - ' '
+            - 'if [ ${SLURM_ARRAY_TASK_ID} == "1" ]'
+            - 'then'
+            - !concat ['   grep -h "S:" ',*ale_slurm_results_file_uml_rec,' \']
+            - !concat ['      | cut -f 2 > ', *data_reconciliations_species_tree]
+            - !concat ['   ', !join [*run_dir_scripts, 'GeneRax_create_species_file.py'], ' \']
+            - !concat ['      ', *data_reconciliations_species_tree, ' \']
+            - !concat ['      ', *data_reconciliations_species_file]
+            - 'fi'
+            - ' '
+            - !concat ['grep "1 reconciled G-s:" -A 2 ', *ale_slurm_results_file_uml_rec ,' \']
+            - !concat ['   | tail -1 > temp${', *ale_slurm_array_results_var, '}.nhx']
+            - ' '
+            - !concat ['python ', !join [*run_dir_scripts, 'ALEtoRecXML.py'],' \']
+            - !concat ['   -g temp${', *ale_slurm_array_results_var, '}.nhx \']
+            - !concat ['   -o ', *ale_result_file_recphyloxml, ' \']
+            - !concat ['   -s "', *specie_gene_name_separator,'" \']
+            - !concat ['   -st ',*data_reconciliations_species_tree]
+            - ' '
+            - !concat ['rm temp${', *ale_slurm_array_results_var, '}.nhx']            
 
    # GeneRax: computing reconciled gene trees
    GeneRax:
@@ -371,14 +408,14 @@ tools:
               ]
          cmd:
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
-            - !ref [*generax_slurm_results_species_file]
+            - !ref [*data_reconciliations_species_file]
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
             - !ref [*decostar_stats_thresholds]
             - !ref [*decostar_stats_file_species]
             - ';'
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
-            - !ref [*generax_slurm_results_species_file]
+            - !ref [*data_reconciliations_species_file]
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
             - !ref [*sppdcj_ilp_threshold]
