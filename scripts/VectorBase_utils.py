@@ -8,6 +8,8 @@ import os
 import sys
 import pandas as pd
 
+from data_utils import rename_object
+
 '''
 Expected data format.
 A single tab-separated files with one line per gene and fields:
@@ -19,11 +21,15 @@ A single tab-separated files with one line per gene and fields:
 - Coding Sequence: gene squence
 '''
 
+_ASSEMBLED_SPECIES = [
+    'Anopheles albimanus STECLA',
+    'Anopheles atroparvus EBRO',
+    'Anopheles funestus FUMOZ',
+    'Anopheles gambiae PEST'
+]
+
 ASSEMBLED_SPECIES = [
-    'Anopheles_albimanus_STECLA',
-    'Anopheles_atroparvus_EBRO',
-    'Anopheles_funestus_FUMOZ',
-    'Anopheles_gambiae_PEST'
+    rename_object(species) for species in _ASSEMBLED_SPECIES
 ]
 
 ''' Reading original data into a DataFrame '''
@@ -44,9 +50,6 @@ def rename_columns(data_df, read_seq=False):
             columns={'Coding Sequence': 'sequence'},
             inplace=True
         )
-
-def rename_species(data_df):
-    data_df['species'] = data_df['species'].map(lambda x: x.replace(' ','_'))
 
 def split_location(data_df):
     def split_entry(s, i):
@@ -74,7 +77,7 @@ def delete_ambiguous_data(data_df):
     nb_rows_before = len(data_df.index)
     data_df.drop(data_df[data_df['family'] == 'NA'].index, inplace = True)
     data_df.drop(data_df[data_df['chromosome'] == 'UNKN'].index, inplace = True)
-    data_df.drop(data_df[data_df['chromosome'] == 'Y_unplaced'].index, inplace = True)
+    data_df.drop(data_df[data_df['chromosome'] == 'Yunplaced'].index, inplace = True)
     nb_rows_after = len(data_df.index)
     nb_discarded_rows = nb_rows_before - nb_rows_after
     return nb_discarded_rows
@@ -91,13 +94,30 @@ def delete_included_genes(data_df):
     data_df.drop(index=idx_to_discard, inplace=True)
     return len(idx_to_discard)
 
-def read_data(tsv_file, target_species, read_seq=False):
+def rename_data(data_df, out_map_file):
+    if out_map_file is not None:
+        with open(out_map_file, 'w') as map_file:
+            map_file.write('#original object:(species)(gene)(chromosome)(family)\t')
+            map_file.write('renamed_object:(species)(gene)(chromosome)(family)')
+            for idx,gene in data_df.iterrows():
+                data = [gene['species'], gene['gene'], gene['chromosome'], gene['family']]
+                original_object = ''.join([f'({x})' for x in data])
+                renamed_object = ''.join([f'({rename_object(x)})' for x in data])
+                map_file.write(f'\n{original_object}\t{renamed_object}')        
+    for column in ['gene', 'species', 'chromosome', 'family']:
+        data_df[column] = data_df[column].map(lambda x: rename_object(x))
+
+def read_data(tsv_file, target_species, out_dir, read_seq=False):
     columns = ['Gene ID', 'Organism', 'Genomic Location (Gene)', 'Chromosome', 'Ortholog Group']
     if read_seq:
         columns.append('Coding Sequence')
     data_df = pd.read_table(tsv_file, delimiter='\t', usecols=columns)
     rename_columns(data_df, read_seq=read_seq)
-    rename_species(data_df)
+    if out_dir is None:
+        names_map_file = None
+    else:
+        names_map_file = os.path.join(out_dir, f'{tsv_file}_map')
+    rename_data(data_df, names_map_file)
     if target_species != ['all']:
         nb_discarded_species = delete_species(data_df, target_species)
     else:
@@ -239,14 +259,15 @@ def build_gene_orders(data_df_by_species, selected_families, out_dir, suffix):
 command = sys.argv[1]
 read_seq = {'stats': False, 'build': True, 'test': False}
 genes_file = sys.argv[2]
-target_chr = sys.argv[3].split()
+target_chr = [rename_object(x) for x in sys.argv[3].split()]
 # if 'all', all species are considered
-target_species = sys.argv[4].split()
+target_species = [rename_object(x) for x in sys.argv[4].split()]
 min_on_target = int(sys.argv[5])
 min_size = int(sys.argv[6])
+out_dir = None
 
 data_df,nb_ambiguous_genes,nb_included_genes,nb_discarded_species = read_data(
-    genes_file, target_species, read_seq=read_seq[command]
+    genes_file, target_species, out_dir, read_seq=read_seq[command]
 )
 data_df_by_family = group_by_OG(data_df)
 selected_families,nb_families,stats = select_families(

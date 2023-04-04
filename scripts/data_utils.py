@@ -134,3 +134,10 @@ def data_gene2species(in_gene_orders_file):
                 gene = gene_data.split('\t')[0]
                 gene2species[gene] = species
     return gene2species
+
+''' 
+Rename an object (species, family, gene) to replace all non alphanumeric characters 
+by sep
+'''
+def rename_object(name, sep=''):
+    return sep.join(filter(str.isalnum, name))

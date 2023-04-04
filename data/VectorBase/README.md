@@ -2,9 +2,8 @@
 
 The file `genes_20230311.txt.gz` was downloaded from VectorBase (https://vectorbase.org/vectorbase/app/) on 2023-03-11
 
-Genes assigned to no orthology group (NA) or to no chrn=omosme (UNKN) or to the Y chromosome (Y_unplaced) are discarded.
-Genes included into another gene are discarded.
-
+Genes assigned to no orthology group (NA) or to no chromosme (UNKN) or to the Y chromosome (Y_unplaced) are discarded.  
+Genes included into another gene are discarded.  
 The branch lengths on the species tree are estimated in million years.
 
 ```
@@ -26,10 +25,6 @@ Off target      9091
 Ambiguous       288
 Small2          24
 On target       606     606
-```
-
-```
-python ../../scripts/VectorBase_utils.py build genes_20230311.txt X all 2 3 /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase X
 ```
 
 ```
@@ -57,7 +52,7 @@ On target       1422    1422
 ```
 
 ```
-Target ['2', '3', '2L', '2R', '3L', '3R'] Min size 3 Min size on target 2
+./Target ['2', '3', '2L', '2R', '3L', '3R'] Min size 3 Min size on target 2
 Filter          ambiguous:711   included:5716
 All             15857
 Small1          5837
@@ -95,7 +90,7 @@ On target       451     451
 ```
 
 ```
-python ../../scripts/VectorBase_utils.py build genes_20230311.txt X 'Anopheles_gambiae_PEST Anopheles_atroparvus_EBRO Anopheles_funestus_FUMOZ Anopheles_albimanus_STECLA' 4 4 /home/chauvec/projects/ctb-chauvec/SPP-PIPELINE/data/VectorBase X_4
+python ../../scripts/VectorBase_utils.py build genes_20230311.txt X 'AnophelesgambiaePEST AnophelesatroparvusEBRO AnophelesfunestusFUMOZ AnophelesalbimanusSTECLA' 4 4 /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase X_4
 ```
 
 ```
