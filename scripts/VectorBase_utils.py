@@ -264,7 +264,10 @@ target_chr = [rename_object(x) for x in sys.argv[3].split()]
 target_species = [rename_object(x) for x in sys.argv[4].split()]
 min_on_target = int(sys.argv[5])
 min_size = int(sys.argv[6])
-out_dir = None
+if len(sys.argv) >= 8:
+    out_dir = sys.argv[7]
+else:
+    out_dir = None
 
 data_df,nb_ambiguous_genes,nb_included_genes,nb_discarded_species = read_data(
     genes_file, target_species, out_dir, read_seq=read_seq[command]
@@ -285,7 +288,6 @@ if command == 'stats':
     print(f'Small2    \t{stats[4]}')
     print(f'On target \t{stats[5]}\t{len(selected_families)}')
 elif command == 'build':
-    out_dir = sys.argv[7]
     if len(sys.argv) == 8:
         out_suffix = f'{"_".join(target_chr)}.{"__".join(target_species)}.{min_size}.{min_on_target}.txt'
     else:
