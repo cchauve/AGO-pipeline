@@ -26,16 +26,22 @@ The output root directory is `/scratch/chauvec/SPP`.
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/MACSE/MACSE.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/MACSE/MACSE.sh
 sbatch: NOTE: Your memory request of 8192M was likely submitted as 8G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
-Submitted batch job 64153824
+Submitted batch job 64257173
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check MACSE
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/MACSE.log
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/alignments_X_4.txt
 > grep -c "ERROR" /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/MACSE.log
+0
 ```
 
 ### GeneRax
 
 ```
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml script GeneRax
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/GeneRax/GeneRax.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/GeneRax/GeneRax.sh
+sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 64270569
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check GeneRax
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats GeneRax
 > m /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/GeneRax/GeneRax_species.csv
@@ -57,12 +63,12 @@ We consider only the three ingroup species as node_0 has almost no signal.
 
 ```
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml script SPPDCJ_ILP
-> sbatch  /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_ingroups.sh
+> sbatch  /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check SPPDCJ_ILP
-> cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP_ingroups.log
-> cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP/SPPDCJ_ILP_ingroups.err
+> cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP_all.log
+> cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP/SPPDCJ_ILP_all.err
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats SPPDCJ_ILP
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml script SPPDCJ
-> sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ/SPPDCJ_ingroups.sh
+> sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ/SPPDCJ_all.sh
 ```
 

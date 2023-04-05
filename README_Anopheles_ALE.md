@@ -21,18 +21,20 @@ The output root directory is `/scratch/chauvec/SPP`.
 ```
 
 ### MACSE
+We reuse the alignments obtained by the GeneRax experiments
 
 ```
-> python src/AGO.py parameters/Anopheles_ALE_NT.yaml script MACSE
-        /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/MACSE/MACSE.sh
-> sbatch /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/MACSE/MACSE.sh
-sbatch: NOTE: Your memory request of 8192M was likely submitted as 8G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
-Submitted batch job 64153898
-> python src/AGO.py parameters/Anopheles_ALE_NT.yaml check MACSE
-> grep -c "ERROR" /scratch/chauvec/SPP/Anopheles_ALE_NT/log/MACSE.log
+> cp /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/alignments_X_4.txt /scratch/chauvec/SPP/Anopheles_ALE_NT/data/
 ```
 
 ### IQ-TREE
+
+> python src/AGO.py parameters/Anopheles_ALE_NT.yaml script IQ-TREE
+        /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/IQ-TREE/IQ-TREE.sh
+> sbatch /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/IQ-TREE/IQ-TREE.sh
+sbatch: NOTE: Your memory request of 1024M was likely submitted as 1G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 64270627
+> python src/AGO.py parameters/Anopheles_ALE_NT.yaml check IQ-TREE
 
 ### ALE
 
@@ -46,16 +48,15 @@ Submitted batch job 64153898
 ```
 
 ### SPPDCJ
-We consider only the three ingroup species as node_0 has almost no signal.
 
 ```
 > python src/AGO.py parameters/Anopheles_ALE_NT.yaml script SPPDCJ_ILP
-> sbatch  /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_ingroups.sh
+> sbatch  /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
 > python src/AGO.py parameters/Anopheles_ALE_NT.yaml check SPPDCJ_ILP
-> cat /scratch/chauvec/SPP/Anopheles_ALE_NT/log/SPPDCJ_ILP_ingroups.log
-> cat /scratch/chauvec/SPP/Anopheles_ALE_NT/log/SPPDCJ_ILP/SPPDCJ_ILP_ingroups.err
+> cat /scratch/chauvec/SPP/Anopheles_ALE_NT/log/SPPDCJ_ILP_all.log
+> cat /scratch/chauvec/SPP/Anopheles_ALE_NT/log/SPPDCJ_ILP/SPPDCJ_ILP_all.err
 > python src/AGO.py parameters/Anopheles_ALE_NT.yaml stats SPPDCJ_ILP
 > python src/AGO.py parameters/Anopheles_ALE_NT.yaml script SPPDCJ
-> sbatch /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/SPPDCJ/SPPDCJ_ingroups.sh
+> sbatch /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/SPPDCJ/SPPDCJ_all.sh
 ```
 
