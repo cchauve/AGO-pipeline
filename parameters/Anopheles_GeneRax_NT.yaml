@@ -298,7 +298,7 @@ tools:
                 - &generax_slurm_results_species_tree !join [
                      *generax_results_dir, 'species_trees', 'starting_species_tree.newick'
                   ]
-                - &generax_slurm_results_species_file !ref [*data_species_path]
+                - &generax_slurm_results_species_file !ref [*data_reconciliations_species_file]
          cmd:
             - !concat ['mpiexec -np 48 ', *generax_exec, ' \']
             - !concat ['   -f ', *generax_input_file, ' \']

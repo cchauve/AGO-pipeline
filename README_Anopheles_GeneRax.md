@@ -41,29 +41,44 @@ Submitted batch job 64257173
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/GeneRax/GeneRax.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/GeneRax/GeneRax.sh
 sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
-Submitted batch job 64270569
+Submitted batch job 64272604
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check GeneRax
-> python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats GeneRax
-> m /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/GeneRax/GeneRax_species.csv
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/GeneRax.log
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/reconciliations_X_4.txt
 > grep -c "ERROR" /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/GeneRax.log
+0
 > wc -l /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/reconciliations_X_4.txt
+451 /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/reconciliations_X_4.txt
+> python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats GeneRax
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/GeneRax/GeneRax_species.csv
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/GeneRax/GeneRax_families.csv
+> m /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/GeneRax/GeneRax_species.csv
 ```
 
 ### DeCoSTAR
 
 ```
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml script DeCoSTAR
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/DeCoSTAR/DeCoSTAR.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/DeCoSTAR/DeCoSTAR.sh
+sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 64273185
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check DeCoSTAR
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/DeCoSTAR.log
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/adjacencies_X_4.txt
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats DeCoSTAR
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/DeCoSTAR/DeCoSTAR.csv
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
 ```
 
 ### SPPDCJ
-We consider only the three ingroup species as node_0 has almost no signal.
 
 ```
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml script SPPDCJ_ILP
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
 > sbatch  /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
+sbatch: NOTE: Your memory request of 262144M was likely submitted as 256G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 64274354
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check SPPDCJ_ILP
 > cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP_all.log
 > cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP/SPPDCJ_ILP_all.err

@@ -29,14 +29,30 @@ We reuse the alignments obtained by the GeneRax experiments
 
 ### IQ-TREE
 
+```
 > python src/AGO.py parameters/Anopheles_ALE_NT.yaml script IQ-TREE
         /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/IQ-TREE/IQ-TREE.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/IQ-TREE/IQ-TREE.sh
 sbatch: NOTE: Your memory request of 1024M was likely submitted as 1G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
 Submitted batch job 64270627
 > python src/AGO.py parameters/Anopheles_ALE_NT.yaml check IQ-TREE
+  	/scratch/chauvec/SPP/Anopheles_ALE_NT/log/IQ-TREE.log
+        /scratch/chauvec/SPP/Anopheles_ALE_NT/data/gene_trees.txt
+> grep -c "ERROR" /scratch/chauvec/SPP/Anopheles_ALE_NT/log/IQ-TREE.log
+0
+```
 
 ### ALE
+
+```
+> python src/AGO.py parameters/Anopheles_ALE_NT.yaml script ALE
+        /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/ALE/ALE.sh
+> sbatch /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/ALE/ALE.sh
+sbatch: NOTE: Your memory request of 2048M was likely submitted as 2G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 64274136
+> python src/AGO.py parameters/Anopheles_ALE_NT.yaml check ALE
+> grep -c "ERROR" /scratch/chauvec/SPP/Anopheles_ALE_NT/log/ALE.log
+```
 
 ### DeCoSTAR
 
