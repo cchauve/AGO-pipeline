@@ -30,6 +30,17 @@ def newick_get_leaves(species_tree_file):
         leaves[node.name].sort()
     return(leaves)
 
+''' 
+Creates from a species tree file a species file of format
+<node><TAB><space-separated list of extant descendants>
+'''
+def newick_create_species_file(species_tree_file, species_file):
+    leaves_map = newick_get_leaves(species_tree_file)
+    with open(species_file,'w') as out_file:
+        for species,leaves in leaves_map.items():
+            leaves_str = ' '.join(leaves)
+            out_file.write(f'{species}\t{leaves_str}\n')
+
 ''' Creates a map from species names to species status '''
 def newick_get_species_status(tree_file):
     '''

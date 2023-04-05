@@ -12,7 +12,7 @@ import sys
 
 # Auxiliary generic functions
 
-''' Creates a map from a 2-fields tabulate file '''
+''' Creates a map from a tabulated file '''
 def _data_create_map(in_file, sep1='\t', sep2=None):
     '''
     input: path to dataset tabulated file with 2 fields 
@@ -23,11 +23,16 @@ def _data_create_map(in_file, sep1='\t', sep2=None):
     result_map = {}
     with open(in_file, 'r') as in_data:
         for index_data in in_data.readlines():
-            index,data = index_data.rstrip().split(sep1)
-            if sep2 is None:
-                result_map[index] = data
+            index_data_split = index_data.rstrip().split(sep1)
+            index = index_data_split[0]
+            if len(index_data_split)==1:
+                result_map[index] = []
             else:
-                result_map[index] = data.split(sep2)
+                data = index_data_split[1]
+                if sep2 is None:
+                    result_map[index] = data
+                else:
+                    result_map[index] = data.split(sep2)
     return result_map
 
 ''' Creates an inverse map from a tabulated file '''
@@ -35,7 +40,7 @@ def _data_create_inverse_map(in_file, sep1='\t', sep2=' '):
     '''
     input:
     - tabulated indexed file
-    - separator between idex and data
+    - separator between index and data
     - separator between data list
     output:
     dict(data item -> index)
@@ -134,6 +139,35 @@ def data_gene2species(in_gene_orders_file):
                 gene = gene_data.split('\t')[0]
                 gene2species[gene] = species
     return gene2species
+
+''' Creates a map between species '''
+def data_species_map(in_species_file):
+    '''
+    input: path to species files
+    output: dict(species_name -> sorted extant descendants (weak))
+    '''
+    sorted_descendants_map = {
+        s: sorted(l) for s,l in _data_create_map(in_species_file, sep2=' ').items()
+    }
+    return sorted_descendants_map
+
+
+''' Create an equivalence map between keys of 2 data maps '''
+def data_create_equivalence_map(in_map_1, in_map_2, direction=1):
+    '''
+    input: 2 maps of the form key -> data
+    output: map between keys
+    '''
+    nodes_map_1to2,nodes_map_2to1 = {},{}
+    for s1 in in_map_1.keys():
+        for s2 in in_map_2.keys():
+            if in_map_1[s1] == in_map_2[s2]:
+                nodes_map_1to2[s1] = s2
+                nodes_map_2to1[s2] = s1
+    if direction==1:
+        return nodes_map_1to2
+    elif direction==2:
+        return nodes_map_2to1
 
 ''' 
 Rename an object (species, family, gene) to replace all non alphanumeric characters 

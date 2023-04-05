@@ -17,7 +17,7 @@ def main():
     in_GeneRax_families_file = sys.argv[1]
     results_dir = sys.argv[2]
     suffix = sys.argv[3]
-    
+
     with open(in_GeneRax_families_file, 'r') as families:
         current_gene_id = 0 # current gene number
         families = [

@@ -12,8 +12,9 @@ import sys
 import os
 from collections import defaultdict
 
-from newick_utils import newick_get_leaves
 from data_utils import (
+    data_create_equivalence_map,
+    data_species_map,
     data_gene2family,
     data_reconciliation_path2family
 )
@@ -43,24 +44,17 @@ def decostar_read_species_file(in_species_file):
     return leaves
 
 ''' Returns a map from DeCoSTAR species name to original species name '''
-def decostar_species_map(in_species_tree_file, in_species_file):
+def decostar_species_map(in_species_file, in_decostar_species_file):
     '''
     input:
-    - original Newick species tree file
+    - original species file
     - DeCoSTAR species file
-    output: dict(str->str) Decostar species name -> Newick species name
+    output: dict(str->str) Decostar species name -> original species name
     '''
-    newick_leaves_map = newick_get_leaves(in_species_tree_file)
-    decostar_leaves_map = decostar_read_species_file(in_species_file)
-    map_aux = defaultdict(list)
-    for newick_species,leaves in newick_leaves_map.items():
-        map_aux[''.join(leaves)].append(newick_species)
-    for decostar_species,leaves in decostar_leaves_map.items():
-        map_aux[''.join(leaves)].append(decostar_species)
-    species_map = {}
-    for species_pair in map_aux.values():
-        species_map[species_pair[1]] = species_pair[0]
-    return(species_map)
+    in_species_map = data_species_map(in_species_file)
+    in_decostar_species_map = decostar_read_species_file(in_decostar_species_file)
+    species_map_from_decostar = data_create_equivalence_map(in_species_map, in_decostar_species_map, direction=2)
+    return(species_map_from_decostar)
 
 ''' Returns a map from DeCoSTAR family ID to original family ID '''
 def decostar_family_map(
@@ -268,8 +262,8 @@ def decostar_reformat_adjacencies_file(
 
 
 def main():
-    in_species_tree_file = sys.argv[1]
-    in_species_file = sys.argv[2]
+    in_species_file = sys.argv[1]
+    in_decostar_species_file = sys.argv[2]
     in_families_file = sys.argv[3]
     in_reconciliations_file = sys.argv[4]
     in_gene_trees_file = sys.argv[5]
@@ -279,7 +273,7 @@ def main():
     out_adjacencies_dir = sys.argv[9]    
 
     species_map = decostar_species_map(
-        in_species_tree_file, in_species_file
+        in_species_file, in_decostar_species_file
     )
     genes_map = decostar_reformat_genes(
         species_map,
