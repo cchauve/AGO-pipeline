@@ -1,5 +1,10 @@
 Anopheles data, for the 4 assembled species and the X chromosome.
 
+```
+> date
+Wed Apr  5 13:32:45 PDT 2023
+```
+
 The parameters file is `parameters/Anopheles_GeneRax_NT.yaml`.
 The output root directory is `/scratch/chauvec/SPP`.
 
