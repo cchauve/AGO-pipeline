@@ -128,19 +128,10 @@ node0:495:1.0   450:403:2:186
 sbatch: NOTE: Your memory request of 262144M was likely submitted as 256G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
 Submitted batch job 64363355
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check SPPDCJ_ILP
-        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP_all.log
-        No output file is created
 > cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP_all.log
-#status tool    index   message
-SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/Anopheles_GeneRax_NT/results/SPPDCJ_ILP/all_0.5_0.5_0.25.idmap
-SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/Anopheles_GeneRax_NT/results/SPPDCJ_ILP/all_0.5_0.5_0.25.ilp
 > cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP/SPPDCJ_ILP_all.err
-
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats SPPDCJ_ILP
-        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/SPPDCJ_ILP/components_all.log
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml script SPPDCJ
-        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ/SPPDCJ_all.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ/SPPDCJ_all.sh
-Submitted batch job 64275505
 ```
 
