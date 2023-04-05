@@ -1,0 +1,7 @@
+AnophelesgambiaePEST
+AnophelesfunestusFUMOZ
+node0	AnophelesgambiaePEST AnophelesfunestusFUMOZ
+AnophelesatroparvusEBRO
+node1	AnophelesgambiaePEST AnophelesfunestusFUMOZ AnophelesatroparvusEBRO
+AnophelesalbimanusSTECLA
+node2	AnophelesgambiaePEST AnophelesfunestusFUMOZ AnophelesatroparvusEBRO AnophelesalbimanusSTECLA

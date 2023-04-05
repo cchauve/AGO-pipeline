@@ -16,7 +16,10 @@ from newick_utils import (
     newick_get_children_map,
     newick_get_lca_species
 )
-from DeCoSTAR_reformat import decostar_read_adjacencies
+from DeCoSTAR_reformat import (
+    decostar_read_adjacencies,
+    decostar_sep
+)
 from DeCoSTAR_statistics import decostar_sign2extremity
 
 ''' Creates SPP-DCJ species tree file '''
@@ -54,7 +57,10 @@ def sppdcj_adjacencies(
     output: out_adjacencies_file
     '''
     sppdcj_sep = '\t'
-    decostar_sep = '|'
+    def split_gene(gene):
+        gene_split = gene.split(decostar_sep)
+        return gene_split[0],decostar_sep.join(gene_split[1:])
+    
     species2adjacencies_file = [
         (species,adj_path)
         for (species,adj_path) in data_species2adjacencies_path(
@@ -79,8 +85,8 @@ def sppdcj_adjacencies(
             ]
             for (sp,g1,g2,sign1,sign2,w1,w2) in in_adjacencies:
                 exts = decostar_sign2extremity[(sign1,sign2)]
-                fam1,gene1 = g1.split(decostar_sep)
-                fam2,gene2 = g2.split(decostar_sep)
+                fam1,gene1 = split_gene(g1)
+                fam2,gene2 = split_gene(g2)
                 adj_str = [
                     sp,f'{fam1}_{gene1}',exts[0],
                     sp,f'{fam2}_{gene2}',exts[1],
