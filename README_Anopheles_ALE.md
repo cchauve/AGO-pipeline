@@ -51,14 +51,20 @@ Submitted batch job 64270627
 sbatch: NOTE: Your memory request of 2048M was likely submitted as 2G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
 Submitted batch job 64274136
 > python src/AGO.py parameters/Anopheles_ALE_NT.yaml check ALE
+        /scratch/chauvec/SPP/Anopheles_ALE_NT/log/ALE.log
+        /scratch/chauvec/SPP/Anopheles_ALE_NT/data/reconciliations_X_4.txt
 > grep -c "ERROR" /scratch/chauvec/SPP/Anopheles_ALE_NT/log/ALE.log
+0
 ```
 
 ### DeCoSTAR
 
 ```
 > python src/AGO.py parameters/Anopheles_ALE_NT.yaml script DeCoSTAR
+        /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/DeCoSTAR/DeCoSTAR.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_ALE_NT/aux/DeCoSTAR/DeCoSTAR.sh
+sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
+Submitted batch job 64275565
 > python src/AGO.py parameters/Anopheles_ALE_NT.yaml check DeCoSTAR
 > python src/AGO.py parameters/Anopheles_ALE_NT.yaml stats DeCoSTAR
 ```
