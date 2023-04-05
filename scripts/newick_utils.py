@@ -8,6 +8,7 @@ __email__     = "cedric.chauve@sfu.ca"
 __version__   = "0.99"
 __status__    = "Development"
 
+import sys
 from collections import defaultdict
 import ete3
 
@@ -89,3 +90,14 @@ def newick_get_lca_species(tree_file, leaves_list):
     lca = leaf1.get_common_ancestor(*leaves2)
     nodes_list = [lca] + lca.get_descendants()
     return [node.name for node in nodes_list]
+
+def main():
+    command = sys.argv[1]
+
+    if command == 'species':
+        in_species_tree_file = sys.argv[2]
+        out_species_file = sys.argv[3]
+        newick_create_species_file(in_species_tree_file, out_species_file)
+
+if __name__ == "__main__":
+    main()

@@ -91,6 +91,7 @@ On target       451     451
 
 ```
 python ../../scripts/VectorBase_utils.py build genes_20230311.txt X 'AnophelesgambiaePEST AnophelesatroparvusEBRO AnophelesfunestusFUMOZ AnophelesalbimanusSTECLA' 4 4 /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase X_4
+python ../../scripts/newick_utils.py species species_tree_4.newick species_4.txt
 ```
 
 ```
