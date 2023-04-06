@@ -164,3 +164,12 @@ AnophelesgambiaePEST    470:470.0:470:470.0
 AnophelesfunestusFUMOZ  471:471.0:471:471.0
 ```
 
+Creating FASTA format gene orders files.
+
+```
+python scripts/gene_orders_utils.py \
+       /scratch/chauvec/SPP/Anopheles_GeneRax_NT/results/DeCoSTAR/genes_reformatted.txt \
+       /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/adjacencies_ago_X_4.txt \
+       /scratch/chauvec/SPP/Anopheles_GeneRax_NT/results/SPPDCJ/ \
+       /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/gene_orders_ago_X_4.txt
+```
