@@ -151,5 +151,16 @@ Submitted batch job 64365862
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check SPPDCJ
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_all.log
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/adjacencies_ago_X_4.txt
+> python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats SPPDCJ
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/SPPDCJ/SPPDCJ_species.csv
+> cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/SPPDCJ/SPPDCJ_species.csv
+#species        <number of adjacencies>:<total weight>:<kept adjacencies>:<kept weight>
+node2   231:225.73899999999998:224:223.24099999999999
+node1   404:372.4:357:350.543
+AnophelesalbimanusSTECLA        488:488.0:488:488.0
+node0   460:436.963:416:409.47600000000006
+AnophelesatroparvusEBRO 502:502.0:502:502.0
+AnophelesgambiaePEST    470:470.0:470:470.0
+AnophelesfunestusFUMOZ  471:471.0:471:471.0
 ```
 

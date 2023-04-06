@@ -435,3 +435,15 @@ tools:
             - !concat ['   ', *data_adjacencies_path, '\']
             - !concat ['   ', *sppdcj_results_file_adjacencies, ' \']
             - !concat ['   ', *sppdcj_results_dir]
+      stats:
+         dir: &sppdcj_stats_dir  !join [*dir_stats, *sppdcj_name]
+         files:
+            - &sppdcj_stats_file !join [
+                 *sppdcj_stats_dir,
+                 !concat [*sppdcj_name, '_species.', *log_ext_stat]
+              ]
+         cmd:
+            - !join [*run_dir_scripts, 'SPPDCJ_statistics.py']
+            - !ref [*data_adjacencies_path]
+            - !ref [*sppdcj_results_file_adjacencies]
+            - !ref [*sppdcj_stats_file]
