@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-""" Create DeCoSTAR input files """
+""" Data handling utils """
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
@@ -175,3 +175,4 @@ by sep
 '''
 def rename_object(name, sep=''):
     return sep.join(filter(str.isalnum, name))
+

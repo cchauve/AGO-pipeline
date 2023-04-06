@@ -49,11 +49,11 @@ def read_sppdcj_adjacencies(in_adjacencies_file):
 
 ''' Read the DeCoSTAR adajcencies file and create a species-indexed dictionary '''
 def read_decostar_adjacencies(in_data_adjacencies_file):
-   '''
+    '''
     input: data adjacencies file (species<TAB>DeCoSTAR adjacencies file
     output: dict(species -> dict((gene1,ext1,gene2,ext2)->(gene1,sign1,gene2,sign2,weight1,weight2))
     '''
-   species2adjacencies_files = data_species2adjacencies_path(in_data_adjacencies_file)
+    species2adjacencies_files = data_species2adjacencies_path(in_data_adjacencies_file)
     species2adjacencies_aux = {}
     for species,adjacencies_file in species2adjacencies_files.items():
         species2adjacencies_aux[species] = decostar_read_adjacencies(adjacencies_file, species=species)
