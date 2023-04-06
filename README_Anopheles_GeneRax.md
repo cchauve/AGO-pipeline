@@ -148,5 +148,8 @@ INFO    2023-04-05 13:54:33,497 identified 2 candidate telomeres in genome Anoph
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ/SPPDCJ_all.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ/SPPDCJ_all.sh
 Submitted batch job 64365862
+> python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check SPPDCJ
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_all.log
+        /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/adjacencies_ago_X_4.txt
 ```
 
