@@ -18,8 +18,7 @@ from recPhyloXML_utils import (
     xml_get_name,
     xml_get_rec_species,
     xml_get_species_tree_root,
-    xml_get_gene_tree_root,
-    xml_parse_tree
+    xml_get_gene_tree_root
 )
 
 # Statistics dictionary keys
@@ -34,6 +33,34 @@ STATS_xmlkeys = {
     'loss': STATS_loss
 }
 STATS_keys = [STATS_genes, STATS_dup, STATS_loss]
+
+def xml_parse_tree(root, tag_pref):
+    ''' 
+    input: XML root node
+    output: 
+    dict(node name(str) -> name of siblings (str/None))
+    '''
+    def parse_clade_recursive(node, result):
+        ''' Assumption: node is tagged <clade> '''
+        name = xml_get_name(node, tag_pref=tag_pref)
+        # Updating result dictionary
+        children = node.findall(f'{tag_pref}clade')
+        # Recursive calls
+        leaves = []
+        for child in children:
+            leaves += parse_clade_recursive(child, result)
+        if len(children) == 0 and name != 'loss': # Extant leaf
+            leaves += [name]
+        # Update output
+        if len(children) == 2:
+            child1 = xml_get_name(children[0], tag_pref=tag_pref)
+            child2 = xml_get_name(children[1], tag_pref=tag_pref)
+            result[child1] = child2
+            result[child2] = child1
+        return leaves
+    result = {xml_get_name(root, tag_pref=tag_pref): None}
+    parse_clade_recursive(root, result)
+    return result
 
 def recPhyloXML_read_events(in_file):
     ''' 
@@ -50,7 +77,7 @@ def recPhyloXML_read_events(in_file):
         dict(species name(str) -> 
         species name of sibling species (str/None))
         '''
-        return xml_parse_tree(root, tag_pref, output_type=1)
+        return xml_parse_tree(root, tag_pref)
 
     def parse_recGeneTree(root, tag_pref, siblings):
         ''' 

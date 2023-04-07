@@ -20,7 +20,9 @@ from data_utils import (
 )
 from recPhyloXML_utils import (
     xml_get_gene_tree_root,
-    xml_parse_tree
+    xml_get_name,
+    xml_get_rec_event,
+    xml_get_rec_species
 )
 
 ''' Separator family/gene in DeCoStar ancestral genes '''
@@ -54,7 +56,7 @@ def decostar_species_map(in_species_file, in_decostar_species_file):
     in_species_map = data_species_map(in_species_file)
     in_decostar_species_map = decostar_read_species_file(in_decostar_species_file)
     species_map_from_decostar = data_create_equivalence_map(in_species_map, in_decostar_species_map, direction=2)
-    return(species_map_from_decostar)
+    return species_map_from_decostar
 
 ''' Returns a map from DeCoSTAR family ID to original family ID '''
 def decostar_family_map(
@@ -95,31 +97,62 @@ def decostar_test_ancestral(gene):
 
 ''' 
 Read DeCoSTAR genes file to compute a map from gene name 
-to list of descendant (gene) leaves 
+to list of species + descendant (gene) leaves 
 '''
-def decostar_genes2leaves(in_genes_file):
+def decostar_genes2leaves(in_genes_file, species_map):
     '''
     input: DeCoSTAR genes file, separator family/gene
-    output: dict(gene name -> list of descendant (gene) leaves)
+    output: dict(gene name -> species + list of descendant (gene) leaves)
     '''
     gene2leaves = {}
     with open(in_genes_file, 'r') as in_genes:
         for gene_data in in_genes.readlines():
             data = gene_data.rstrip().split()
+            species = data[0]
             gene = data[1]
             gene2leaves[gene] = []
             if len(data) == 2: # Extant leaf
                 gene2leaves[gene] = [gene]
             for child in data[2:]:
                 if decostar_test_ancestral(child): # Ancestral gene
-                    gene2leaves[gene] += gene2leaves[child]
+                    gene2leaves[gene] += gene2leaves[child][1:]
                 else: # Extant leaf, no descendant
                     gene2leaves[gene] += [child]
             gene2leaves[gene].sort()
+            gene2leaves[gene] = [species_map[species]] + gene2leaves[gene]
     return gene2leaves
 
+def xml_parse_tree(rec_path):
+    ''' 
+    input: XML file path
+    output: 
+    dict(node name(str) -> species + name of descendant leaves (str/None))
+    '''
+    def parse_clade_recursive(node, result):
+        ''' Assumption: node is tagged <clade> '''
+        name = xml_get_name(node, tag_pref=tag_pref)
+        events = xml_get_rec_event(node, tag_pref=tag_pref)
+        species = xml_get_rec_species(events[0])
+        # Updating result dictionary
+        children = node.findall(f'{tag_pref}clade')
+        # Recursive calls
+        leaves = []
+        for child in children:
+            leaves += parse_clade_recursive(child, result)
+        if len(children) == 0 and name != 'loss': # Extant leaf
+            leaves += [name]
+        # Update output
+        if name != 'loss':
+            result[name] = [species] + sorted(leaves.copy())
+        return leaves
+    result = {}
+    rec_root,tag_pref = xml_get_gene_tree_root(rec_path)
+    parse_clade_recursive(rec_root, result)
+    return result
+
+
 ''' Returns a map from DeCoSTAR gene names to original gene names '''
-def decostar_gene_map(in_family_map, in_genes_file):
+def decostar_gene_map(in_family_map, in_genes_file, in_species_map):
     '''
     input:
     - dict(DeCoSTAR family ID -> (original family ID, reconciliation path))
@@ -130,14 +163,11 @@ def decostar_gene_map(in_family_map, in_genes_file):
     # Dictionary (list of extant descendants genes -> original gene name)
     leaves2gene_map = {}
     for (fam_id,rec_path) in in_family_map.values():
-        rec_root,tag_pref = xml_get_gene_tree_root(rec_path)
-        _gene2leaves_map = xml_parse_tree(rec_root, tag_pref, output_type=2)
+        _gene2leaves_map = xml_parse_tree(rec_path)
         for gene,leaves in _gene2leaves_map.items():
-            if len(leaves) > 0:
-                leaves.sort()
-                leaves2gene_map[decostar_sep.join(leaves)] = gene
+            leaves2gene_map[decostar_sep.join(leaves)] = gene
     # Dictionary DeCoSTAR gene name -> list of descendant extant genes
-    gene2leaves_map = decostar_genes2leaves(in_genes_file)
+    gene2leaves_map = decostar_genes2leaves(in_genes_file, in_species_map)
     # Mapping DeCoSTAR gene names to original names by identifying leaves sets
     genes_map = {}
     for decostar_gene,decostar_leaves in gene2leaves_map.items():
@@ -178,7 +208,7 @@ def decostar_reformat_genes(
         in_gene_trees_file, in_reconciliations_file, add_path=True
     )
     # Mapping DeCoSTAR gene names to original names
-    gene_map = decostar_gene_map(family_map, in_genes_file)
+    gene_map = decostar_gene_map(family_map, in_genes_file, in_species_map)
     # Reformatting genes
     with open(in_genes_file, 'r') as in_genes, \
          open(out_genes_file, 'w') as out_genes:

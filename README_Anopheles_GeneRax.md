@@ -45,7 +45,7 @@ Submitted batch job 64349391
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/GeneRax/GeneRax.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/GeneRax/GeneRax.sh
 sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
-Submitted batch job 64358662
+Submitted batch job 64566124
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check GeneRax
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/GeneRax.log
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/reconciliations_X_4.txt
@@ -56,7 +56,7 @@ Submitted batch job 64358662
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats GeneRax
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/GeneRax/GeneRax_species.csv
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/GeneRax/GeneRax_families.csv
-> m /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/GeneRax/GeneRax_species.csv
+> cat /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/GeneRax/GeneRax_species.csv
 #species:genes:duplications:losses
 node2:492:41:0
 AnophelesgambiaePEST:471:6:30
@@ -74,11 +74,11 @@ AnophelesalbimanusSTECLA:489:8:11
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/DeCoSTAR/DeCoSTAR.sh
 > sbatch /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/DeCoSTAR/DeCoSTAR.sh
 sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
-Submitted batch job 64273185
+Submitted batch job 64567288
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check DeCoSTAR
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/DeCoSTAR.log
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/data/adjacencies_X_4.txt
-> grep "ERROR" /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/DeCoSTAR.log
+> grep -c "ERROR" /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/DeCoSTAR.log
 0
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml stats DeCoSTAR
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/statistics/DeCoSTAR/DeCoSTAR.csv
@@ -126,7 +126,7 @@ node0:495:1.0   450:403:2:186
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
 > sbatch  /scratch/chauvec/SPP/Anopheles_GeneRax_NT/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
 sbatch: NOTE: Your memory request of 262144M was likely submitted as 256G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
-Submitted batch job 64363355
+Submitted batch job 64569034
 > python src/AGO.py parameters/Anopheles_GeneRax_NT.yaml check SPPDCJ_ILP
         /scratch/chauvec/SPP/Anopheles_GeneRax_NT/log/SPPDCJ_ILP_all.log
         No output file is created
