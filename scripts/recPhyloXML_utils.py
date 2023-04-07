@@ -51,11 +51,14 @@ def _xml_get_tree_root(xml_tree, tree):
     ).find(f'{tag_pref}phylogeny'
     ).find(f'{tag_pref}clade')
     return tree_root,tag_pref
+
 def xml_get_tree_root(in_file, tree):
     xml_tree = ET.parse(in_file)
     return _xml_get_tree_root(xml_tree, tree)
+
 def xml_get_species_tree_root(in_file):
     return xml_get_tree_root(in_file, ST_TAG)
+
 def xml_get_gene_tree_root(in_file):
     return xml_get_tree_root(in_file, REC_TAG)
 
@@ -64,15 +67,14 @@ def _xml_rename_species_st(tree, species_map):
     root,_ = _xml_get_tree_root(tree, ST_TAG)
     for node in root.iter('name'):
         species = node.text
-        if species in species_map.keys():
-            node.text = species_map[species]
+        node.text = species_map[species]
 
 ''' Rename all species according to a dictionary in gene tree '''
 def _xml_rename_species_rec(tree, species_map):
     root,_ = _xml_get_tree_root(tree, REC_TAG)
-    for node in root.iter('duplication'):
-        species = node.attrib['speciesLocation']
-        if species in species_map.keys():
+    for node in root.iter():
+        if 'speciesLocation' in node.attrib:
+            species = node.attrib['speciesLocation']
             node.attrib['speciesLocation'] = species_map[species]
 
 ''' Rename all species according to a dictionary '''
