@@ -42,6 +42,13 @@ def newick_create_species_file(species_tree_file, species_file):
             leaves_str = ' '.join(leaves)
             out_file.write(f'{species}\t{leaves_str}\n')
 
+'''
+Remove internal node names from a species tree
+'''
+def newick_remove_internal_names(in_species_tree_file, out_species_tree_file):
+    tree = ete3.Tree(in_species_tree_file, format=1)
+    tree.write(format=5, outfile=out_species_tree_file)
+
 ''' Creates a map from species names to species status '''
 def newick_get_species_status(tree_file):
     '''
@@ -91,6 +98,22 @@ def newick_get_lca_species(tree_file, leaves_list):
     nodes_list = [lca] + lca.get_descendants()
     return [node.name for node in nodes_list]
 
+''' Creates a map of species names between two identical trees on same leaves '''
+def newick_create_species_map(in_tree_file_1, in_tree_file_2):
+    '''
+    input: two species tree files of same topology and on the same set of leaves
+    output: dict(species in tree 1 -> species in tree 2)
+    '''
+    leaves_map_1 = newick_get_leaves(in_tree_file_1)
+    leaves_map_2 = newick_get_leaves(in_tree_file_2)
+    species_map = {}
+    for species_1,leaves_1 in leaves_map_1.items():
+        for species_2,leaves_2 in leaves_map_2.items():
+            if leaves_1 == leaves_2:
+                species_map[species_1] = species_2
+    return species_map
+    
+
 def main():
     command = sys.argv[1]
 
@@ -98,6 +121,10 @@ def main():
         in_species_tree_file = sys.argv[2]
         out_species_file = sys.argv[3]
         newick_create_species_file(in_species_tree_file, out_species_file)
+    elif command == 'unlabel':
+        in_species_tree_file = sys.argv[2]
+        out_species_tree_file = sys.argv[3]
+        newick_remove_internal_names(in_species_tree_file, out_species_tree_file)
 
 if __name__ == "__main__":
     main()
