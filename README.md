@@ -49,7 +49,8 @@ Submitted batch job 64349391
 
 ### Reconciled Gene Trees
 
-```> python src/AGO.py parameters/anopheles_X.yaml script GeneRax
+```
+> python src/AGO.py parameters/anopheles_X.yaml script GeneRax
         /scratch/chauvec/SPP/anopheles_X/aux/GeneRax/GeneRax.sh
 > sbatch /scratch/chauvec/SPP/anopheles_X/aux/GeneRax/GeneRax.sh
 sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
