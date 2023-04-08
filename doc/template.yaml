@@ -60,7 +60,7 @@ tools:
    - &ale_modules                    # REQUIRED: modules needed to run ALE                         (ex: '', no module needed)
    - &ale_slurm_options              # REQUIRED: ALE slurm options                                 (ex: '--mem=2G --time=02:00:00')
    # GeneRax
-   - &generax_exec                   # REQUIRED: GeneRax command-line                              (ex: !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax'])
+   - &generax_exec                   # REQUIRED: GeneRax command-line                              (ex: !concat ['mpiexec -np 48 ', !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']])
    - &generax_options                # REQUIRED: GeneRax command-line options                      (ex: '--per-family-rates --si-quartet-support --seed 123 --rec-model UndatedDL --strategy SPR')
    - &generax_alignment_model        # REQUIRED: GeneRax alignment model                           (ex: 'GTR+G')
    - &generax_modules                # REQUIRED: modules needed to run GeneRax                     (ex: '', no module needed)
@@ -302,7 +302,7 @@ tools:
                      !concat ['${', *generax_slurm_array_results_var, '}', *data_reconciliations_ext]
                   ]
          cmd:
-            - !concat ['mpiexec -np 48 ', *generax_exec, ' \']
+            - !concat [*generax_exec, ' \']
             - !concat ['   -f ', *generax_input_file, ' \']
             - !concat ['   -s ', *data_species_tree_path, ' \']
             - !concat ['   -p ', *generax_results_dir, ' \']
