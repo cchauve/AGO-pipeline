@@ -63,6 +63,7 @@ tools:
    - &macse_slurm_options '--mem=8G --time=02:00:00'
    # GeneRax
    - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
+   - &generax_modules         ''
    - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
    - &generax_options         '--per-family-rates --si-quartet-support'
    - &generax_seed            '123'
@@ -71,6 +72,7 @@ tools:
    - &generax_alignment_model 'GTR+G'
    # DeCoSTAR
    - &decostar_exec                  !join [*run_dir_bin, 'DeCoSTAR']
+   - &decostar_modules               ''
    - &decostar_slurm_options         '--mem=4G --time=24:00:00'
    - &decostar_nb_sample             '1000'
    - &decostar_boltzmann_temperature '0.1'
@@ -78,6 +80,7 @@ tools:
    # SPP-DCJ
    - &sppdcj_bin_dir              !join [*run_dir_bin, 'spp_dcj', 'scripts']
    - &sppdcj_ilp_exec             !join [*sppdcj_bin_dir, 'spp_dcj.py']
+   - &sppdcj_ilp_modules          ''
    - &sppdcj_ilp_slurm_options    '--mem=256G --time=24:00:00'
    - &sppdcj_ilp_threshold        '0.5'
    - &sppdcj_ilp_alpha            '0.5'     
@@ -169,6 +172,7 @@ tools:
          file:  &generax_output_file !ref [*data_reconciliations_path]
       slurm:
          options: !ref [*generax_slurm_options] 
+         modules: !ref [*generax_modules] 
          array:
             results:
                file:  &generax_slurm_array_results_file  !ref [*data_alignments_path]
@@ -228,6 +232,7 @@ tools:
          file: &decostar_output_file !ref [*data_adjacencies_path]
       slurm:
          options: !ref [*decostar_slurm_options]
+         modules: !ref [*decostar_modules]
          array:
             results:
                file:  &decostar_slurm_array_results_file  !ref [*data_species_path]
@@ -342,6 +347,7 @@ tools:
 
       slurm:
          options: !ref [*sppdcj_ilp_slurm_options]
+         modules: !ref [*sppdcj_ilp_modules]
          results:
             dir: &sppdcj_ilp_results_dir  !join [*dir_results, *sppdcj_ilp_name]
             prefix: &sppdcj_results_prefix !concat [
