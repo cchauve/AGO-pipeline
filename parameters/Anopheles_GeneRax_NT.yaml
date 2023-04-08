@@ -1,5 +1,4 @@
 # Parameters file to process Anopheles VectorBase data, for 4 assembled species and X chromosome
-version: 1
 
 # Specific run parameters
 run:
@@ -46,9 +45,6 @@ data:
       # [optional] Suffixes for nucleotides and amino-acids alignments files
       NT_ext: &data_alignments_NT_ext '_NT.fasta'
       AA_ext: &data_alignments_AA_ext '_AA.fasta'
-#   gene_trees:
-#      name: &data_gene_trees_name 'gene_trees_X_4.txt'
-#      path: &data_gene_trees_path !join [*dir_data, *data_gene_trees_name]
    reconciliations:
       name:  &data_reconciliations_name   'reconciliations_X_4.txt'
       path:  &data_reconciliations_path   !join [*dir_data, *data_reconciliations_name]
@@ -63,6 +59,7 @@ data:
 tools:
    # MACSE
    - &macse_exec          !join [*run_dir_bin, 'macse_v2.06.jar']
+   - &macse_modules       'java'
    - &macse_slurm_options '--mem=8G --time=02:00:00'
    # GeneRax
    - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
@@ -88,9 +85,10 @@ tools:
    - &sppdcj_input_species        'all'
    - &sppdcj_input_suffix         'all'
    - &sppdcj_gurobi_exec          'gurobi_cl'
+   - &sppdcj_writesol_exec        !join [*sppdcj_bin_dir, 'sol2adjacencies.py']
+   - &sppdcj_modules              'gurobi'
    - &sppdcj_gurobi_options       'MIPGap=0.05'
    - &sppdcj_slurm_options        '--mem=50G --time=12:00:00'
-   - &sppdcj_writesol_exec        !join [*sppdcj_bin_dir, 'sol2adjacencies.py']
 
 # SLURM account
 slurm:
@@ -119,7 +117,7 @@ tools:
          file: &macse_output_file !ref [*data_alignments_path]
       slurm:
          options: !ref [*macse_slurm_options]
-         modules: ['java']
+         modules: !ref [*macse_modules]
          array:
             input:
                file:  &macse_slurm_array_input_file  !ref [*macse_input_file]
@@ -396,7 +394,7 @@ tools:
            file: &sppdcj_output_file !ref [*data_ago_adjacencies_path]
       slurm:
          options: !ref [*sppdcj_slurm_options]
-         modules: ['gurobi']
+         modules: !ref [*sppdcj_modules]
          array:
             results:
                file:  &sppdcj_slurm_array_results_file  !ref [*data_species_path]

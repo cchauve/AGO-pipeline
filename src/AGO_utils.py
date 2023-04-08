@@ -26,7 +26,7 @@ def create_slurm_script(parameters, tool):
     with open(script_file, 'w') as script:
         script.write('#!/bin/bash\n')
         slurm_options = parameters.get_slurm_options(tool, suffix=True)
-        slurm_modules = parameters.get_slurm_modules(tool, concat=" ")
+        slurm_modules = parameters.get_slurm_modules(tool)
         slurm_cmd = parameters.get_slurm_cmd(tool, concat='\n')
         for option in slurm_options:
             script.write(f'\n#SBATCH {option}')
@@ -41,7 +41,7 @@ def create_slurm_script(parameters, tool):
                     f'$(sed "{TASK_ID}q;d" {array_spec["file"]} |'
                     f'cut -f {array_spec["field"]})'
                 )
-        if len(slurm_modules) > 0:
+        if slurm_modules is not None:
             script.write(f'\n\nmodule load {slurm_modules}')
         script.write(f'\n\n{slurm_cmd}')
     return [script_file]

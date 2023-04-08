@@ -155,17 +155,24 @@ class Parameters:
             [f'--output={self.get_slurm_log_file(tool, suffix=suffix)}'] +\
             [f'--error={self.get_slurm_err_file(tool, suffix=suffix)}']
 
-    def get_slurm_modules(self, tool, concat=None):
+    # def get_slurm_modules(self, tool):
+    #     if 'modules' in self.parameters['tools'][tool]['slurm'].keys():
+    #         modules = self.parameters['tools'][tool]['slurm']['modules']
+    #         if isinstance(modules, str):
+    #             modules = modules.split()
+    #     else:
+    #         modules = []
+    #     if concat is None:
+    #         return modules
+    #     else:
+    #         return concat.join(modules)
+
+    def get_slurm_modules(self, tool):
         if 'modules' in self.parameters['tools'][tool]['slurm'].keys():
             modules = self.parameters['tools'][tool]['slurm']['modules']
-            if isinstance(modules, str):
-                modules = modules.split()
-        else:
-            modules = []
-        if concat is None:
             return modules
         else:
-            return concat.join(modules)
+            return None
 
     def check_slurm_array_key(self, tool, key):
         slurm = self.parameters['tools'][tool]['slurm']
