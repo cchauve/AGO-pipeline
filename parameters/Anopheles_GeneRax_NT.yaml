@@ -62,7 +62,7 @@ tools:
    - &macse_modules       'java'
    - &macse_slurm_options '--mem=8G --time=02:00:00'
    # GeneRax
-   - &generax_exec            !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']
+   - &generax_exec            !concat ['mpiexec -np 48 ', !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']]
    - &generax_modules         ''
    - &generax_slurm_options   '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
    - &generax_options         '--per-family-rates --si-quartet-support'
@@ -186,7 +186,7 @@ tools:
                      !concat ['${', *generax_slurm_array_results_var, '}', *data_reconciliations_ext]
                   ]
          cmd:
-            - !concat ['mpiexec -np 48 ', *generax_exec, ' \']
+            - !concat [*generax_exec, ' \']
             - !concat ['   -f ', *generax_input_file, ' \']
             - !concat ['   -s ', *data_species_tree_path, ' \']
             - !concat ['   -p ', *generax_results_dir, ' \']
