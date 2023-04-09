@@ -41,20 +41,24 @@ HPC scheduler: <a href="https://slurm.schedmd.com/documentation.html">slurm</a>.
 
 ### Implementation
 
-See [AGO manual](doc/manual.md)
+See [AGO manual](doc/manual.md).
 
 ## Example
 
 Reconstructing the X chromosome gene order of *Anopheles* mosquitoes genomes.
 
-See [Anopheles example parameters file](example/anopheles_X.yaml)
+See [Anopheles example parameters file](example/anopheles_X.yaml).
+
 
 ### Data
 
+Make data available on zenodo and provide documentation about how the data was obtained.
+
+
 ### Initalization
 
+
 ```
-> source AGO_python3/bin/activate
 > python src/AGO.py parameters/anopheles_X.yaml init
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /scratch/chauvec/SPP/anopheles_X/data/species_tree_4.newick.
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /scratch/chauvec/SPP/anopheles_X/data/species_4.txt.
@@ -74,7 +78,6 @@ See [Anopheles example parameters file](example/anopheles_X.yaml)
 > python src/AGO.py parameters/anopheles_X.yaml script MACSE
         /scratch/chauvec/SPP/anopheles_X/aux/MACSE/MACSE.sh
 > sbatch /scratch/chauvec/SPP/anopheles_X/aux/MACSE/MACSE.sh
-sbatch: NOTE: Your memory request of 8192M was likely submitted as 8G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
 Submitted batch job 64349391
 > python src/AGO.py parameters/anopheles_X.yaml check MACSE
         /scratch/chauvec/SPP/anopheles_X/log/MACSE.log
@@ -89,7 +92,6 @@ Submitted batch job 64349391
 > python src/AGO.py parameters/anopheles_X.yaml script GeneRax
         /scratch/chauvec/SPP/anopheles_X/aux/GeneRax/GeneRax.sh
 > sbatch /scratch/chauvec/SPP/anopheles_X/aux/GeneRax/GeneRax.sh
-sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
 Submitted batch job 64566124
 > python src/AGO.py parameters/anopheles_X.yaml check GeneRax
         /scratch/chauvec/SPP/anopheles_X/log/GeneRax.log
@@ -118,7 +120,6 @@ AnophelesalbimanusSTECLA:489:8:11
 > python src/AGO.py parameters/anopheles_X.yaml script DeCoSTAR
         /scratch/chauvec/SPP/anopheles_X/aux/DeCoSTAR/DeCoSTAR.sh
 > sbatch /scratch/chauvec/SPP/anopheles_X/aux/DeCoSTAR/DeCoSTAR.sh
-sbatch: NOTE: Your memory request of 4096M was likely submitted as 4G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
 Submitted batch job 64567288
 > python src/AGO.py parameters/anopheles_X.yaml check DeCoSTAR
         /scratch/chauvec/SPP/anopheles_X/log/DeCoSTAR.log
@@ -170,7 +171,6 @@ node0:495:1.0   450:403:2:186
 > python src/AGO.py parameters/anopheles_X.yaml script SPPDCJ_ILP
         /scratch/chauvec/SPP/anopheles_X/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
 > sbatch  /scratch/chauvec/SPP/anopheles_X/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
-sbatch: NOTE: Your memory request of 262144M was likely submitted as 256G. Please note that Slurm interprets memory requests denominated in G as multiples of 1024M, not 1000M.
 Submitted batch job 64569034
 > python src/AGO.py parameters/anopheles_X.yaml check SPPDCJ_ILP
         /scratch/chauvec/SPP/anopheles_X/log/SPPDCJ_ILP_all.log
