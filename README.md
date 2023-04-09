@@ -79,6 +79,9 @@ Make data available on zenodo and provide documentation about how the data was o
         /scratch/chauvec/SPP/anopheles_X/aux/MACSE/MACSE.sh
 > sbatch /scratch/chauvec/SPP/anopheles_X/aux/MACSE/MACSE.sh
 Submitted batch job 64349391
+```
+
+```
 > python src/AGO.py parameters/anopheles_X.yaml check MACSE
         /scratch/chauvec/SPP/anopheles_X/log/MACSE.log
         /scratch/chauvec/SPP/anopheles_X/data/alignments_X_4.txt
@@ -93,6 +96,9 @@ Submitted batch job 64349391
         /scratch/chauvec/SPP/anopheles_X/aux/GeneRax/GeneRax.sh
 > sbatch /scratch/chauvec/SPP/anopheles_X/aux/GeneRax/GeneRax.sh
 Submitted batch job 64566124
+```
+
+```
 > python src/AGO.py parameters/anopheles_X.yaml check GeneRax
         /scratch/chauvec/SPP/anopheles_X/log/GeneRax.log
         /scratch/chauvec/SPP/anopheles_X/data/reconciliations_X_4.txt
@@ -121,6 +127,9 @@ AnophelesalbimanusSTECLA:489:8:11
         /scratch/chauvec/SPP/anopheles_X/aux/DeCoSTAR/DeCoSTAR.sh
 > sbatch /scratch/chauvec/SPP/anopheles_X/aux/DeCoSTAR/DeCoSTAR.sh
 Submitted batch job 64567288
+```
+
+```
 > python src/AGO.py parameters/anopheles_X.yaml check DeCoSTAR
         /scratch/chauvec/SPP/anopheles_X/log/DeCoSTAR.log
         /scratch/chauvec/SPP/anopheles_X/data/adjacencies_X_4.txt
@@ -172,6 +181,9 @@ node0:495:1.0   450:403:2:186
         /scratch/chauvec/SPP/anopheles_X/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
 > sbatch  /scratch/chauvec/SPP/anopheles_X/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
 Submitted batch job 64569034
+```
+
+```
 > python src/AGO.py parameters/anopheles_X.yaml check SPPDCJ_ILP
         /scratch/chauvec/SPP/anopheles_X/log/SPPDCJ_ILP_all.log
         No output file is created
@@ -189,10 +201,16 @@ INFO    2023-04-05 13:54:33,497 identified 2 candidate telomeres in genome Anoph
 INFO    2023-04-05 13:54:33,497 identified 2 candidate telomeres in genome AnophelesfunestusFUMOZ
 > python src/AGO.py parameters/anopheles_X.yaml stats SPPDCJ_ILP
         /scratch/chauvec/SPP/anopheles_X/statistics/SPPDCJ_ILP/components_all.log
+```
+
+```
 > python src/AGO.py parameters/anopheles_X.yaml script SPPDCJ
         /scratch/chauvec/SPP/anopheles_X/aux/SPPDCJ/SPPDCJ_all.sh
 > sbatch /scratch/chauvec/SPP/anopheles_X/aux/SPPDCJ/SPPDCJ_all.sh
 Submitted batch job 64365862
+```
+
+```
 > python src/AGO.py parameters/anopheles_X.yaml check SPPDCJ
         /scratch/chauvec/SPP/anopheles_X/log/SPPDCJ_all.log
         /scratch/chauvec/SPP/anopheles_X/data/adjacencies_ago_X_4.txt
