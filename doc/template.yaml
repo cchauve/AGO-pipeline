@@ -10,6 +10,7 @@ run:
 slurm:
    account: &slurm_account # REQUIRED: SLURM account name (ex: 'def-chauvec')
 dir:
+   data:    &dir_data    # REQUIRED: directory of run data         (ex: !join [*run_dir_exp, 'data'])
    aux:     &dir_aux     # REQUIRED: directory of auxiliary files  (ex: !join [*run_dir_exp, 'aux'])
    log:     &dir_log     # REQUIRED: directory of log files        (ex: !join [*run_dir_exp, 'log'])
    stats:   &dir_stats   # REQUIRED: directory of statistics files (ex: !join [*run_dir_exp, 'statistics'])
@@ -83,7 +84,7 @@ tools:
    - &sppdcj_ilp_beta                # REQUIRED: beta parameter of SPPDCJ model                    (ex: '0.25')
    - &sppdcj_input_species           # REQUIRED: species to consider                               (ex: 'all' or 'species1 species2 ... speciesk')
    - &sppdcj_input_suffix            # REQUIRED: suffix of result files                            (ex: 'all')
-   - &sppdcj_ilp_modules             # REQUIRED: modules needed to create the ILP                  (ex: 'gurobi')
+   - &sppdcj_ilp_modules             # REQUIRED: modules needed to create the ILP                  (ex: '')
    - &sppdcj_modules                 # REQUIRED: modules needed to solve the ILP                   (ex: 'gurobi')
    - &sppdcj_ilp_slurm_options       # REQUIRED: slurm options to create the ILP                   (ex: '--mem=256G --time=24:00:00')
    - &sppdcj_slurm_options           # REQUIRED: slurm options to solve the ILP                    (ex: '--mem=50G --time=12:00:00')
