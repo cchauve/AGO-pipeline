@@ -41,13 +41,13 @@ HPC scheduler: <a href="https://slurm.schedmd.com/documentation.html">slurm</a>.
 
 ### Implementation
 
-See [manual](doc/manual.md)
+See [AGO manual](doc/manual.md)
 
 ## Example
 
 Reconstructing the X chromosome gene order of *Anopheles* mosquitoes genomes.
 
-See [example parameters](example/anopheles_X.md)
+See [Anopheles example parameters file](example/anopheles_X.yaml)
 
 ### Data
 
