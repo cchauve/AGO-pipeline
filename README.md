@@ -59,57 +59,57 @@ Make data available on zenodo and provide documentation about how the data was o
 
 
 ```
-> python src/AGO.py parameters/anopheles_X.yaml init
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /scratch/chauvec/SPP/anopheles_X/data/species_tree_4.newick.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /scratch/chauvec/SPP/anopheles_X/data/species_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /scratch/chauvec/SPP/anopheles_X/data/families_X_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_4.txt -> /scratch/chauvec/SPP/anopheles_X/data/sequences_X_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt -> /scratch/chauvec/SPP/anopheles_X/data/gene_orders_X_4.txt.
-        /scratch/chauvec/SPP/anopheles_X/data/alignments_X_4.txt will be computed.
-        /scratch/chauvec/SPP/anopheles_X/data/reconciliations_X_4.txt will be computed.
-        /scratch/chauvec/SPP/anopheles_X/data/adjacencies_X_4.txt will be computed.
-> wc -l /scratch/chauvec/SPP/anopheles_X/data/families_X_4.txt
-451 /scratch/chauvec/SPP/anopheles_X/data/families_X_4.txt
+> python src/AGO.py example/anopheles_X.yaml init
+        <DATA_DIR>/species_tree_4.newick -> <EXP_DIR>/data/species_tree_4.newick.
+        <DATA_DIR>/species_4.txt -> <EXP_DIR>/data/species_4.txt.
+        <DATA_DIR>/families_X_4.txt -> <EXP_DIR>/data/families_X_4.txt.
+        <DATA_DIR>/sequences_X_4.txt -> <EXP_DIR>/data/sequences_X_4.txt.
+        <DATA_DIR>/gene_orders_X_4.txt -> <EXP_DIR>/data/gene_orders_X_4.txt.
+        <EXP_DIR>/data/alignments_X_4.txt will be computed.
+        <EXP_DIR>/data/reconciliations_X_4.txt will be computed.
+        <EXP_DIR>/data/adjacencies_X_4.txt will be computed.
+> wc -l <EXP_DIR>/data/families_X_4.txt
+451 <EXP_DIR>/data/families_X_4.txt
 ```
 
 ### Multiple Sequences Alignments
 
 ```
-> python src/AGO.py parameters/anopheles_X.yaml script MACSE
-        /scratch/chauvec/SPP/anopheles_X/aux/MACSE/MACSE.sh
-> sbatch /scratch/chauvec/SPP/anopheles_X/aux/MACSE/MACSE.sh
+> python src/AGO.py example/anopheles_X.yaml script MACSE
+        <EXP_DIR>/aux/MACSE/MACSE.sh
+> sbatch <EXP_DIR>/aux/MACSE/MACSE.sh
 Submitted batch job 64349391
 ```
 
 ```
-> python src/AGO.py parameters/anopheles_X.yaml check MACSE
-        /scratch/chauvec/SPP/anopheles_X/log/MACSE.log
-        /scratch/chauvec/SPP/anopheles_X/data/alignments_X_4.txt
-> grep -c "ERROR" /scratch/chauvec/SPP/anopheles_X/log/MACSE.log
+> python src/AGO.py example/anopheles_X.yaml check MACSE
+        <EXP_DIR>/log/MACSE.log
+        <EXP_DIR>/data/alignments_X_4.txt
+> grep -c "ERROR" <EXP_DIR>/log/MACSE.log
 0
 ```
 
 ### Reconciled Gene Trees
 
 ```
-> python src/AGO.py parameters/anopheles_X.yaml script GeneRax
-        /scratch/chauvec/SPP/anopheles_X/aux/GeneRax/GeneRax.sh
-> sbatch /scratch/chauvec/SPP/anopheles_X/aux/GeneRax/GeneRax.sh
+> python src/AGO.py example/anopheles_X.yaml script GeneRax
+        <EXP_DIR>/aux/GeneRax/GeneRax.sh
+> sbatch <EXP_DIR>/aux/GeneRax/GeneRax.sh
 Submitted batch job 64566124
 ```
 
 ```
-> python src/AGO.py parameters/anopheles_X.yaml check GeneRax
-        /scratch/chauvec/SPP/anopheles_X/log/GeneRax.log
-        /scratch/chauvec/SPP/anopheles_X/data/reconciliations_X_4.txt
-> grep -c "ERROR" /scratch/chauvec/SPP/anopheles_X/log/GeneRax.log
+> python src/AGO.py example/anopheles_X.yaml check GeneRax
+        <EXP_DIR>/log/GeneRax.log
+        <EXP_DIR>/data/reconciliations_X_4.txt
+> grep -c "ERROR" <EXP_DIR>/log/GeneRax.log
 0
-> wc -l /scratch/chauvec/SPP/anopheles_X/data/reconciliations_X_4.txt
-451 /scratch/chauvec/SPP/anopheles_X/data/reconciliations_X_4.txt
-> python src/AGO.py parameters/anopheles_X.yaml stats GeneRax
-        /scratch/chauvec/SPP/anopheles_X/statistics/GeneRax/GeneRax_species.csv
-        /scratch/chauvec/SPP/anopheles_X/statistics/GeneRax/GeneRax_families.csv
-> cat /scratch/chauvec/SPP/anopheles_X/statistics/GeneRax/GeneRax_species.csv
+> wc -l <EXP_DIR>/data/reconciliations_X_4.txt
+451 <EXP_DIR>/data/reconciliations_X_4.txt
+> python src/AGO.py example/anopheles_X.yaml stats GeneRax
+        <EXP_DIR>/statistics/GeneRax/GeneRax_species.csv
+        <EXP_DIR>/statistics/GeneRax/GeneRax_families.csv
+> cat <EXP_DIR>/statistics/GeneRax/GeneRax_species.csv
 #species:genes:duplications:losses
 node2:492:41:0
 AnophelesgambiaePEST:471:6:30
@@ -123,22 +123,22 @@ AnophelesalbimanusSTECLA:489:8:11
 ### Ancestral Adjancecies
 
 ```
-> python src/AGO.py parameters/anopheles_X.yaml script DeCoSTAR
-        /scratch/chauvec/SPP/anopheles_X/aux/DeCoSTAR/DeCoSTAR.sh
-> sbatch /scratch/chauvec/SPP/anopheles_X/aux/DeCoSTAR/DeCoSTAR.sh
+> python src/AGO.py example/anopheles_X.yaml script DeCoSTAR
+        <EXP_DIR>/aux/DeCoSTAR/DeCoSTAR.sh
+> sbatch <EXP_DIR>/aux/DeCoSTAR/DeCoSTAR.sh
 Submitted batch job 64567288
 ```
 
 ```
-> python src/AGO.py parameters/anopheles_X.yaml check DeCoSTAR
-        /scratch/chauvec/SPP/anopheles_X/log/DeCoSTAR.log
-        /scratch/chauvec/SPP/anopheles_X/data/adjacencies_X_4.txt
-> grep -c "ERROR" /scratch/chauvec/SPP/anopheles_X/log/DeCoSTAR.log
+> python src/AGO.py example/anopheles_X.yaml check DeCoSTAR
+        <EXP_DIR>/log/DeCoSTAR.log
+        <EXP_DIR>/data/adjacencies_X_4.txt
+> grep -c "ERROR" <EXP_DIR>/log/DeCoSTAR.log
 0
-> python src/AGO.py parameters/anopheles_X.yaml stats DeCoSTAR
-        /scratch/chauvec/SPP/anopheles_X/statistics/DeCoSTAR/DeCoSTAR.csv
-        /scratch/chauvec/SPP/anopheles_X/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
-> grep node /scratch/chauvec/SPP/anopheles_X/statistics/DeCoSTAR/DeCoSTAR.csv
+> python src/AGO.py example/anopheles_X.yaml stats DeCoSTAR
+        <EXP_DIR>/statistics/DeCoSTAR/DeCoSTAR.csv
+        <EXP_DIR>/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
+> grep node <EXP_DIR>/statistics/DeCoSTAR/DeCoSTAR.csv
 #node2
 node2:492:0.1   335:230:4:528
 node2:492:0.2   335:230:4:528
@@ -177,21 +177,21 @@ node0:495:1.0   450:403:2:186
 ### Ancestral Gene Orders
 
 ```
-> python src/AGO.py parameters/anopheles_X.yaml script SPPDCJ_ILP
-        /scratch/chauvec/SPP/anopheles_X/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
-> sbatch  /scratch/chauvec/SPP/anopheles_X/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
+> python src/AGO.py example/anopheles_X.yaml script SPPDCJ_ILP
+        <EXP_DIR>/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
+> sbatch  <EXP_DIR>/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
 Submitted batch job 64569034
 ```
 
 ```
-> python src/AGO.py parameters/anopheles_X.yaml check SPPDCJ_ILP
-        /scratch/chauvec/SPP/anopheles_X/log/SPPDCJ_ILP_all.log
+> python src/AGO.py example/anopheles_X.yaml check SPPDCJ_ILP
+        <EXP_DIR>/log/SPPDCJ_ILP_all.log
         No output file is created
-> cat /scratch/chauvec/SPP/anopheles_X/log/SPPDCJ_ILP_all.log
+> cat <EXP_DIR>/log/SPPDCJ_ILP_all.log
 #status tool    index   message
-SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/anopheles_X/results/SPPDCJ_ILP/all_0.5_0.5_0.25.idmap
-SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/anopheles_X/results/SPPDCJ_ILP/all_0.5_0.5_0.25.ilp
-> grep telomere /scratch/chauvec/SPP/anopheles_X/log/SPPDCJ_ILP/SPPDCJ_ILP_all.err
+SUCCESS SPPDCJ_ILP              <EXP_DIR>/results/SPPDCJ_ILP/all_0.5_0.5_0.25.idmap
+SUCCESS SPPDCJ_ILP              <EXP_DIR>/results/SPPDCJ_ILP/all_0.5_0.5_0.25.ilp
+> grep telomere <EXP_DIR>/log/SPPDCJ_ILP/SPPDCJ_ILP_all.err
 INFO    2023-04-05 13:54:33,494 identified 214 candidate telomeres in genome node2
 INFO    2023-04-05 13:54:33,495 identified 210 candidate telomeres in genome node1
 INFO    2023-04-05 13:54:33,496 identified 2 candidate telomeres in genome AnophelesalbimanusSTECLA
@@ -199,24 +199,24 @@ INFO    2023-04-05 13:54:33,496 identified 116 candidate telomeres in genome nod
 INFO    2023-04-05 13:54:33,496 identified 2 candidate telomeres in genome AnophelesatroparvusEBRO
 INFO    2023-04-05 13:54:33,497 identified 2 candidate telomeres in genome AnophelesgambiaePEST
 INFO    2023-04-05 13:54:33,497 identified 2 candidate telomeres in genome AnophelesfunestusFUMOZ
-> python src/AGO.py parameters/anopheles_X.yaml stats SPPDCJ_ILP
-        /scratch/chauvec/SPP/anopheles_X/statistics/SPPDCJ_ILP/components_all.log
+> python src/AGO.py example/anopheles_X.yaml stats SPPDCJ_ILP
+        <EXP_DIR>/statistics/SPPDCJ_ILP/components_all.log
 ```
 
 ```
-> python src/AGO.py parameters/anopheles_X.yaml script SPPDCJ
-        /scratch/chauvec/SPP/anopheles_X/aux/SPPDCJ/SPPDCJ_all.sh
-> sbatch /scratch/chauvec/SPP/anopheles_X/aux/SPPDCJ/SPPDCJ_all.sh
+> python src/AGO.py example/anopheles_X.yaml script SPPDCJ
+        <EXP_DIR>/aux/SPPDCJ/SPPDCJ_all.sh
+> sbatch <EXP_DIR>/aux/SPPDCJ/SPPDCJ_all.sh
 Submitted batch job 64365862
 ```
 
 ```
-> python src/AGO.py parameters/anopheles_X.yaml check SPPDCJ
-        /scratch/chauvec/SPP/anopheles_X/log/SPPDCJ_all.log
-        /scratch/chauvec/SPP/anopheles_X/data/adjacencies_ago_X_4.txt
-> python src/AGO.py parameters/anopheles_X.yaml stats SPPDCJ
-        /scratch/chauvec/SPP/anopheles_X/statistics/SPPDCJ/SPPDCJ_species.csv
-> cat /scratch/chauvec/SPP/anopheles_X/statistics/SPPDCJ/SPPDCJ_species.csv
+> python src/AGO.py example/anopheles_X.yaml check SPPDCJ
+        <EXP_DIR>/log/SPPDCJ_all.log
+        <EXP_DIR>/data/adjacencies_ago_X_4.txt
+> python src/AGO.py example/anopheles_X.yaml stats SPPDCJ
+        <EXP_DIR>/statistics/SPPDCJ/SPPDCJ_species.csv
+> cat <EXP_DIR>/statistics/SPPDCJ/SPPDCJ_species.csv
 #species        <number of adjacencies>:<total weight>:<kept adjacencies>:<kept weight>
 node2   231:225.73899999999998:224:223.24099999999999
 node1   404:372.4:357:350.543
@@ -226,8 +226,8 @@ AnophelesatroparvusEBRO 502:502.0:502:502.0
 AnophelesgambiaePEST    470:470.0:470:470.0
 AnophelesfunestusFUMOZ  471:471.0:471:471.0
 > python scripts/gene_orders_utils.py \
-       /scratch/chauvec/SPP/anopheles_X/results/DeCoSTAR/genes_reformatted.txt \
-       /scratch/chauvec/SPP/anopheles_X/data/adjacencies_ago_X_4.txt \
-       /scratch/chauvec/SPP/anopheles_X/results/SPPDCJ/ \
-       /scratch/chauvec/SPP/anopheles_X/data/gene_orders_ago_X_4.txt
+       <EXP_DIR>/results/DeCoSTAR/genes_reformatted.txt \
+       <EXP_DIR>/data/adjacencies_ago_X_4.txt \
+       <EXP_DIR>/results/SPPDCJ/ \
+       <EXP_DIR>/data/gene_orders_ago_X_4.txt
 ```
