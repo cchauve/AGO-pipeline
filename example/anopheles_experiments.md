@@ -101,6 +101,22 @@ Submitted batch job 64815209
 
 ```
 
+```
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ_ILP
+        /scratch/chauvec/SPP/anopheles_X_GeneRax/log/SPPDCJ_ILP_all.log
+        No output file is created
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_GeneRax/log/SPPDCJ_ILP_all.log
+#status tool    index   message
+SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/anopheles_X_GeneRax/results/SPPDCJ_ILP/all_0.5_0.5_0.25.idmap
+SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/anopheles_X_GeneRax/results/SPPDCJ_ILP/all_0.5_0.5_0.25.ilp
+```
+
+```
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml script SPPDCJ
+        /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ/SPPDCJ_all.sh
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ/SPPDCJ_all.sh
+Submitted batch job 64816896
+```
 
 ## ALE-based pipeline
 
@@ -139,6 +155,27 @@ Submitted batch job 64806164
 (AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/ALE/ALE.sh
 Submitted batch job 64814991
 ```
+
+```(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check ALE
+        /scratch/chauvec/SPP/anopheles_X_ALE/log/ALE.log
+        /scratch/chauvec/SPP/anopheles_X_ALE/data/reconciliations_X.txt
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > grep -c ERROR /scratch/chauvec/SPP/anopheles_X_ALE/log/ALE.log
+0
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats ALE
+        /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_species.csv
+        /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_families.csv
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_species.csv
+#species:genes:duplications:losses
+node2:961:510:0
+AnophelesgambiaePEST:471:5:308
+AnophelesfunestusFUMOZ:472:2:304
+node0:774:0:291
+AnophelesatroparvusEBRO:503:2:564
+node1:1065:140:36
+AnophelesalbimanusSTECLA:489:2:474
+```
+
+The number of ancestral genes is unrealistic.
 
 ## ecceTERA-based pipeline
 
@@ -190,4 +227,21 @@ node2:483:0.5   330:224:0:518
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
 Submitted batch job 64815159
 
+```
+
+```
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check SPPDCJ_ILP
+        /scratch/chauvec/SPP/anopheles_X_ecceTERA/log/SPPDCJ_ILP_all.log
+        No output file is created
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_ecceTERA/log/SPPDCJ_ILP_all.log
+#status tool    index   message
+SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/anopheles_X_ecceTERA/results/SPPDCJ_ILP/all_0.5_0.5_0.25.idmap
+SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/anopheles_X_ecceTERA/results/SPPDCJ_ILP/all_0.5_0.5_0.25.ilp
+```
+
+```
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml script SPPDCJ
+        /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ_all.sh
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ_all.sh
+Submitted batch job 64816944
 ```
