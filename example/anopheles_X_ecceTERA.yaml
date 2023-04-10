@@ -1,7 +1,7 @@
 ## Reconstruting ancestral gene orders of the X chromosome of Anopheles mosquito genomes
 
 run:
-   name: &run_name  anopheles_X
+   name: &run_name  anopheles_X_ecceTERA
    dir:
       # Root directory for parameters and tool-specific scripts
       - &run_dir_root    '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
@@ -33,29 +33,34 @@ data:
       path: &data_sequences_path         !join [*run_vectorbase_data, 'sequences_X_4.txt']
    # Computed data
    alignments:
-      path: &data_alignments_path        !join [*dir_data, 'alignments_X_4.txt']
+      path: &data_alignments_path        !join [*dir_data, 'alignments_X.txt']
       NT_ext: &data_alignments_NT_ext    '_NT.fasta'
       AA_ext: &data_alignments_AA_ext    '_AA.fasta'
-   reconciliations:
-      path:  &data_reconciliations_path  !join [*dir_data, 'reconciliations_X_4.txt']
-      ext:   &data_reconciliations_ext   '.recphyloxml'
+   gene_trees:
+      path: &data_gene_trees_path        !join [*dir_data, 'gene_trees_X.txt']
    adjacencies:
-      path:  &data_adjacencies_path      !join [*dir_data, 'adjacencies_X_4.txt']
-      path:  &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X_4.txt']
+      path:  &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
+      path:  &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
 # External tools options
 tools:
    # MACSE
    - &macse_exec                     !join [*run_dir_bin, 'macse_v2.06.jar']
    - &macse_modules                  'java'
    - &macse_slurm_options            '--mem=8G --time=02:00:00'
-   # GeneRax
-   - &generax_exec                   !concat ['mpiexec -np 48 ', !join [*run_dir_bin, 'GeneRax', 'build', 'bin', 'generax']]
-   - &generax_options                '--per-family-rates --si-quartet-support --seed 123 --rec-model UndatedDL --strategy SPR'
-   - &generax_alignment_model        'GTR+G'
-   - &generax_modules                ''
-   - &generax_slurm_options          '--mem-per-cpu=4G --time=12:00:00 --ntasks=100'
+   # IQ-TREE
+   - &iqtree_exec                    'iqtree'
+   - &iqtree_options                 '-m MFP -bb 1000 -wbtl'
+   - &iqtree_ufboot_ext              '.ufboot'
+   - &iqtree_modules                 'iq-tree/2.0.7'
+   - &iqtree_slurm_options           '--mem=1G --time=00:20:00'
    # DeCoSTAR
    - &decostar_exec                  !join [*run_dir_bin, 'DeCoSTAR']
+   - &decostar_input_path            !ref [*data_gene_trees_path]
+   - &decostar_already_reconciled    'false'
+   - &decostar_dupli_cost            '2'
+   - &decostar_loss_cost             '1'
+   - &decostar_dated_species_tree    'true'
+   - &decostar_rooted                'false'
    - &decostar_nb_sample             '1000'
    - &decostar_boltzmann_temperature '0.1'
    - &decostar_stats_thresholds      "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0"
@@ -134,62 +139,38 @@ tools:
             - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_2]
             - !concat ["sed -i 's/?/-/g' ",*macse_slurm_results_file_2]
 
-   # GeneRax: computing reconciled gene trees
-   GeneRax:
-      name: &generax_name 'GeneRax'
+   # IQ-TREE: gene trees inference
+   IQ-TREE:
+      name: &iqtree_name 'IQ-TREE'
       input:
-         dir:    &generax_input_dir  !join [*dir_aux, *generax_name]
-         file:   &generax_input_file !join [*generax_input_dir, 'families.txt']
-         script:
-            - !join [*run_dir_scripts, 'GeneRax_create_input_files.py']
-            - !ref [*data_families_path]
-            - !ref [*data_gene_orders_path]
-            - !ref [*data_alignments_path]
-            - !ref [*data_alignments_NT_ext]
-            - !ref [*generax_alignment_model]
-            - !ref [*generax_input_file]
-            - !ref [*generax_input_dir]
+         file: &iqtree_input_file !ref [*data_alignments_path]
       output:
-         file:  &generax_output_file !ref [*data_reconciliations_path]
+         file: &iqtree_output_file !ref [*data_gene_trees_path]
       slurm:
-         options: !ref [*generax_slurm_options] 
-         modules: !ref [*generax_modules]
+         options: !ref [*iqtree_slurm_options]
+         modules: !ref [*iqtree_modules]
          array:
+            input:
+               file:  &iqtree_slurm_array_input_file  !ref [*iqtree_input_file]
+               field: &iqtree_slurm_array_input_field 2
+               var:   &iqtree_slurm_array_input_var   'MSA_FILE'
             results:
-               file:  &generax_slurm_array_results_file  !ref [*data_alignments_path]
-               field: &generax_slurm_array_results_field 1
-               var:   &generax_slurm_array_results_var   'FAM_ID'
+               file:  &iqtree_slurm_array_results_file  !ref [*iqtree_input_file]
+               field: &iqtree_slurm_array_results_field 1
+               var:   &iqtree_slurm_array_results_var   'FAM_ID'
+               ext:   &iqtree_slurm_array_results_ext   !ref [*iqtree_ufboot_ext]
          results:
-            dir: &generax_results_dir  !join [*dir_results, *generax_name]
-            files: 
-                - &generax_slurm_results_file !join [
-                     *generax_results_dir, 'reconciliations',
-                     !concat ['${', *generax_slurm_array_results_var, '}', *data_reconciliations_ext]
+            dir: &iqtree_results_dir !join [*dir_results, *iqtree_name]
+            files:
+                - &iqtree_slurm_results_file_ufboot !join [
+                     *iqtree_results_dir,
+                     !concat ['${', *iqtree_slurm_array_results_var, '}', *iqtree_ufboot_ext]
                   ]
          cmd:
-            - !concat [*generax_exec, ' \']
-            - !concat ['   -f ', *generax_input_file, ' \']
-            - !concat ['   -s ', *data_species_tree_path, ' \']
-            - !concat ['   -p ', *generax_results_dir, ' \']
-            - !concat ['   ', *generax_options]
-            - ' '
-            - !concat [!join [*run_dir_scripts, 'GeneRax_reformat.py'], ' \']
-            - !concat ['   ', *generax_input_file, ' \']
-            - !concat ['   ', *generax_results_dir, ' \']
-            - !concat ['   ', *data_reconciliations_ext]
-      stats:
-         files:
-            - &generax_stats_file_species  !join [
-                 *dir_stats, *generax_name, !concat [*generax_name, '_species.', *log_ext_stat]
-              ]
-            - &generax_stats_file_families  !join [
-                 *dir_stats, *generax_name, !concat [*generax_name, '_families.', *log_ext_stat]
-              ]
-         cmd:
-            - !join [*run_dir_scripts, 'recPhyloXML_statistics.py']
-            - !ref [*generax_output_file]
-            - !ref [*generax_stats_file_species]
-            - !ref [*generax_stats_file_families]
+            - !concat [*iqtree_exec, ' \']
+            - !concat ['   -s ${',*iqtree_slurm_array_input_var,'} \']
+            - !concat ['   ',*iqtree_options,' \']
+            - !concat ['   -pre ',*iqtree_results_dir,'/${',*iqtree_slurm_array_results_var,'}']
 
    # DeCoSTAR: computing ancestral adjacencies
    DeCoSTAR:
