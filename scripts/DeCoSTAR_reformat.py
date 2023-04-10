@@ -60,18 +60,18 @@ def decostar_species_map(in_species_file, in_decostar_species_file):
 
 ''' Returns a map from DeCoSTAR family ID to original family ID '''
 def decostar_family_map(
-        in_gene_trees_file, in_reconciliations_file, add_path=False
+        in_gene_trees_file, in_input_file, add_path=False
 ):
     '''
     input: 
     - in_gene_trees_file: DeCoSTAR input gene trees distribution file
-    - in_reconciliations_file: map to original family ID to rec. path
+    - in_distribution_file: map from original family ID to rec/gene trees path
     - if add_path is True, adds the reconciliation path
     output:
     dict(str->str) from DeCoSTAR family ID to original family ID
     '''
     reconciliation2family = data_reconciliation_path2family(
-        in_reconciliations_file
+        in_input_file
     )
     family_map = {}
     with open(in_gene_trees_file, 'r') as in_gene_trees:
@@ -101,7 +101,7 @@ to list of species + descendant (gene) leaves
 '''
 def decostar_genes2leaves(in_genes_file, species_map):
     '''
-    input: DeCoSTAR genes file, separator family/gene
+    input: DeCoSTAR genes file, map DeCoSTAR species -> original species
     output: dict(gene name -> species + list of descendant (gene) leaves)
     '''
     gene2leaves = {}
@@ -150,12 +150,11 @@ def xml_parse_tree(rec_path):
     parse_clade_recursive(rec_root, result)
     return result
 
-
 ''' Returns a map from DeCoSTAR gene names to original gene names '''
 def decostar_gene_map(in_family_map, in_genes_file, in_species_map):
     '''
     input:
-    - dict(DeCoSTAR family ID -> (original family ID, reconciliation path))
+    - dict(DeCoSTAR family ID -> (original family ID, gene trees distribution path))
     - DeCoSTAR genes file
     output:
     dict(DeCoSTAR gene name -> original gene name)
@@ -166,7 +165,7 @@ def decostar_gene_map(in_family_map, in_genes_file, in_species_map):
         _gene2leaves_map = xml_parse_tree(rec_path)
         for gene,leaves in _gene2leaves_map.items():
             leaves2gene_map[decostar_sep.join(leaves)] = gene
-    # Dictionary DeCoSTAR gene name -> list of descendant extant genes
+    # Dictionary DeCoSTAR gene name -> species + list of descendant extant genes
     gene2leaves_map = decostar_genes2leaves(in_genes_file, in_species_map)
     # Mapping DeCoSTAR gene names to original names by identifying leaves sets
     genes_map = {}
@@ -176,20 +175,36 @@ def decostar_gene_map(in_family_map, in_genes_file, in_species_map):
         genes_map[decostar_gene] = original_gene
     return genes_map
 
+''' Returns the identity gene map from the DeCoSTAR genes file '''
+def decostar_gene_map_identity(in_genes_file):
+    '''
+    input:
+    - DeCoSTAR genes file
+    output:
+    dict(DeCoSTAR gene name -> DeCoSTAR gene name without family prefix)
+    '''
+    genes_map = {}
+    with open(in_genes_file, 'r') as in_file:
+        for gene in in_file.readlines():
+            gene_name = gene.rstrip().split()[1]
+            genes_map[gene_name] = gene_name.split(decostar_sep)[1]
+    return genes_map
+    
 ''' Reformat DeCoSTAR genes file '''
 def decostar_reformat_genes(
         in_species_map,
         in_families_file,
-        in_reconciliations_file,
+        in_input_file,
         in_gene_trees_file,
         in_genes_file,
-        out_genes_file
+        out_genes_file,
+        already_reconciled = False
 ):
     '''
     input:
     - dict(str->str): mapping from DeCoSTAR species names to species names
     - original families file
-    - reconciliations access file
+    - original reconciliations/gene trees access file
     - DeCoSTAR gene trees distribution file
     - DeCoSTAR genes file
     - reformated genes file
@@ -205,10 +220,13 @@ def decostar_reformat_genes(
     # Mapping from DeCoSTAR family (integer) ID to original family ID
     # and reconciliation path
     family_map = decostar_family_map(
-        in_gene_trees_file, in_reconciliations_file, add_path=True
+        in_gene_trees_file, in_input_file, add_path=True
     )
     # Mapping DeCoSTAR gene names to original names
-    gene_map = decostar_gene_map(family_map, in_genes_file, in_species_map)
+    if already_reconciled:
+        gene_map = decostar_gene_map(family_map, in_genes_file, in_species_map)
+    else:
+        gene_map = decostar_gene_map_identity(in_genes_file)
     # Reformatting genes
     with open(in_genes_file, 'r') as in_genes, \
          open(out_genes_file, 'w') as out_genes:
@@ -237,7 +255,7 @@ def decostar_reformat_genes(
     return original_fam_gene
 
 ''' 
-Reads a DeCoSTAR adjacencies fiel and returns a list of
+Reads a DeCoSTAR adjacencies field and returns a list of
 adjacencies in form (species,gene1,gene2,extremity1,extremity2,weight1,weight2)
 '''
 def decostar_read_adjacencies(in_adjacencies_file, species=None):
@@ -294,13 +312,14 @@ def decostar_reformat_adjacencies_file(
 def main():
     in_species_file = sys.argv[1]
     in_decostar_species_file = sys.argv[2]
-    in_families_file = sys.argv[3]
-    in_reconciliations_file = sys.argv[4]
-    in_gene_trees_file = sys.argv[5]
-    in_genes_file = sys.argv[6]
-    in_adjacencies_file = sys.argv[7]
-    out_genes_file = sys.argv[8]
-    out_adjacencies_dir = sys.argv[9]    
+    in_already_reconciled = (sys.argv[3] == 'true')
+    in_families_file = sys.argv[4]
+    in_reconciliations_file = sys.argv[5]
+    in_gene_trees_file = sys.argv[6]
+    in_genes_file = sys.argv[7]
+    in_adjacencies_file = sys.argv[8]
+    out_genes_file = sys.argv[9]
+    out_adjacencies_dir = sys.argv[10]    
 
     species_map = decostar_species_map(
         in_species_file, in_decostar_species_file
@@ -309,7 +328,8 @@ def main():
         species_map,
         in_families_file, in_reconciliations_file,
         in_gene_trees_file, in_genes_file,
-        out_genes_file
+        out_genes_file,
+        already_reconciled = in_already_reconciled
     )
     decostar_reformat_adjacencies_file(
         species_map, genes_map, in_adjacencies_file,
