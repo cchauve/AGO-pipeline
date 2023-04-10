@@ -45,9 +45,12 @@ See [AGO manual](doc/manual.md).
 
 ## Example
 
-Reconstructing the X chromosome gene order of *Anopheles* mosquitoes genomes.
+Reconstructing the X chromosome gene order of *Anopheles* mosquitoes genomes using different methods.
+- GeneRax: [Anopheles example parameters file](example/anopheles_X_GeneRax.yaml).
+- IQ-TREE+ALE: [Anopheles example parameters file](example/anopheles_X_ALE.yaml).
+- IQ-TREE+ecceTERA: [Anopheles example parameters file](example/anopheles_X_ecceTERA.yaml).
 
-See [Anopheles example parameters file](example/anopheles_X.yaml).
+**TO REWRITE**
 
 
 ### Data
