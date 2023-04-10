@@ -64,8 +64,8 @@ tools:
    - &decostar_exec                  # REQUIRED: DeCoSTAR command line                             (ex: !join [*run_dir_bin, 'DeCoSTAR'])
    - &decostar_input_path            !ref [*data_reconciliations_path]
    - &decostar_already_reconciled    'true'
-   - &decostar_dupli_cost            '1'
-   - &decostar_loss_cost             '1'
+   - &decostar_dupli_cost            '0'
+   - &decostar_loss_cost             '0'
    - &decostar_dated_species_tree    # REQUIRED: 'true', 'false'
    - &decostar_rooted                'true' if ALE
    - &decostar_nb_sample             # REQUIRED: number of sampled adjacency forests per family    (ex: '1000')
@@ -311,7 +311,7 @@ tools:
             - !concat [*decostar_exec, ' \']
             - !concat ['   species.file=', *data_species_tree_path, ' \']
             - !concat ['   adjacencies.file=', *decostar_input_file_adjacencies, ' \']
-            - !concat ['   gene.distribution.file=', *decostar_input_trees, ' \']
+            - !concat ['   gene.distribution.file=', *decostar_input_file_trees, ' \']
             - !concat ['   output.dir=', *decostar_results_dir, ' \']
             - '   write.newick=true \'
             - '   write.adjacencies=true \'

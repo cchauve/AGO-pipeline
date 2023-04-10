@@ -57,7 +57,7 @@ tools:
    - &decostar_exec                  !join [*run_dir_bin, 'DeCoSTAR']
    - &decostar_input_path            !ref [*data_gene_trees_path]
    - &decostar_already_reconciled    'false'
-   - &decostar_dupli_cost            '2'
+   - &decostar_dupli_cost            '1'
    - &decostar_loss_cost             '1'
    - &decostar_dated_species_tree    'true'
    - &decostar_rooted                'false'
@@ -183,7 +183,7 @@ tools:
          script:
             - !join [*run_dir_scripts, 'DeCoSTAR_create_input_files.py']
             - !ref [*data_gene_orders_path]
-            - !ref [*data_reconciliations_path]
+            - !ref [*decostar_input_path]
             - !ref [*data_families_path]
             - !ref [*decostar_input_file_adjacencies]
             - !ref [*decostar_input_file_trees]
@@ -218,21 +218,24 @@ tools:
             - '   write.newick=true \'
             - '   write.adjacencies=true \'
             - '   write.genes=true \'
-            - '   already.reconciled=true \'
+            - !concat ['   already.reconciled=' , *decostar_already_reconciled, ' \']
+            - !concat ['   dupli.cost=' , *decostar_dupli_cost, ' \']
+            - !concat ['   loss.cost=' , *decostar_loss_cost, ' \']
             - '   use.boltzmann=true \'
             - '   char.sep="|" \'
             - !concat ['   boltzmann.temperature=', *decostar_boltzmann_temperature, ' \']
             - !concat ['   nb.sample=', *decostar_nb_sample, ' \']
-            - '   dated.species.tree=false \'
-            - '   rooted=true \'
+            - !concat ['   dated.species.tree=', *decostar_dated_species_tree, ' \']
+            - !concat ['   rooted=', *decostar_rooted, ' \']
             - '   with.transfer=false \'
             - '   verbose=2'
             - ' '
             - !concat [!join [*run_dir_scripts, 'DeCoSTAR_reformat.py'], ' \']
             - !concat ['   ', *data_species_path, ' \']
             - !concat ['   ', *decostar_slurm_results_species_file, ' \']
+            - !concat ['   ', *decostar_already_reconciled, ' \']
             - !concat ['   ', *data_families_path, ' \']
-            - !concat ['   ', *data_reconciliations_path, ' \']
+            - !concat ['   ', *decostar_input_path, ' \']
             - !concat ['   ', *decostar_input_file_trees, ' \']
             - !concat ['   ', *decostar_slurm_results_genes_file_1, ' \']
             - !concat ['   ', *decostar_slurm_results_adjacencies_file, ' \']

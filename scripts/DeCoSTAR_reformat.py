@@ -101,7 +101,7 @@ to list of species + descendant (gene) leaves
 '''
 def decostar_genes2leaves(in_genes_file, species_map):
     '''
-    input: DeCoSTAR genes file, separator family/gene
+    input: DeCoSTAR genes file, map DeCoSTAR species -> original species
     output: dict(gene name -> species + list of descendant (gene) leaves)
     '''
     gene2leaves = {}
@@ -165,7 +165,7 @@ def decostar_gene_map(in_family_map, in_genes_file, in_species_map):
         _gene2leaves_map = xml_parse_tree(rec_path)
         for gene,leaves in _gene2leaves_map.items():
             leaves2gene_map[decostar_sep.join(leaves)] = gene
-    # Dictionary DeCoSTAR gene name -> list of descendant extant genes
+    # Dictionary DeCoSTAR gene name -> species + list of descendant extant genes
     gene2leaves_map = decostar_genes2leaves(in_genes_file, in_species_map)
     # Mapping DeCoSTAR gene names to original names by identifying leaves sets
     genes_map = {}
@@ -181,13 +181,13 @@ def decostar_gene_map_identity(in_genes_file):
     input:
     - DeCoSTAR genes file
     output:
-    dict(DeCoSTAR gene name -> DeCoSTAR gene name)
+    dict(DeCoSTAR gene name -> DeCoSTAR gene name without family prefix)
     '''
     genes_map = {}
     with open(in_genes_file, 'r') as in_file:
         for gene in in_file.readlines():
             gene_name = gene.rstrip().split()[1]
-            genes_map[gene_name] = gene_name
+            genes_map[gene_name] = gene_name.split(decostar_sep)[1]
     return genes_map
     
 ''' Reformat DeCoSTAR genes file '''

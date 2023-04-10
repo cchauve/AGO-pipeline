@@ -238,7 +238,7 @@ tools:
             - !concat [*decostar_exec, ' \']
             - !concat ['   species.file=', *data_species_tree_path, ' \']
             - !concat ['   adjacencies.file=', *decostar_input_file_adjacencies, ' \']
-            - !concat ['   gene.distribution.file=', *decostar_input_trees, ' \']
+            - !concat ['   gene.distribution.file=', *decostar_input_file_trees, ' \']
             - !concat ['   output.dir=', *decostar_results_dir, ' \']
             - '   write.newick=true \'
             - '   write.adjacencies=true \'

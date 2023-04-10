@@ -60,7 +60,7 @@ tools:
    - &ale_object_exec                !join [*run_dir_bin,'ALE/bin/ALEobserve']
    - &ale_object_ext                 '.ale'
    - &ale_uml_exec                   !join [*run_dir_bin,'ALE/bin/ALEml_undated']
-   - &ale_uml_options                !concat ['sample=1 tau=0 separators="', *species_gene_name_separator, '"'])
+   - &ale_uml_options                !concat ['sample=1 tau=0 separators="', *species_gene_name_separator, '"']
    - &ale_uml_rec_ext                '.uml_rec'
    - &ale_modules                    ''
    - &ale_slurm_options              '--mem=2G --time=02:00:00'
@@ -285,7 +285,7 @@ tools:
          script:
             - !join [*run_dir_scripts, 'DeCoSTAR_create_input_files.py']
             - !ref [*data_gene_orders_path]
-            - !ref [*data_reconciliations_path]
+            - !ref [*decostar_input_path]
             - !ref [*data_families_path]
             - !ref [*decostar_input_file_adjacencies]
             - !ref [*decostar_input_file_trees]
@@ -333,8 +333,9 @@ tools:
             - !concat [!join [*run_dir_scripts, 'DeCoSTAR_reformat.py'], ' \']
             - !concat ['   ', *data_species_path, ' \']
             - !concat ['   ', *decostar_slurm_results_species_file, ' \']
+            - !concat ['   ', *decostar_already_reconciled, ' \']
             - !concat ['   ', *data_families_path, ' \']
-            - !concat ['   ', *data_reconciliations_path, ' \']
+            - !concat ['   ', *decostar_input_path, ' \']
             - !concat ['   ', *decostar_input_file_trees, ' \']
             - !concat ['   ', *decostar_slurm_results_genes_file_1, ' \']
             - !concat ['   ', *decostar_slurm_results_adjacencies_file, ' \']
