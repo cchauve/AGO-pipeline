@@ -93,6 +93,14 @@ node1:529:0.5   462:368:11:333
 node2:492:0.5   331:224:0:536
 ```
 
+```
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml script SPPDCJ_ILP
+        /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
+Submitted batch job 64815209
+
+```
+
 
 ## ALE-based pipeline
 
@@ -174,4 +182,12 @@ AnophelesgambiaePEST:471:0.5    471:470:0:2
 node0:472:0.5   450:420:4:108
 node1:499:0.5   443:355:5:293
 node2:483:0.5   330:224:0:518
+```
+
+```
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml script SPPDCJ_ILP
+        /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
+Submitted batch job 64815159
+
 ```
