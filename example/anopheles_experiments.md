@@ -52,6 +52,17 @@ Submitted batch job 64806136
         /scratch/chauvec/SPP/anopheles_X_GeneRax/data/reconciliations_X.txt
 (AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > grep -c ERROR /scratch/chauvec/SPP/anopheles_X_GeneRax/log/GeneRax.log
 0
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml stats GeneRax
+        /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_species.csv
+        /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_families.csv
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_species.csv
+#species:genes:duplications:losses
+node2:492:41:0
+AnophelesgambiaePEST:471:6:30
+AnophelesfunestusFUMOZ:472:2:25
+node0:495:0:34
+AnophelesatroparvusEBRO:503:16:42
+node1:529:37:0
 ```
 
 ```
@@ -59,6 +70,26 @@ Submitted batch job 64806136
         /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/DeCoSTAR/DeCoSTAR.sh
 (AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/DeCoSTAR/DeCoSTAR.sh
 Submitted batch job 64806808
+```
+
+```
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check DeCoSTAR
+        /scratch/chauvec/SPP/anopheles_X_GeneRax/log/DeCoSTAR.log
+        /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_X.txt
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > grep -c ERROR /scratch/chauvec/SPP/anopheles_X_GeneRax/log/DeCoSTAR.log
+0
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml stats DeCoSTAR
+        /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv
+        /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv; grep -P ':0.5\t' /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv | sort
+#species:nb_genes_in_adj:min_weight     nb_genes_in_adj:nb_adjacencies:nb_ext_in_conflict:nb_free_ext
+AnophelesalbimanusSTECLA:489:0.5        489:488:0:2
+AnophelesatroparvusEBRO:503:0.5 503:502:0:2
+AnophelesfunestusFUMOZ:472:0.5  472:471:0:2
+AnophelesgambiaePEST:471:0.5    471:470:0:2
+node0:495:0.5   474:448:33:127
+node1:529:0.5   462:368:11:333
+node2:492:0.5   331:224:0:536
 ```
 
 
