@@ -118,6 +118,19 @@ SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/anopheles_X_GeneRax/results
 Submitted batch job 64816896
 ```
 
+```
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ
+        /scratch/chauvec/SPP/anopheles_X_GeneRax/log/SPPDCJ_all.log
+        /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_ago_X.txt
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > grep -c ERROR /scratch/chauvec/SPP/anopheles_X_GeneRax/log/SPPDCJ_all.log
+0
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python scripts/gene_orders_utils.py \
+	      /scratch/chauvec/SPP/anopheles_X_GeneRax/results/DeCoSTAR/genes_reformatted.txt \
+	      /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_ago_X.txt \
+	      /scratch/chauvec/SPP/anopheles_X_GeneRax/results/SPPDCJ/ \
+	      /scratch/chauvec/SPP/anopheles_X_GeneRax/data/gene_orders_ago_X.txt
+```
+
 ## ALE-based pipeline
 
 ```
@@ -244,4 +257,17 @@ SUCCESS SPPDCJ_ILP              /scratch/chauvec/SPP/anopheles_X_ecceTERA/result
         /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ_all.sh
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ_all.sh
 Submitted batch job 64816944
+```
+
+```
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check SPPDCJ
+        /scratch/chauvec/SPP/anopheles_X_ecceTERA/log/SPPDCJ_all.log
+        /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > grep -c ERROR /scratch/chauvec/SPP/anopheles_X_ecceTERA/log/SPPDCJ_all.log
+0
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python scripts/gene_orders_utils.py \
+	      /scratch/chauvec/SPP/anopheles_X_ecceTERA/results/DeCoSTAR/genes_reformatted.txt \
+	      /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt \
+	      /scratch/chauvec/SPP/anopheles_X_ecceTERA/results/SPPDCJ/ \
+	      /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/gene_orders_ago_X.txt
 ```
