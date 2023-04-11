@@ -125,6 +125,8 @@ def xml_reformat_file(in_file, out_file, start_id=0):
                 out_xml.write(line.replace('/>', '></loss>'))
             elif line1.startswith('<speciationLoss'):
                 out_xml.write(line.replace('/>', '></speciationLoss>'))
+            elif line1.startswith('<branchingOut'):
+                out_xml.write(line.replace('/>', '></branchingOut>'))
             else:
                 out_xml.write(line)
     return(current_id)

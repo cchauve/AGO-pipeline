@@ -25,14 +25,16 @@ from recPhyloXML_utils import (
 STATS_genes = 'genes' # Number of genes
 STATS_dup = 'duplications' # Number of duplications
 STATS_loss = 'losses' # Number of losses
+STATS_hgt = 'transfers' # Number of HGTs
 # XML tags to corresponding statistics keys
 STATS_xmlkeys = {
     'leaf': STATS_genes,
     'speciation': STATS_genes,
     'duplication': STATS_dup,
-    'loss': STATS_loss
+    'loss': STATS_loss,
+    'branchingOut': STATS_hgt
 }
-STATS_keys = [STATS_genes, STATS_dup, STATS_loss]
+STATS_keys = [STATS_genes, STATS_dup, STATS_loss, STATS_hgt]
 
 def xml_parse_tree(root, tag_pref):
     ''' 
@@ -84,7 +86,7 @@ def recPhyloXML_read_events(in_file):
         input: XML root node
         output: 
         dict(species name(str) -> 
-        dict(STATS_genes: int, STATS_dup: int, STATS_loss: int))
+        dict(key: int for key in STATS_keys)
         '''
         def parse_clade_recursive(node, tag_pref, stats):
             # Reconciliation event (possibly more than one)
@@ -102,7 +104,7 @@ def recPhyloXML_read_events(in_file):
             for child in node.findall(f'{tag_pref}clade'):
                 parse_clade_recursive(child, tag_pref, stats)
         stats = {
-            sp:{STATS_genes: 0, STATS_dup: 0, STATS_loss: 0}
+            sp:{key: 0 for key in STATS_keys}
             for sp in siblings.keys()
         }
         parse_clade_recursive(root, tag_pref, stats)
@@ -120,8 +122,8 @@ def collect_statistics(in_reconciliations_file):
     '''
     input: dataset path family ID -> path to reconciliation file
     output:
-    - dict(species -> {STATS_keys: value})
-    - dict(family ID -> {dict(species -> {STATS_keys: value})})
+    - dict(species -> dict(key: value for key in STATS_keys))
+    - dict(family ID -> dict(species -> dict(key: value for key in STATS_keys)))
     '''
     family2reconciliation = data_family2reconciliation_path(
         in_reconciliations_file
@@ -133,9 +135,7 @@ def collect_statistics(in_reconciliations_file):
         stats_families[fam_id] = events
         for species,stats in stats_families[fam_id].items():
             if species not in stats_species.keys():
-                stats_species[species] = {
-                    STATS_genes: 0, STATS_dup: 0, STATS_loss: 0
-                }
+                stats_species[species] = {key: 0 for key in STATS_keys}
             for stats_key in STATS_keys:
                 stats_species[species][stats_key] += stats[stats_key]
     return (stats_families,stats_species)
@@ -146,7 +146,9 @@ def _stats_str(stats, sp, sep=':'):
             str(sp),
             str(stats[STATS_genes]),
             str(stats[STATS_dup]),
-            str(stats[STATS_loss])]
+            str(stats[STATS_loss]),
+            str(stats[STATS_hgt])
+        ]
     )
 
 def write_statistics_species(
@@ -155,9 +157,7 @@ def write_statistics_species(
         sep1=':', sep2='\t', sep3=' '
 ):
     with open(out_stats_file_species, 'w') as out_stats_file:
-        header1 = sep1.join(
-            ['#species', STATS_genes, STATS_dup, STATS_loss]
-        )
+        header1 = sep1.join(['#species'] + STATS_keys)
         out_stats_file.write(header1)
         for species,stats in in_statistics_species.items():
             out_stats_file.write(
@@ -170,19 +170,13 @@ def write_statistics_families(
         sep1=':', sep2='\t', sep3=' '
 ):
     with open(out_stats_file_families, 'w') as out_stats_file:
-        header1 = sep1.join(
-            ['nb_species', STATS_genes, STATS_dup, STATS_loss]
-        )
-        header2 = sep1.join(
-            ['species', STATS_genes, STATS_dup, STATS_loss]
-        )
+        header1 = sep1.join(['nb_species'] + STATS_keys)
+        header2 = sep1.join(['species'] + STATS_keys)
         header3 = f'#family{sep2}{header1}{sep2}{header2}'
         out_stats_file.write(header3)
         for fam_id,stats_all in in_statistics_families.items():
             out_stats_file.write(f'\n{fam_id}{sep2}')
-            stats_fam = {
-                STATS_genes: 0, STATS_dup: 0, STATS_loss: 0
-            }
+            stats_fam = {key: 0 for key in STATS_keys}
             stats_str = []
             nb_species = 0
             for species,stats in stats_all.items():

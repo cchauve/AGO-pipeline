@@ -22,7 +22,8 @@ from recPhyloXML_utils import (
     xml_get_gene_tree_root,
     xml_get_name,
     xml_get_rec_event,
-    xml_get_rec_species
+    xml_get_rec_species,
+    xml_get_tag
 )
 
 ''' Separator family/gene in DeCoStar ancestral genes '''
@@ -132,7 +133,11 @@ def xml_parse_tree(rec_path):
         ''' Assumption: node is tagged <clade> '''
         name = xml_get_name(node, tag_pref=tag_pref)
         events = xml_get_rec_event(node, tag_pref=tag_pref)
-        species = xml_get_rec_species(events[0])
+        event1 = xml_get_tag(events[0])
+        if len(events)>1 and event1 == 'branchingOut':
+            species = xml_get_rec_species(events[-1])
+        else:
+            species = xml_get_rec_species(events[0])
         # Updating result dictionary
         children = node.findall(f'{tag_pref}clade')
         # Recursive calls
