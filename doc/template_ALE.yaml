@@ -94,9 +94,9 @@ tools:
 
 log:
    ext:
-      log:  &log_ext_log  'log'
-      err:  &log_ext_err  'err'
-      stat: &log_ext_stat 'csv'
+      log:  &log_ext_log  '.log'
+      err:  &log_ext_err  '.err'
+      stat: &log_ext_stat '.csv'
    msg:
       success: &log_msg_success 'SUCCESS'
       error:   &log_msg_error   'ERROR'
@@ -108,7 +108,8 @@ tools:
    MACSE:
       name: &macse_name 'MACSE'
       input:
-         file: &macse_input_file !ref [*data_sequences_path]
+         files:
+            - &macse_input_file !ref [*data_sequences_path]
       output:
          file: &macse_output_file !ref [*data_alignments_path]
       slurm:
@@ -119,28 +120,29 @@ tools:
                file:  &macse_slurm_array_input_file  !ref [*macse_input_file]
                field: &macse_slurm_array_input_field 2
                var:   &macse_slurm_array_input_var   'SEQ_FILE'
+               name:  &macse_slurm_array_input_name  !concat ['${', *macse_slurm_array_input_var, '}']
             results:
                file:  &macse_slurm_array_results_file  !ref [*macse_input_file]
                field: &macse_slurm_array_results_field 1
                var:   &macse_slurm_array_results_var   'FAM_ID'
+               name:  &macse_slurm_array_results_name  !concat ['${', *macse_slurm_array_results_var, '}']
                ext:   &macse_slurm_array_results_ext   !ref [*data_alignments_NT_ext]
          results:
-            dir: &macse_results_dir  !join [*dir_results, *macse_name]
+            dirs:
+               - &macse_results_dir  !join [*dir_results, *macse_name]
+            names:
+               - &macse_slurm_results_file_1_name !concat [*macse_slurm_array_results_name, *data_alignments_NT_ext]
+               - &macse_slurm_results_file_2_name !concat [*macse_slurm_array_results_name, *data_alignments_AA_ext]
             files:
-                - &macse_slurm_results_file_1 !join [
-                     *macse_results_dir,
-                     !concat ['${', *macse_slurm_array_results_var, '}', *data_alignments_NT_ext]
-                  ]
-                - &macse_slurm_results_file_2 !join [
-                     *macse_results_dir,
-                     !concat ['${', *macse_slurm_array_results_var, '}', *data_alignments_AA_ext]
-                  ]
+               - &macse_slurm_results_file_1 !join [*macse_results_dir, *macse_slurm_results_file_1_name]
+               - &macse_slurm_results_file_2 !join [*macse_results_dir, *macse_slurm_results_file_2_name]
          cmd:
             - !concat ['java -jar ', *macse_exec, ' \']
             - '   -prog alignSequences \'
-            - !concat ['   -seq ${', *macse_slurm_array_input_var, '} \']
+            - !concat ['   -seq ', *macse_slurm_array_input_name, ' \']
             - !concat ['   -out_NT ', *macse_slurm_results_file_1, ' \']
             - !concat ['   -out_AA ', *macse_slurm_results_file_2]
+            - !concat [' ']
             - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_1]
             - !concat ["sed -i 's/?/-/g' ",*macse_slurm_results_file_1]
             - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_2]
@@ -150,7 +152,8 @@ tools:
    IQ-TREE:
       name: &iqtree_name 'IQ-TREE'
       input:
-         file: &iqtree_input_file !ref [*data_alignments_path]
+         files:
+            - &iqtree_input_file !ref [*data_alignments_path]
       output:
          file: &iqtree_output_file !ref [*data_gene_trees_path]
       slurm:
@@ -161,31 +164,35 @@ tools:
                file:  &iqtree_slurm_array_input_file  !ref [*iqtree_input_file]
                field: &iqtree_slurm_array_input_field 2
                var:   &iqtree_slurm_array_input_var   'MSA_FILE'
+               name:  &iqtree_slurm_array_input_name  !concat ['${', *iqtree_slurm_array_input_var, '}']
             results:
                file:  &iqtree_slurm_array_results_file  !ref [*iqtree_input_file]
                field: &iqtree_slurm_array_results_field 1
                var:   &iqtree_slurm_array_results_var   'FAM_ID'
+               name:  &iqtree_slurm_array_results_name  !concat ['${', *iqtree_slurm_array_results_var, '}']
                ext:   &iqtree_slurm_array_results_ext   !ref [*iqtree_ufboot_ext]
          results:
-            dir: &iqtree_results_dir !join [*dir_results, *iqtree_name]
+            dirs:
+               - &iqtree_results_dir    !join [*dir_results, *iqtree_name]
+               - &iqtree_results_prefix !join [*iqtree_results_dir, *iqtree_slurm_array_results_name]
             files:
-                - &iqtree_slurm_results_file_ufboot !join [
-                     *iqtree_results_dir,
-                     !concat ['${', *iqtree_slurm_array_results_var, '}', *iqtree_ufboot_ext]
-                  ]
+               - &iqtree_slurm_results_file_ufboot !concat [*iqtree_results_prefix, *iqtree_ufboot_ext]
          cmd:
             - !concat [*iqtree_exec, ' \']
-            - !concat ['   -s ${',*iqtree_slurm_array_input_var,'} \']
+            - !concat ['   -s ',*iqtree_slurm_array_input_name,' \']
             - !concat ['   ',*iqtree_options,' \']
-            - !concat ['   -pre ',*iqtree_results_dir,'/${',*iqtree_slurm_array_results_var,'}']
+            - !concat ['   -pre ',*iqtree_results_prefix]
 
    # ALE: gene tree reconcilliation from gene tree sample
    ALE:
       name: &ale_name 'ALE'
       input:
-         dir:  &ale_input_dir !join [*dir_aux, *ale_name]
-         name: &ale_input_species_tree_name  'species_tree.newick'
-         file: &ale_input_species_tree_path  !join [*ale_input_dir, *ale_input_species_tree_name]
+         dirs:
+            - &ale_input_dir !join [*dir_aux, *ale_name]
+         names:
+            - &ale_input_species_tree_name  'species_tree.newick'
+         files:
+            - &ale_input_species_tree_path  !join [*ale_input_dir, *ale_input_species_tree_name]
          script:
             - !join [*run_dir_scripts, 'newick_utils.py']
             - 'unlabel'
@@ -201,59 +208,40 @@ tools:
                file:  &ale_slurm_array_input_file  !ref [*data_gene_trees_path]
                field: &ale_slurm_array_input_field 2
                var:   &ale_slurm_array_input_var   'TREES_FILE'
+               name:
+                  - &ale_slurm_array_input_path  !concat ['${',*ale_slurm_array_input_var,'}']
+                  - &ale_slurm_array_input_name  !concat ['${',*ale_slurm_array_input_var,'##*/}']
             results:
                file:  &ale_slurm_array_results_file  !ref [*data_gene_trees_path]
                field: &ale_slurm_array_results_field 1
                var:   &ale_slurm_array_results_var   'FAM_ID'
+               var:   &ale_slurm_array_results_name  ['${', *ale_slurm_array_results_var, '}']
                ext:   &ale_slurm_array_results_ext   !ref [*data_reconciliations_ext]
          results:
-            dir: &ale_results_dir !join [*dir_results, *ale_name]
+            dirs:
+               - &ale_results_dir !join [*dir_results, *ale_name]
+            names:
+               - &ale_slurm_recphyloxml_file_name  !concat [*ale_slurm_array_results_name, *data_reconciliations_ext]
+               - &ale_slurm_object_file_name       !concat [*ale_slurm_array_input_name, *ale_object_ext]
+               - &ale_slurm_uml_rec_file_name      !concat [*ale_input_species_tree_name, '_', *ale_slurm_object_file_name, *ale_uml_rec_ext]
             files:
-                - &ale_slurm_result_file_ale_object !join [
-                     *ale_results_dir,
-                     !concat ['${', *ale_slurm_array_input_var, '##*/}', *ale_object_ext]
-                  ]
-                - &ale_slurm_results_file_uml_rec !join [
-                     *ale_results_dir,
-                     !concat [
-                         *ale_input_species_tree_name, '_',
-                         '${', *ale_slurm_array_input_var, '##*/}',
-                         *ale_object_ext, *ale_uml_rec_ext
-                     ]
-                  ]
-                - &ale_slurm_results_file_uml_rec_stree !join [
-                     *ale_results_dir,
-                     !concat [
-                         *ale_input_species_tree_name, '_',
-                         '${', *ale_slurm_array_input_var, '##*/}',
-                         *ale_object_ext, '.stree'
-                     ]
-                  ]
-                - &ale_slurm_results_file_uml_rec_recs !join [
-                     *ale_results_dir,
-                     !concat [
-                         *ale_input_species_tree_name, '_',
-                         '${', *ale_slurm_array_input_var, '##*/}',
-                         *ale_object_ext, '.recs'
-                     ]
-                  ]
-                - &ale_slurm_results_file_uml_rec_recs_xml !concat [
-                     *ale_slurm_results_file_uml_rec_recs, '.xml'
-                  ]
-                - &ale_result_file_recphyloxml !join [
-                     *ale_results_dir,
-                     !concat ['${', *ale_slurm_array_results_var, '}',*data_reconciliations_ext]
-                  ]
+               - &ale_slurm_results_file_ale_object_aux   !concat [*ale_slurm_array_input_path, *ale_object_ext]
+               - &ale_slurm_results_file_ale_object       !join [*ale_results_dir, *ale_slurm_object_file_name]
+               - &ale_result_file_recphyloxml             !join [*ale_results_dir, *ale_slurm_recphyloxml_file_name]
+               - &ale_slurm_results_file_uml_rec          !join [*ale_results_dir, *ale_slurm_uml_rec_file_name]
+               - &ale_slurm_results_file_uml_rec_stree    !concat [*ale_slurm_results_file_uml_rec, '.stree']
+               - &ale_slurm_results_file_uml_rec_recs     !concat [*ale_slurm_results_file_uml_rec, '.recs']
+               - &ale_slurm_results_file_uml_rec_recs_xml !concat [*ale_slurm_results_file_uml_rec_recs, '.xml']
          cmd:
             - !concat ['cd ',*ale_results_dir]
             - ' '
-            - !concat [*ale_object_exec, ' ${',*ale_slurm_array_input_var,'}']
+            - !concat [*ale_object_exec, ' ', *ale_slurm_array_input_path]
             - ' '
-            - !concat ['mv  ${',*ale_slurm_array_input_var,'}', *ale_object_ext, ' ', *ale_results_dir]
+            - !concat ['mv  ', *ale_slurm_results_file_ale_object_aux, ' ', *ale_slurm_results_file_ale_object]
             - ' '
             - !concat [*ale_uml_exec, ' \']
             - !concat ['   ', *ale_input_species_tree_path,' \']
-            - !concat ['   ', *ale_slurm_result_file_ale_object, ' \']
+            - !concat ['   ', *ale_slurm_results_file_ale_object, ' \']
             - !concat ['   ', *ale_uml_options]
             - ' '
             - !concat ['python ', !join [*run_dir_scripts, 'ale_splitter.py'],' \']
@@ -271,13 +259,12 @@ tools:
             - !concat ['   ', *ale_slurm_results_file_uml_rec_recs_xml, ' \']
             - !concat ['   ', *ale_result_file_recphyloxml]
       stats:
+         names:
+            - &ale_stats_file_species_name  !concat [*ale_name, '_species', *log_ext_stat]
+            - &ale_stats_file_families_name !concat [*ale_name, '_families', *log_ext_stat]
          files:
-            - &ale_stats_file_species  !join [
-                 *dir_stats, *ale_name, !concat [*ale_name, '_species.', *log_ext_stat]
-              ]
-            - &ale_stats_file_families  !join [
-                 *dir_stats, *ale_name, !concat [*ale_name, '_families.', *log_ext_stat]
-              ]
+            - &ale_stats_file_species  !join [*dir_stats, *ale_name, *ale_stats_file_species_name]
+            - &ale_stats_file_families  !join [*dir_stats, *ale_name, *ale_stats_file_families_name]
          cmd:
             - !join [*run_dir_scripts, 'recPhyloXML_statistics.py']
             - !ref [*ale_output_file]
@@ -288,8 +275,9 @@ tools:
    DeCoSTAR:
       name: &decostar_name 'DeCoSTAR'
       input:
-         dir:  &decostar_input_dir !join [*dir_aux, *decostar_name]
-         file:
+         dirs:
+           - &decostar_input_dir !join [*dir_aux, *decostar_name]
+         files:
            - &decostar_input_file_trees       !join [*decostar_input_dir, 'gene_trees.txt']
            - &decostar_input_file_adjacencies !join [*decostar_input_dir, 'adjacencies.txt']
          script:
@@ -308,19 +296,20 @@ tools:
             results:
                file:  &decostar_slurm_array_results_file  !ref [*data_species_path]
                field: &decostar_slurm_array_results_field 1
-               var:   &decostar_slurm_array_results_var   'SPECIES'      
+               var:   &decostar_slurm_array_results_var   'SPECIES'
+               name:  &decostar_slurm_array_results_name  !concat ['${', *decostar_slurm_array_results_var, '}']
          results:
-            dir: &decostar_results_dir  !join [*dir_results, *decostar_name]
+            dirs:
+               - &decostar_results_dir !join [*dir_results, *decostar_name]
+            names:
+               - &decostar_slurm_results_species_adjacencies_name !concat [*decostar_slurm_array_results_name, '_adjacencies.txt']
             files:
-                - &decostar_slurm_results_species_adjacencies !join [
-                     *decostar_results_dir,
-                     !concat ['${', *decostar_slurm_array_results_var, '}_adjacencies.txt']
-                  ]
+               - &decostar_slurm_results_species_adjacencies !join [*decostar_results_dir, *decostar_slurm_results_species_adjacencies_name]
             other:
-                - &decostar_slurm_results_adjacencies_file !join [*decostar_results_dir, 'adjacencies.txt']
-                - &decostar_slurm_results_genes_file_1     !join [*decostar_results_dir, 'genes.txt']
-                - &decostar_slurm_results_genes_file_2     !join [*decostar_results_dir, 'genes_reformatted.txt']
-                - &decostar_slurm_results_species_file     !join [*decostar_results_dir, 'species.txt']
+               - &decostar_slurm_results_adjacencies_file !join [*decostar_results_dir, 'adjacencies.txt']
+               - &decostar_slurm_results_genes_file_1     !join [*decostar_results_dir, 'genes.txt']
+               - &decostar_slurm_results_genes_file_2     !join [*decostar_results_dir, 'genes_reformatted.txt']
+               - &decostar_slurm_results_species_file     !join [*decostar_results_dir, 'species.txt']
          cmd:
             - !concat [*decostar_exec, ' \']
             - !concat ['   species.file=', *data_species_tree_path, ' \']
@@ -330,15 +319,13 @@ tools:
             - '   write.newick=true \'
             - '   write.adjacencies=true \'
             - '   write.genes=true \'
-            - !concat ['   already.reconciled=' , *decostar_already_reconciled, ' \']
-            - !concat ['   dupli.cost=' , *decostar_dupli_cost, ' \']
-            - !concat ['   loss.cost=' , *decostar_loss_cost, ' \']
+            - '   already.reconciled=true \'
             - '   use.boltzmann=true \'
             - '   char.sep="|" \'
             - !concat ['   boltzmann.temperature=', *decostar_boltzmann_temperature, ' \']
             - !concat ['   nb.sample=', *decostar_nb_sample, ' \']
-            - !concat ['   dated.species.tree=', *decostar_dated_species_tree, ' \']
-            - !concat ['   rooted=', *decostar_rooted, ' \']
+            - '   dated.species.tree=false \'
+            - '   rooted=true \'
             - '   with.transfer=false \'
             - '   verbose=2'
             - ' '
@@ -354,13 +341,10 @@ tools:
             - !concat ['   ', *decostar_slurm_results_genes_file_2, ' \']
             - !concat ['   ', *decostar_results_dir]
       stats:
-         files: 
-            - &decostar_stats_file_species  !join [
-                 *dir_stats, *decostar_name, !concat [*decostar_name, '.', *log_ext_stat]
-              ]
-            - &decostar_stats_file_conflicts  !join [
-                 *dir_stats, *decostar_name, !concat [*decostar_name, '_', *sppdcj_ilp_threshold, '_conflicts.txt']
-              ]
+         names:
+            - &decostar_stats_file_species_name !concat [*decostar_name, *log_ext_stat]
+         files:
+            - &decostar_stats_file_species !join [*dir_stats, *decostar_name, *decostar_stats_file_species_name]
          cmd:
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
             - !ref [*data_species_path]
@@ -368,36 +352,25 @@ tools:
             - !ref [*data_adjacencies_path]
             - !ref [*decostar_stats_thresholds]
             - !ref [*decostar_stats_file_species]
-            - ';'
-            - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
-            - !ref [*data_species_path]
-            - !ref [*decostar_slurm_results_genes_file_2]
-            - !ref [*data_adjacencies_path]
-            - !ref [*sppdcj_ilp_threshold]
-            - !ref [*decostar_stats_file_conflicts]
 
    # SPPDCJ_ILP: Writing the SPPDCJ ILP file
    SPPDCJ_ILP:
       name:   &sppdcj_ilp_name 'SPPDCJ_ILP'
-      suffix: !concat ['_', *sppdcj_input_suffix]
       input:
-         dir: &sppdcj_ilp_input_dir !join [*dir_aux, *sppdcj_ilp_name]
-         file:
-           - &sppdcj_ilp_input_file_species_tree !join [
-                *sppdcj_ilp_input_dir, !concat ['species_tree_', *sppdcj_input_suffix, '.txt']
-             ]
-           - &sppdcj_ilp_input_file_adjacencies_1  !join [
-                *sppdcj_ilp_input_dir, !concat ['adjacencies_', *sppdcj_input_suffix, '.txt']
-             ]
-           - &sppdcj_ilp_input_file_adjacencies_2  !join [
-                *sppdcj_ilp_input_dir, !concat ['adjacencies_complemented_', *sppdcj_input_suffix, '.txt']
-             ]
-           - &sppdcj_ilp_input_file_conflicts !join [
-                *sppdcj_ilp_input_dir, !concat ['conflicts_', *sppdcj_input_suffix, '.txt']
-             ]
-           - &sppdcj_ilp_input_file_log !join [
-                *sppdcj_ilp_input_dir, !concat ['adjacencies_', *sppdcj_input_suffix, '.log']
-             ]
+         dirs:
+            - &sppdcj_ilp_input_dir !join [*dir_aux, *sppdcj_ilp_name]
+         names:
+            - &sppdcj_ilp_input_file_species_tree_name  !concat ['species_tree_', *sppdcj_input_suffix, '.txt']
+            - &sppdcj_ilp_input_file_adjacencies_1_name !concat ['adjacencies_', *sppdcj_input_suffix, '.txt']
+            - &sppdcj_ilp_input_file_adjacencies_2_name !concat ['adjacencies_complemented_', *sppdcj_input_suffix, '.txt']
+            - &sppdcj_ilp_input_file_conflicts_name     !concat ['conflicts_', *sppdcj_input_suffix, '.txt']
+            - &sppdcj_ilp_input_file_log_name           !concat ['adjacencies_', *sppdcj_input_suffix, '.log']
+         files:
+            - &sppdcj_ilp_input_file_species_tree   !join [*sppdcj_ilp_input_dir, *sppdcj_ilp_input_file_species_tree_name]
+            - &sppdcj_ilp_input_file_adjacencies_1  !join [*sppdcj_ilp_input_dir, *sppdcj_ilp_input_file_adjacencies_1_name]
+            - &sppdcj_ilp_input_file_adjacencies_2  !join [*sppdcj_ilp_input_dir, *sppdcj_ilp_input_file_adjacencies_2_name]
+            - &sppdcj_ilp_input_file_conflicts      !join [*sppdcj_ilp_input_dir, *sppdcj_ilp_input_file_conflicts_name]
+            - &sppdcj_ilp_input_file_log            !join [*sppdcj_ilp_input_dir, *sppdcj_ilp_input_file_log_name]
          script:
             - !join [*run_dir_scripts, 'SPPDCJ_create_input_files.py']
             - !ref [*data_adjacencies_path]
@@ -423,20 +396,18 @@ tools:
          options: !ref [*sppdcj_ilp_slurm_options]
          modules: !ref [*sppdcj_ilp_modules]
          results:
-            dir: &sppdcj_ilp_results_dir  !join [*dir_results, *sppdcj_ilp_name]
-            prefix: &sppdcj_results_prefix !concat [
-                       *sppdcj_input_suffix, '_',
-                       *sppdcj_ilp_threshold, '_',
-                       *sppdcj_ilp_alpha, '_',
-                       *sppdcj_ilp_beta
-                    ]
+            dirs:
+               - &sppdcj_ilp_results_dir  !join [*dir_results, *sppdcj_ilp_name]
+            names:
+               - &sppdcj_results_prefix !concat [
+                    *sppdcj_input_suffix, '_', *sppdcj_ilp_threshold, '_',
+                    *sppdcj_ilp_alpha, '_', *sppdcj_ilp_beta
+                 ]
+               - &sppdcj_ilp_results_file_idmap_name !concat [*sppdcj_results_prefix, '.idmap']
+               - &sppdcj_ilp_results_file_ilp_name   !concat [*sppdcj_results_prefix, '.ilp']
             other:
-                - &sppdcj_ilp_results_file_idmap !join [
-                     *sppdcj_ilp_results_dir, !concat [*sppdcj_results_prefix, '.idmap']
-                  ]
-                - &sppdcj_ilp_results_file_ilp !join [
-                     *sppdcj_ilp_results_dir, !concat [*sppdcj_results_prefix, '.ilp']
-                  ]
+               - &sppdcj_ilp_results_file_idmap !join [*sppdcj_ilp_results_dir, *sppdcj_ilp_results_file_idmap_name]
+               - &sppdcj_ilp_results_file_ilp   !join [*sppdcj_ilp_results_dir, *sppdcj_ilp_results_file_ilp_name]
          cmd:
             - !concat [*sppdcj_ilp_exec, ' \']
             - !concat ['   -m ', *sppdcj_ilp_results_file_idmap, ' \']
@@ -448,12 +419,12 @@ tools:
             - !concat ['   > ', *sppdcj_ilp_results_file_ilp ]
 
       stats:
-         dir: &sppdcj_ilp_stats_dir  !join [*dir_stats, *sppdcj_ilp_name]
+         dirs:
+            - &sppdcj_ilp_stats_dir !join [*dir_stats, *sppdcj_ilp_name]
+         names:
+            - &sppdcj_ilp_stats_file_log_name !concat ['components_', *sppdcj_input_suffix, '.log']
          files:
-            - &sppdcj_ilp_stats_file_log !join [
-                 *sppdcj_ilp_stats_dir,
-                 !concat ['components_', *sppdcj_input_suffix, '.log']
-              ]
+            - &sppdcj_ilp_stats_file_log !join [*sppdcj_ilp_stats_dir, *sppdcj_ilp_stats_file_log_name]
          cmd:
             - !join [*run_dir_scripts, 'SPPDCJ_adjs_to_components.py']
             - '-p'
@@ -465,11 +436,10 @@ tools:
    # SPPDCJ: Solving the SPPDCJ ILP
    SPPDCJ:
       name:   &sppdcj_name 'SPPDCJ'
-      suffix: !concat ['_', *sppdcj_input_suffix]
       input:
-         file:
-           - &sppdcj_input_file_ilp !ref [*sppdcj_ilp_results_file_ilp]
-           - &sppdcj_input_file_idmap !ref [*sppdcj_ilp_results_file_idmap]
+         files:
+            - &sppdcj_input_file_ilp   !ref [*sppdcj_ilp_results_file_ilp]
+            - &sppdcj_input_file_idmap !ref [*sppdcj_ilp_results_file_idmap]
       output:
            file: &sppdcj_output_file !ref [*data_ago_adjacencies_path]
       slurm:
@@ -479,24 +449,22 @@ tools:
             results:
                file:  &sppdcj_slurm_array_results_file  !ref [*data_species_path]
                field: &sppdcj_slurm_array_results_field 1
-               var:   &sppdcj_slurm_array_results_var   'SPECIES'      
+               var:   &sppdcj_slurm_array_results_var   'SPECIES'
+               var:   &sppdcj_slurm_array_results_name  !concat ['${', *sppdcj_slurm_array_results_var, '}']
          results:
-            dir: &sppdcj_results_dir  !join [*dir_results, *sppdcj_name]
+            dirs:
+               - &sppdcj_results_dir  !join [*dir_results, *sppdcj_name]
+            names: 
+               - &sppdcj_slurm_results_file_name       !concat [*sppdcj_slurm_array_results_name, '_adjacencies.txt']
+               - &sppdcj_results_file_sol_name         !concat [*sppdcj_results_prefix, '.sol']
+               - &sppdcj_results_file_log_name         !concat [*sppdcj_results_prefix, '.log']
+               - &sppdcj_results_file_adjacencies_name !concat [*sppdcj_results_prefix, '_adjacencies.txt']
             files: 
-                - &sppdcj_slurm_results_file !join [
-                     *sppdcj_results_dir, 
-                     !concat ['${', *sppdcj_slurm_array_results_var, '}_adjacencies.txt']
-                  ]
+               - &sppdcj_slurm_results_file !join [*sppdcj_results_dir, *sppdcj_slurm_results_file_name]
             other:
-                - &sppdcj_results_file_sol !join [
-                     *sppdcj_results_dir, !concat [*sppdcj_results_prefix, '.sol']
-                  ]
-                - &sppdcj_results_file_log !join [
-                     *sppdcj_results_dir, !concat [*sppdcj_results_prefix, '.log']
-                  ]
-                - &sppdcj_results_file_adjacencies !join [
-                     *sppdcj_results_dir, !concat [*sppdcj_results_prefix, '_adjacencies.txt']
-                  ]
+               - &sppdcj_results_file_sol         !join [*sppdcj_results_dir, *sppdcj_results_file_sol_name]
+               - &sppdcj_results_file_log         !join [*sppdcj_results_dir, *sppdcj_results_file_log_name]
+               - &sppdcj_results_file_adjacencies !join [*sppdcj_results_dir, *sppdcj_results_file_adjacencies_name]
          cmd:
             - !concat [*sppdcj_gurobi_exec, ' \']
             - !concat ['   ', *sppdcj_gurobi_options, ' \']
@@ -514,12 +482,10 @@ tools:
             - !concat ['   ', *sppdcj_results_file_adjacencies, ' \']
             - !concat ['   ', *sppdcj_results_dir]
       stats:
-         dir: &sppdcj_stats_dir  !join [*dir_stats, *sppdcj_name]
+         names:
+            - &sppdcj_stats_file_name !concat [*sppdcj_name, '_species', *log_ext_stat]
          files:
-            - &sppdcj_stats_file !join [
-                 *sppdcj_stats_dir,
-                 !concat [*sppdcj_name, '_species.', *log_ext_stat]
-              ]
+            - &sppdcj_stats_file !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_name]
          cmd:
             - !join [*run_dir_scripts, 'SPPDCJ_statistics.py']
             - !ref [*data_adjacencies_path]

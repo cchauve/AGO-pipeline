@@ -85,7 +85,7 @@ class Parameters:
     def get_log_file(self, tool, suffix=False):
         return os.path.join(
             self.get_dir_log(),
-            f'{self.get_tool_name(tool, suffix=suffix)}.{self.get_log_ext()}'
+            f'{self.get_tool_name(tool, suffix=suffix)}{self.get_log_ext()}'
         )
 
     def get_ext(self, key):
