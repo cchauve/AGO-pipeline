@@ -99,6 +99,15 @@ def xml_rename_ancestral_genes(tree, identify_ancestral_gene, start_id=1):
             current_id += 1
     return current_id
 
+''' Check if a tree contains HGT '''
+def xml_check_transfer(tree, identify_transfer):
+    result = False
+    root,tag_pref = _xml_get_tree_root(tree, REC_TAG)
+    for node in root.iter('name'):        
+        if identify_transfer(node):
+            return True
+    return result
+        
 ''' 
 Reformat a recphyloxml file that does not have the proper format for DeCoSTAR
 Also relabel the internal nodes with no name
