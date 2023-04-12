@@ -3,7 +3,7 @@
 ```
 [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > source AGO_python3/bin/activate
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > date
-Mon Apr 10 12:19:06 PDT 2023
+Mon Apr 10 12:19:06 PDT 2023 - Tue Apr 11 21:12:14 PDT 2023
 ```
 
 ## Data
@@ -196,7 +196,7 @@ AnophelesatroparvusEBRO:388:2:0:0
 node1:386:0:0:0
 ```
 
-The families discarded due to transfers included most families with reconciliatio events.
+The families discarded due to transfers included most families with reconciliation events.
 
 ```
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml script DeCoSTAR
