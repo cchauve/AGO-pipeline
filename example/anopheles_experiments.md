@@ -167,7 +167,7 @@ Submitted batch job 64806164
 (AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml script ALE
         /scratch/chauvec/SPP/anopheles_X_ALE/aux/ALE/ALE.sh
 (AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/ALE/ALE.sh
-Submitted batch job 64897266
+Submitted batch job 64917920
 ```
 
 ```
@@ -175,26 +175,34 @@ Submitted batch job 64897266
         /scratch/chauvec/SPP/anopheles_X_ALE/log/ALE.log
         /scratch/chauvec/SPP/anopheles_X_ALE/data/reconciliations_X.txt
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > grep -c ERROR /scratch/chauvec/SPP/anopheles_X_ALE/log/ALE.log
-0
+65
+(AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > wc -l /scratch/chauvec/SPP/anopheles_X_ALE/data/reconciliations_X.txt
+386 /scratch/chauvec/SPP/anopheles_X_ALE/data/reconciliations_X.txt
+```
+
+There were 65 families involving transfers.
+
+```
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats ALE
         /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_species.csv
         /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_families.csv
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_species.csv
 #species:genes:duplications:losses:transfers
-node2:424:0:0:6
-AnophelesgambiaePEST:471:6:1:22
-AnophelesfunestusFUMOZ:472:2:0:29
-node0:460:0:0:16
-AnophelesatroparvusEBRO:503:2:0:33
-node1:449:0:2:10
+node2:386:0:0:0
+AnophelesgambiaePEST:392:6:0:0
+AnophelesfunestusFUMOZ:388:2:0:0
+node0:386:0:0:0
+AnophelesatroparvusEBRO:388:2:0:0
+node1:386:0:0:0
 ```
+
+The families discarded due to transfers included most families with reconciliatio events.
 
 ```
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml script DeCoSTAR
         /scratch/chauvec/SPP/anopheles_X_ALE/aux/DeCoSTAR/DeCoSTAR.sh
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/DeCoSTAR/DeCoSTAR.sh
-Submitted batch job 64904582
-
+Submitted batch job 64919068
 ```
 
 ```
@@ -203,23 +211,26 @@ Submitted batch job 64904582
         /scratch/chauvec/SPP/anopheles_X_ALE/data/adjacencies_X.txt
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > grep -c ERROR /scratch/chauvec/SPP/anopheles_X_ALE/log/DeCoSTAR.log
 0
+(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats DeCoSTAR
+        /scratch/chauvec/SPP/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv
+        /scratch/chauvec/SPP/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv; \
 	      grep -P ':0.5\t' /scratch/chauvec/SPP/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv | sort
 #species:nb_genes_in_adj:min_weight     nb_genes_in_adj:nb_adjacencies:nb_ext_in_conflict:nb_free_ext
-AnophelesalbimanusSTECLA:489:0.5        489:488:0:2
-AnophelesatroparvusEBRO:503:0.5 503:502:0:2
-AnophelesfunestusFUMOZ:472:0.5  472:471:0:2
-AnophelesgambiaePEST:471:0.5    471:470:0:2
-node0:460:0.5   439:402:0:116
-node1:449:0.5   390:300:0:298
-node2:424:0.5   255:167:0:514
+AnophelesalbimanusSTECLA:390:0.5        390:389:0:2
+AnophelesatroparvusEBRO:388:0.5 388:387:0:2
+AnophelesfunestusFUMOZ:388:0.5  388:387:0:2
+AnophelesgambiaePEST:392:0.5    392:391:0:2
+node0:386:0.5   365:336:0:100
+node1:386:0.5   338:265:0:242
+node2:386:0.5   235:158:0:456
 ```
 
 ```
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml script SPPDCJ_ILP
         /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ_ILP/SPPDCJ_ILP_all.sh
-Submitted batch job 64905211
+Submitted batch job 64919253
 ```
 
 ```
@@ -231,7 +242,7 @@ Submitted batch job 64905211
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml script SPPDCJ
         /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ/SPPDCJ_all.sh
 (AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ/SPPDCJ_all.sh
-Submitted batch job 64906063
+Submitted batch job 64919353
 ```
 
 ```
