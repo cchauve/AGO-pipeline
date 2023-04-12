@@ -1,8 +1,6 @@
 # Reconstructing Anopheles ancestral X chromosome gene orders
 
 ```
-[chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > source AGO_python3/bin/activate
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > date
 Mon Apr 10 12:19:06 PDT 2023 - Tue Apr 11 21:12:14 PDT 2023
 ```
 
