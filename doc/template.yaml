@@ -238,8 +238,7 @@ tools:
                ext:   &iqtree_slurm_array_results_ext   !ref [*iqtree_ufboot_ext]
          results:
             dirs:
-               - &iqtree_results_dir    !join [*dir_results, *iqtree_name]
-               - &iqtree_results_prefix !join [*iqtree_results_dir, *iqtree_slurm_array_results_name]
+               - &iqtree_results_prefix !join [*dir_results, *iqtree_name, *iqtree_slurm_array_results_name]
             files:
                - &iqtree_slurm_results_file_ufboot !concat [*iqtree_results_prefix, *iqtree_ufboot_ext]
          cmd:
