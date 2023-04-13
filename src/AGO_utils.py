@@ -156,7 +156,7 @@ def create_output_file(parameters, tool):
 def check_results(parameters, tool):
     log_file,nb_errors = create_log_file(parameters, tool)
     output_file = create_output_file(parameters, tool)
-    return [f'ERRORS: {nb_errors}', log_file, output_file]
+    return [f'ERRORS:\t{nb_errors}', f'LOG:\t{log_file}', f'OUTPUT:\t{output_file}']
 
 ''' Generic function to delete the results file creates by a Slurm process '''
 def clean_results(parameters, tool):
