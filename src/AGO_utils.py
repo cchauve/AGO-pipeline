@@ -55,7 +55,7 @@ def create_slurm_script(parameters, tool):
         if slurm_modules is not None:
             script.write(f'\n\nmodule load {slurm_modules}')
         script.write(f'\n\n{slurm_cmd}')
-    os.chmod(script_file, '755')
+    os.chmod(script_file, 755)
     return [script_file]
 
 ''' Generic function to create BASH script '''
@@ -88,7 +88,7 @@ def create_bash_script(parameters, tool):
         else:
             bash_cmd = parameters.get_slurm_cmd(tool, concat='\n')
             script.write(f'\n\n{bash_cmd}')
-    os.chmod(script_file, '755')
+    os.chmod(script_file, 755)
     return [script_file]
 
 
