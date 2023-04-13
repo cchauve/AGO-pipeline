@@ -1,0 +1,12 @@
+# DO NOT EDIT
+log:
+   ext:
+      log:  &log_ext_log  '.log'
+      err:  &log_ext_err  '.err'
+      stat: &log_ext_stat '.csv'
+   msg:
+      success: &log_msg_success 'SUCCESS'
+      error:   &log_msg_error   'ERROR'
+      warning: &log_msg_warning 'WARNING'
+      missing: &log_msg_missing 'file is missing'
+

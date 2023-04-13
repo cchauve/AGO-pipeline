@@ -1,0 +1,140 @@
+   # DO NOT EDIT
+   # SPPDCJ_ILP: Writing the SPPDCJ ILP file
+   SPPDCJ_ILP:
+      name:   &sppdcj_ilp_name 'SPPDCJ_ILP'
+      input:
+         dirs:
+            - &sppdcj_ilp_input_dir !join [*dir_aux, *sppdcj_ilp_name]
+         names:
+            - &sppdcj_ilp_input_file_species_tree_name  !concat ['species_tree_', *sppdcj_input_suffix, '.txt']
+            - &sppdcj_ilp_input_file_adjacencies_1_name !concat ['adjacencies_', *sppdcj_input_suffix, '.txt']
+            - &sppdcj_ilp_input_file_adjacencies_2_name !concat ['adjacencies_complemented_', *sppdcj_input_suffix, '.txt']
+            - &sppdcj_ilp_input_file_conflicts_name     !concat ['conflicts_', *sppdcj_input_suffix, '.txt']
+            - &sppdcj_ilp_input_file_log_name           !concat ['adjacencies_', *sppdcj_input_suffix, '.log']
+         files:
+            - &sppdcj_ilp_input_file_species_tree   !join [*sppdcj_ilp_input_dir, *sppdcj_ilp_input_file_species_tree_name]
+            - &sppdcj_ilp_input_file_adjacencies_1  !join [*sppdcj_ilp_input_dir, *sppdcj_ilp_input_file_adjacencies_1_name]
+            - &sppdcj_ilp_input_file_adjacencies_2  !join [*sppdcj_ilp_input_dir, *sppdcj_ilp_input_file_adjacencies_2_name]
+            - &sppdcj_ilp_input_file_conflicts      !join [*sppdcj_ilp_input_dir, *sppdcj_ilp_input_file_conflicts_name]
+            - &sppdcj_ilp_input_file_log            !join [*sppdcj_ilp_input_dir, *sppdcj_ilp_input_file_log_name]
+         script:
+            - !join [*run_dir_scripts, 'SPPDCJ_create_input_files.py']
+            - !ref [*data_adjacencies_path]
+            - !ref [*data_species_tree_path]
+            - !ref [*sppdcj_input_species]
+            - !ref [*sppdcj_ilp_threshold]
+            - !ref [*sppdcj_ilp_input_file_species_tree]
+            - !ref [*sppdcj_ilp_input_file_adjacencies_1]
+            - !concat [';']
+            - !join [*run_dir_scripts, 'SPPDCJ_make_linearizable.py']
+            - !ref [*sppdcj_ilp_input_file_adjacencies_1]
+            - !ref [*sppdcj_ilp_input_file_adjacencies_2]
+            - !ref [*sppdcj_ilp_input_file_log]
+            - !concat [';']
+            - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
+            - !ref [*data_species_path]
+            - !ref [*decostar_slurm_results_genes_file_2]
+            - !ref [*data_adjacencies_path]
+            - !ref [*sppdcj_ilp_threshold]
+            - !ref [*sppdcj_ilp_input_file_conflicts]
+
+      slurm:
+         options: !ref [*sppdcj_ilp_slurm_options]
+         modules: !ref [*sppdcj_ilp_modules]
+         results:
+            dirs:
+               - &sppdcj_ilp_results_dir  !join [*dir_results, *sppdcj_ilp_name]
+            names:
+               - &sppdcj_results_prefix !concat [
+                    *sppdcj_input_suffix, '_', *sppdcj_ilp_threshold, '_',
+                    *sppdcj_ilp_alpha, '_', *sppdcj_ilp_beta
+                 ]
+               - &sppdcj_ilp_results_file_idmap_name !concat [*sppdcj_results_prefix, '.idmap']
+               - &sppdcj_ilp_results_file_ilp_name   !concat [*sppdcj_results_prefix, '.ilp']
+            other:
+               - &sppdcj_ilp_results_file_idmap !join [*sppdcj_ilp_results_dir, *sppdcj_ilp_results_file_idmap_name]
+               - &sppdcj_ilp_results_file_ilp   !join [*sppdcj_ilp_results_dir, *sppdcj_ilp_results_file_ilp_name]
+         cmd:
+            - !concat [*sppdcj_ilp_exec, ' \']
+            - !concat ['   -m ', *sppdcj_ilp_results_file_idmap, ' \']
+            - !concat ['   -a ', *sppdcj_ilp_alpha, ' \']
+            - !concat ['   -b ', *sppdcj_ilp_beta, ' \']
+            - !concat ['   -t ', ' \']
+            - !concat ['   ', *sppdcj_ilp_input_file_species_tree, ' \']
+            - !concat ['   ', *sppdcj_ilp_input_file_adjacencies_2, ' \']
+            - !concat ['   > ', *sppdcj_ilp_results_file_ilp ]
+
+      stats:
+         dirs:
+            - &sppdcj_ilp_stats_dir !join [*dir_stats, *sppdcj_ilp_name]
+         names:
+            - &sppdcj_ilp_stats_file_log_name !concat ['components_', *sppdcj_input_suffix, '.log']
+         files:
+            - &sppdcj_ilp_stats_file_log !join [*sppdcj_ilp_stats_dir, *sppdcj_ilp_stats_file_log_name]
+         cmd:
+            - !join [*run_dir_scripts, 'SPPDCJ_adjs_to_components.py']
+            - '-p'
+            - '-o'
+            - !ref [*sppdcj_ilp_stats_dir]
+            - !ref [*sppdcj_ilp_input_file_adjacencies_2]
+            - !ref [*sppdcj_ilp_stats_file_log]
+
+   # SPPDCJ: Solving the SPPDCJ ILP
+   SPPDCJ:
+      name:   &sppdcj_name 'SPPDCJ'
+      input:
+         files:
+            - &sppdcj_input_file_ilp   !ref [*sppdcj_ilp_results_file_ilp]
+            - &sppdcj_input_file_idmap !ref [*sppdcj_ilp_results_file_idmap]
+      output:
+           file: &sppdcj_output_file !ref [*data_ago_adjacencies_path]
+      slurm:
+         options: !ref [*sppdcj_slurm_options]
+         modules: !ref [*sppdcj_modules]
+         array:
+            results:
+               file:  &sppdcj_slurm_array_results_file  !ref [*data_species_path]
+               field: &sppdcj_slurm_array_results_field 1
+               var:   &sppdcj_slurm_array_results_var   'SPECIES'
+               var:   &sppdcj_slurm_array_results_name  !concat ['${', *sppdcj_slurm_array_results_var, '}']
+         results:
+            dirs:
+               - &sppdcj_results_dir  !join [*dir_results, *sppdcj_name]
+            names: 
+               - &sppdcj_slurm_results_file_name       !concat [*sppdcj_slurm_array_results_name, '_adjacencies.txt']
+               - &sppdcj_results_file_sol_name         !concat [*sppdcj_results_prefix, '.sol']
+               - &sppdcj_results_file_log_name         !concat [*sppdcj_results_prefix, '.log']
+               - &sppdcj_results_file_adjacencies_name !concat [*sppdcj_results_prefix, '_adjacencies.txt']
+            files: 
+               - &sppdcj_slurm_results_file !join [*sppdcj_results_dir, *sppdcj_slurm_results_file_name]
+            other:
+               - &sppdcj_results_file_sol         !join [*sppdcj_results_dir, *sppdcj_results_file_sol_name]
+               - &sppdcj_results_file_log         !join [*sppdcj_results_dir, *sppdcj_results_file_log_name]
+               - &sppdcj_results_file_adjacencies !join [*sppdcj_results_dir, *sppdcj_results_file_adjacencies_name]
+         cmd:
+            - !concat [*sppdcj_gurobi_exec, ' \']
+            - !concat ['   ', *sppdcj_gurobi_options, ' \']
+            - !concat ['   ResultFile=', *sppdcj_results_file_sol, ' \']
+            - !concat ['   ', *sppdcj_input_file_ilp, ' \']
+            - !concat ['   > ', *sppdcj_results_file_log]
+            - ' '
+            - !concat [*sppdcj_writesol_exec, ' \']
+            - !concat ['   ', *sppdcj_results_file_sol, ' \']
+            - !concat ['   ', *sppdcj_input_file_idmap, ' \']
+            - !concat ['   > ', *sppdcj_results_file_adjacencies]
+            - ' '
+            - !concat [!join [*run_dir_scripts, 'SPPDCJ_reformat.py'], ' \']
+            - !concat ['   ', *data_adjacencies_path, '\']
+            - !concat ['   ', *sppdcj_results_file_adjacencies, ' \']
+            - !concat ['   ', *sppdcj_results_dir]
+      stats:
+         names:
+            - &sppdcj_stats_file_name !concat [*sppdcj_name, '_species', *log_ext_stat]
+         files:
+            - &sppdcj_stats_file !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_name]
+         cmd:
+            - !join [*run_dir_scripts, 'SPPDCJ_statistics.py']
+            - !ref [*data_adjacencies_path]
+            - !ref [*sppdcj_results_file_adjacencies]
+            - !ref [*sppdcj_stats_file]
+

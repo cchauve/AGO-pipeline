@@ -1,0 +1,89 @@
+   # DO NOT EDIT
+   # ALE: gene tree reconcilliation from gene tree sample
+   ALE:
+      name: &ale_name 'ALE'
+      input:
+         dirs:
+            - &ale_input_dir !join [*dir_aux, *ale_name]
+         names:
+            - &ale_input_species_tree_name  'species_tree.newick'
+         files:
+            - &ale_input_species_tree_path  !join [*ale_input_dir, *ale_input_species_tree_name]
+         script:
+            - !join [*run_dir_scripts, 'newick_utils.py']
+            - 'unlabel'
+            - !ref [*data_species_tree_path]
+            - !ref [*ale_input_species_tree_path]
+      output:
+         file: &ale_output_file !ref [*data_reconciliations_path]
+      slurm:
+         options: !ref [*ale_slurm_options]
+         modules: !ref [*ale_modules]
+         array:
+            input:
+               file:  &ale_slurm_array_input_file  !ref [*data_gene_trees_path]
+               field: &ale_slurm_array_input_field 2
+               var:   &ale_slurm_array_input_var   'TREES_FILE'
+               name:
+                  - &ale_slurm_array_input_path  !concat ['${',*ale_slurm_array_input_var,'}']
+                  - &ale_slurm_array_input_name  !concat ['${',*ale_slurm_array_input_var,'##*/}']
+            results:
+               file:  &ale_slurm_array_results_file  !ref [*data_gene_trees_path]
+               field: &ale_slurm_array_results_field 1
+               var:   &ale_slurm_array_results_var   'FAM_ID'
+               name:  &ale_slurm_array_results_name  !concat ['${', *ale_slurm_array_results_var, '}']
+               ext:   &ale_slurm_array_results_ext   !ref [*data_reconciliations_ext]
+         results:
+            dirs:
+               - &ale_results_dir !join [*dir_results, *ale_name]
+            names:
+               - &ale_slurm_recphyloxml_file_name  !concat [*ale_slurm_array_results_name, *data_reconciliations_ext]
+               - &ale_slurm_object_file_name       !concat [*ale_slurm_array_input_name, *ale_object_ext]
+               - &ale_slurm_uml_rec_file_name      !concat [*ale_input_species_tree_name, '_', *ale_slurm_object_file_name, *ale_uml_rec_ext]
+            files:
+               - &ale_slurm_results_file_ale_object_aux   !concat [*ale_slurm_array_input_path, *ale_object_ext]
+               - &ale_slurm_results_file_ale_object       !join [*ale_results_dir, *ale_slurm_object_file_name]
+               - &ale_result_file_recphyloxml             !join [*ale_results_dir, *ale_slurm_recphyloxml_file_name]
+               - &ale_slurm_results_file_uml_rec          !join [*ale_results_dir, *ale_slurm_uml_rec_file_name]
+               - &ale_slurm_results_file_uml_rec_stree    !concat [*ale_slurm_results_file_uml_rec, '.stree']
+               - &ale_slurm_results_file_uml_rec_recs     !concat [*ale_slurm_results_file_uml_rec, '.recs']
+               - &ale_slurm_results_file_uml_rec_recs_xml !concat [*ale_slurm_results_file_uml_rec_recs, '.xml']
+         cmd:
+            - !concat ['cd ',*ale_results_dir]
+            - ' '
+            - !concat [*ale_object_exec, ' ', *ale_slurm_array_input_path]
+            - ' '
+            - !concat ['mv  ', *ale_slurm_results_file_ale_object_aux, ' ', *ale_slurm_results_file_ale_object]
+            - ' '
+            - !concat [*ale_uml_exec, ' \']
+            - !concat ['   ', *ale_input_species_tree_path,' \']
+            - !concat ['   ', *ale_slurm_results_file_ale_object, ' \']
+            - !concat ['   ', *ale_uml_options]
+            - ' '
+            - !concat ['python ', !join [*run_dir_scripts, 'ale_splitter.py'],' \']
+            - !concat ['   -i ', *ale_slurm_results_file_uml_rec, ' -stfr']
+            - ' '
+            - !concat ['python ', !join [*run_dir_scripts, 'ALEtoRecXML.py'], ' \']
+            - !concat ['   -g ', *ale_slurm_results_file_uml_rec_recs, ' \']
+            - !concat ['   -o ', *ale_slurm_results_file_uml_rec_recs_xml, '\']
+            - !concat ['   -s "', *species_gene_name_separator,'" \']
+            - !concat ['   -st ', *ale_slurm_results_file_uml_rec_stree]
+            - ' '
+            - !concat [!join [*run_dir_scripts, 'ALE_reformat.py'], ' \']
+            - !concat ['   ', *data_species_tree_path, ' \']
+            - !concat ['   ', *ale_slurm_results_file_uml_rec_stree, ' \']
+            - !concat ['   ', *ale_slurm_results_file_uml_rec_recs_xml, ' \']
+            - !concat ['   ', *ale_result_file_recphyloxml]
+      stats:
+         names:
+            - &ale_stats_file_species_name  !concat [*ale_name, '_species', *log_ext_stat]
+            - &ale_stats_file_families_name !concat [*ale_name, '_families', *log_ext_stat]
+         files:
+            - &ale_stats_file_species  !join [*dir_stats, *ale_name, *ale_stats_file_species_name]
+            - &ale_stats_file_families  !join [*dir_stats, *ale_name, *ale_stats_file_families_name]
+         cmd:
+            - !join [*run_dir_scripts, 'recPhyloXML_statistics.py']
+            - !ref [*ale_output_file]
+            - !ref [*ale_stats_file_species]
+            - !ref [*ale_stats_file_families]
+

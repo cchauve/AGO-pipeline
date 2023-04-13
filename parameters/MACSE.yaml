@@ -1,0 +1,45 @@
+   # DO NOT EDIT
+   # MACSE: multiple sequences alignment
+   MACSE:
+      name: &macse_name 'MACSE'
+      input:
+         files:
+            - &macse_input_file !ref [*data_sequences_path]
+      output:
+         file: &macse_output_file !ref [*data_alignments_path]
+      slurm:
+         options: !ref [*macse_slurm_options]
+         modules: !ref [*macse_modules]
+         array:
+            input:
+               file:  &macse_slurm_array_input_file  !ref [*macse_input_file]
+               field: &macse_slurm_array_input_field 2
+               var:   &macse_slurm_array_input_var   'SEQ_FILE'
+               name:  &macse_slurm_array_input_name  !concat ['${', *macse_slurm_array_input_var, '}']
+            results:
+               file:  &macse_slurm_array_results_file  !ref [*macse_input_file]
+               field: &macse_slurm_array_results_field 1
+               var:   &macse_slurm_array_results_var   'FAM_ID'
+               name:  &macse_slurm_array_results_name  !concat ['${', *macse_slurm_array_results_var, '}']
+               ext:   &macse_slurm_array_results_ext   !ref [*data_alignments_NT_ext]
+         results:
+            dirs:
+               - &macse_results_dir  !join [*dir_results, *macse_name]
+            names:
+               - &macse_slurm_results_file_1_name !concat [*macse_slurm_array_results_name, *data_alignments_NT_ext]
+               - &macse_slurm_results_file_2_name !concat [*macse_slurm_array_results_name, *data_alignments_AA_ext]
+            files:
+               - &macse_slurm_results_file_1 !join [*macse_results_dir, *macse_slurm_results_file_1_name]
+               - &macse_slurm_results_file_2 !join [*macse_results_dir, *macse_slurm_results_file_2_name]
+         cmd:
+            - !concat ['java -jar ', *macse_exec, ' \']
+            - '   -prog alignSequences \'
+            - !concat ['   -seq ', *macse_slurm_array_input_name, ' \']
+            - !concat ['   -out_NT ', *macse_slurm_results_file_1, ' \']
+            - !concat ['   -out_AA ', *macse_slurm_results_file_2]
+            - !concat [' ']
+            - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_1]
+            - !concat ["sed -i 's/?/-/g' ",*macse_slurm_results_file_1]
+            - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_2]
+            - !concat ["sed -i 's/?/-/g' ",*macse_slurm_results_file_2]
+
