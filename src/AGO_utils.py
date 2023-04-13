@@ -15,9 +15,13 @@ from AGO_parameters import Parameters
 
 '''Create a parameters file '''
 def create_parameters_file(header_file_path, yaml_dir, tools_list, out_file_path):
-    files_list = [header_file_path, os.path.join(yaml_dir, 'LOG.yaml')]
-    files_list += [os.path.join(yaml_dir, f'{tool}.yaml') for tool in tools_list]
     with open(out_file_path, 'w') as out_file:
+        files_list = [header_file_path, os.path.join(yaml_dir, 'LOG.yaml')]
+        for file_path in files_list:
+            with open(file_path) as in_file:
+                out_file.write(in_file.read())
+        out_file.write('tools:\n')
+        files_list = [os.path.join(yaml_dir, f'{tool}.yaml') for tool in tools_list]
         for file_path in files_list:
             with open(file_path) as in_file:
                 out_file.write(in_file.read())

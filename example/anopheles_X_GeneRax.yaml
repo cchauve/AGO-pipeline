@@ -95,6 +95,7 @@ log:
       warning: &log_msg_warning 'WARNING'
       missing: &log_msg_missing 'file is missing'
 
+tools:
    # DO NOT EDIT
    # MACSE: multiple sequences alignment
    MACSE:
@@ -168,7 +169,7 @@ log:
                file:  &generax_slurm_array_results_file  !ref [*data_alignments_path]
                field: &generax_slurm_array_results_field 1
                var:   &generax_slurm_array_results_var   'FAM_ID'
-               name:  &generax_slurm_array_results_var   !concat ['${', *generax_slurm_array_results_var, '}']
+               name:  &generax_slurm_array_results_name  !concat ['${', *generax_slurm_array_results_var, '}']
          results:
             dirs:
                - &generax_results_dir !join [*dir_results, *generax_name]

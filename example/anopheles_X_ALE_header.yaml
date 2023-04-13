@@ -33,7 +33,7 @@ data:
       path: &data_sequences_path         !join [*run_vectorbase_data, 'sequences_X_4.txt']
    # Computed data
    alignments:
-      path: &data_alignments_path        !join [*dir_data, 'alignments_X.txt']
+      path: &data_alignments_path        '/scratch/chauvec/SPP/anopheles_X_GeneRax/data/alignments_X.txt'
       NT_ext: &data_alignments_NT_ext    '_NT.fasta'
       AA_ext: &data_alignments_AA_ext    '_AA.fasta'
    gene_trees:

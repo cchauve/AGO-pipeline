@@ -39,6 +39,7 @@ def main():
         yaml_dir = sys.argv[4]
         tools_list = sys.argv[5:]
         create_parameters_file(header_file, yaml_dir, tools_list, parameters_file)
+        print(f'\t{parameters_file}')
     elif command == 'init':
         parameters = Parameters(parameters_file)
         parameters.init()

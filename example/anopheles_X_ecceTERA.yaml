@@ -33,11 +33,11 @@ data:
       path: &data_sequences_path         !join [*run_vectorbase_data, 'sequences_X_4.txt']
    # Computed data
    alignments:
-      path: &data_alignments_path        !join [*dir_data, 'alignments_X.txt']
+      path: &data_alignments_path        '/scratch/chauvec/SPP/anopheles_X_GeneRax/data/alignments_X.txt'
       NT_ext: &data_alignments_NT_ext    '_NT.fasta'
       AA_ext: &data_alignments_AA_ext    '_AA.fasta'
    gene_trees:
-      path: &data_gene_trees_path        !join [*dir_data, 'gene_trees_X.txt']
+      path: &data_gene_trees_path        '/scratch/chauvec/SPP/anopheles_X_ALE/data/gene_trees_X.txt'
    adjacencies:
       path:  &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
       path:  &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
@@ -94,86 +94,7 @@ log:
       warning: &log_msg_warning 'WARNING'
       missing: &log_msg_missing 'file is missing'
 
-   # DO NOT EDIT
-   # MACSE: multiple sequences alignment
-   MACSE:
-      name: &macse_name 'MACSE'
-      input:
-         files:
-            - &macse_input_file !ref [*data_sequences_path]
-      output:
-         file: &macse_output_file !ref [*data_alignments_path]
-      slurm:
-         options: !ref [*macse_slurm_options]
-         modules: !ref [*macse_modules]
-         array:
-            input:
-               file:  &macse_slurm_array_input_file  !ref [*macse_input_file]
-               field: &macse_slurm_array_input_field 2
-               var:   &macse_slurm_array_input_var   'SEQ_FILE'
-               name:  &macse_slurm_array_input_name  !concat ['${', *macse_slurm_array_input_var, '}']
-            results:
-               file:  &macse_slurm_array_results_file  !ref [*macse_input_file]
-               field: &macse_slurm_array_results_field 1
-               var:   &macse_slurm_array_results_var   'FAM_ID'
-               name:  &macse_slurm_array_results_name  !concat ['${', *macse_slurm_array_results_var, '}']
-               ext:   &macse_slurm_array_results_ext   !ref [*data_alignments_NT_ext]
-         results:
-            dirs:
-               - &macse_results_dir  !join [*dir_results, *macse_name]
-            names:
-               - &macse_slurm_results_file_1_name !concat [*macse_slurm_array_results_name, *data_alignments_NT_ext]
-               - &macse_slurm_results_file_2_name !concat [*macse_slurm_array_results_name, *data_alignments_AA_ext]
-            files:
-               - &macse_slurm_results_file_1 !join [*macse_results_dir, *macse_slurm_results_file_1_name]
-               - &macse_slurm_results_file_2 !join [*macse_results_dir, *macse_slurm_results_file_2_name]
-         cmd:
-            - !concat ['java -jar ', *macse_exec, ' \']
-            - '   -prog alignSequences \'
-            - !concat ['   -seq ', *macse_slurm_array_input_name, ' \']
-            - !concat ['   -out_NT ', *macse_slurm_results_file_1, ' \']
-            - !concat ['   -out_AA ', *macse_slurm_results_file_2]
-            - !concat [' ']
-            - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_1]
-            - !concat ["sed -i 's/?/-/g' ",*macse_slurm_results_file_1]
-            - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_2]
-            - !concat ["sed -i 's/?/-/g' ",*macse_slurm_results_file_2]
-
-   # DO NOT EDIT
-   # IQ-TREE: gene trees inference
-   IQ-TREE:
-      name: &iqtree_name 'IQ-TREE'
-      input:
-         files:
-            - &iqtree_input_file !ref [*data_alignments_path]
-      output:
-         file: &iqtree_output_file !ref [*data_gene_trees_path]
-      slurm:
-         options: !ref [*iqtree_slurm_options]
-         modules: !ref [*iqtree_modules]
-         array:
-            input:
-               file:  &iqtree_slurm_array_input_file  !ref [*iqtree_input_file]
-               field: &iqtree_slurm_array_input_field 2
-               var:   &iqtree_slurm_array_input_var   'MSA_FILE'
-               name:  &iqtree_slurm_array_input_name  !concat ['${', *iqtree_slurm_array_input_var, '}']
-            results:
-               file:  &iqtree_slurm_array_results_file  !ref [*iqtree_input_file]
-               field: &iqtree_slurm_array_results_field 1
-               var:   &iqtree_slurm_array_results_var   'FAM_ID'
-               name:  &iqtree_slurm_array_results_name  !concat ['${', *iqtree_slurm_array_results_var, '}']
-               ext:   &iqtree_slurm_array_results_ext   !ref [*iqtree_ufboot_ext]
-         results:
-            dirs:
-               - &iqtree_results_prefix !join [*dir_results, *iqtree_name, *iqtree_slurm_array_results_name]
-            files:
-               - &iqtree_slurm_results_file_ufboot !concat [*iqtree_results_prefix, *iqtree_ufboot_ext]
-         cmd:
-            - !concat [*iqtree_exec, ' \']
-            - !concat ['   -s ',*iqtree_slurm_array_input_name,' \']
-            - !concat ['   ',*iqtree_options,' \']
-            - !concat ['   -pre ',*iqtree_results_prefix]
-
+tools:
    # DO NOT EDIT
    # DeCoSTAR: computing ancestral adjacencies
    DeCoSTAR:
