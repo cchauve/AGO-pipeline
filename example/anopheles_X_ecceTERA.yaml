@@ -82,9 +82,7 @@ tools:
    - &sppdcj_ilp_slurm_options       '--mem=256G --time=12:00:00'
    - &sppdcj_slurm_options           '--mem=50G --time=12:00:00'
 
-## DO NOT EDIT #############################################################################
-## AGO pipeline
-
+# DO NOT EDIT
 log:
    ext:
       log:  &log_ext_log  '.log'
@@ -96,7 +94,7 @@ log:
       warning: &log_msg_warning 'WARNING'
       missing: &log_msg_missing 'file is missing'
 
-tools:   
+   # DO NOT EDIT
    # MACSE: multiple sequences alignment
    MACSE:
       name: &macse_name 'MACSE'
@@ -141,6 +139,7 @@ tools:
             - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_2]
             - !concat ["sed -i 's/?/-/g' ",*macse_slurm_results_file_2]
 
+   # DO NOT EDIT
    # IQ-TREE: gene trees inference
    IQ-TREE:
       name: &iqtree_name 'IQ-TREE'
@@ -175,6 +174,7 @@ tools:
             - !concat ['   ',*iqtree_options,' \']
             - !concat ['   -pre ',*iqtree_results_prefix]
 
+   # DO NOT EDIT
    # DeCoSTAR: computing ancestral adjacencies
    DeCoSTAR:
       name: &decostar_name 'DeCoSTAR'
@@ -257,6 +257,7 @@ tools:
             - !ref [*decostar_stats_thresholds]
             - !ref [*decostar_stats_file_species]
 
+   # DO NOT EDIT
    # SPPDCJ_ILP: Writing the SPPDCJ ILP file
    SPPDCJ_ILP:
       name:   &sppdcj_ilp_name 'SPPDCJ_ILP'
@@ -328,7 +329,7 @@ tools:
          names:
             - &sppdcj_ilp_stats_file_log_name !concat ['components_', *sppdcj_input_suffix, '.log']
          files:
-            - &sppdcj_ilp_stats_file_log !join [*sppdcj_ilp_stats_dir, *sppdcj_ilp_name, *sppdcj_ilp_stats_file_log_name]
+            - &sppdcj_ilp_stats_file_log !join [*sppdcj_ilp_stats_dir, *sppdcj_ilp_stats_file_log_name]
          cmd:
             - !join [*run_dir_scripts, 'SPPDCJ_adjs_to_components.py']
             - '-p'
@@ -395,3 +396,4 @@ tools:
             - !ref [*data_adjacencies_path]
             - !ref [*sppdcj_results_file_adjacencies]
             - !ref [*sppdcj_stats_file]
+

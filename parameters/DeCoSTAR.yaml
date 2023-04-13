@@ -1,0 +1,83 @@
+   # DO NOT EDIT
+   # DeCoSTAR: computing ancestral adjacencies
+   DeCoSTAR:
+      name: &decostar_name 'DeCoSTAR'
+      input:
+         dirs:
+           - &decostar_input_dir !join [*dir_aux, *decostar_name]
+         files:
+           - &decostar_input_file_trees       !join [*decostar_input_dir, 'gene_trees.txt']
+           - &decostar_input_file_adjacencies !join [*decostar_input_dir, 'adjacencies.txt']
+         script:
+            - !join [*run_dir_scripts, 'DeCoSTAR_create_input_files.py']
+            - !ref [*data_gene_orders_path]
+            - !ref [*decostar_input_path]
+            - !ref [*data_families_path]
+            - !ref [*decostar_input_file_adjacencies]
+            - !ref [*decostar_input_file_trees]
+      output:
+         file: &decostar_output_file !ref [*data_adjacencies_path]
+      slurm:
+         options: !ref [*decostar_slurm_options]
+         modules: !ref [*decostar_modules]
+         array:
+            results:
+               file:  &decostar_slurm_array_results_file  !ref [*data_species_path]
+               field: &decostar_slurm_array_results_field 1
+               var:   &decostar_slurm_array_results_var   'SPECIES'
+               name:  &decostar_slurm_array_results_name  !concat ['${', *decostar_slurm_array_results_var, '}']
+         results:
+            dirs:
+               - &decostar_results_dir !join [*dir_results, *decostar_name]
+            names:
+               - &decostar_slurm_results_species_adjacencies_name !concat [*decostar_slurm_array_results_name, '_adjacencies.txt']
+            files:
+               - &decostar_slurm_results_species_adjacencies !join [*decostar_results_dir, *decostar_slurm_results_species_adjacencies_name]
+            other:
+               - &decostar_slurm_results_adjacencies_file !join [*decostar_results_dir, 'adjacencies.txt']
+               - &decostar_slurm_results_genes_file_1     !join [*decostar_results_dir, 'genes.txt']
+               - &decostar_slurm_results_genes_file_2     !join [*decostar_results_dir, 'genes_reformatted.txt']
+               - &decostar_slurm_results_species_file     !join [*decostar_results_dir, 'species.txt']
+         cmd:
+            - !concat [*decostar_exec, ' \']
+            - !concat ['   species.file=', *data_species_tree_path, ' \']
+            - !concat ['   adjacencies.file=', *decostar_input_file_adjacencies, ' \']
+            - !concat ['   gene.distribution.file=', *decostar_input_file_trees, ' \']
+            - !concat ['   output.dir=', *decostar_results_dir, ' \']
+            - '   write.newick=true \'
+            - '   write.adjacencies=true \'
+            - '   write.genes=true \'
+            - '   already.reconciled=true \'
+            - '   use.boltzmann=true \'
+            - '   char.sep="|" \'
+            - !concat ['   boltzmann.temperature=', *decostar_boltzmann_temperature, ' \']
+            - !concat ['   nb.sample=', *decostar_nb_sample, ' \']
+            - '   dated.species.tree=false \'
+            - '   rooted=true \'
+            - '   with.transfer=false \'
+            - '   verbose=2'
+            - ' '
+            - !concat [!join [*run_dir_scripts, 'DeCoSTAR_reformat.py'], ' \']
+            - !concat ['   ', *data_species_path, ' \']
+            - !concat ['   ', *decostar_slurm_results_species_file, ' \']
+            - !concat ['   ', *decostar_already_reconciled, ' \']
+            - !concat ['   ', *data_families_path, ' \']
+            - !concat ['   ', *decostar_input_path, ' \']
+            - !concat ['   ', *decostar_input_file_trees, ' \']
+            - !concat ['   ', *decostar_slurm_results_genes_file_1, ' \']
+            - !concat ['   ', *decostar_slurm_results_adjacencies_file, ' \']
+            - !concat ['   ', *decostar_slurm_results_genes_file_2, ' \']
+            - !concat ['   ', *decostar_results_dir]
+      stats:
+         names:
+            - &decostar_stats_file_species_name !concat [*decostar_name, *log_ext_stat]
+         files:
+            - &decostar_stats_file_species !join [*dir_stats, *decostar_name, *decostar_stats_file_species_name]
+         cmd:
+            - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
+            - !ref [*data_species_path]
+            - !ref [*decostar_slurm_results_genes_file_2]
+            - !ref [*data_adjacencies_path]
+            - !ref [*decostar_stats_thresholds]
+            - !ref [*decostar_stats_file_species]
+

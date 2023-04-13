@@ -12,6 +12,7 @@ import sys
 
 from AGO_parameters import Parameters
 from AGO_utils import (
+    create_parameters_file,
     create_slurm_script,
     create_bash_script,
     check_results,
@@ -31,13 +32,19 @@ CMD = {
 
 def main():
     parameters_file = sys.argv[1]
-    parameters = Parameters(parameters_file)
     command = sys.argv[2]
 
-    if command == 'init':
+    if command == 'create':
+        header_file = sys.argv[3]
+        yaml_dir = sys.argv[4]
+        tools_list = sys.argv[5:]
+        create_parameters_file(header_file, yaml_dir, tools_list, parameters_file)
+    elif command == 'init':
+        parameters = Parameters(parameters_file)
         parameters.init()
     else:
         tool = sys.argv[3]
+        parameters = Parameters(parameters_file)            
         cmd_out = CMD[command](parameters, tool)
         for out_msg in cmd_out:
             print(f'\t{out_msg}')

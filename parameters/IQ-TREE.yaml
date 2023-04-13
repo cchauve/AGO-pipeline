@@ -1,0 +1,35 @@
+   # DO NOT EDIT
+   # IQ-TREE: gene trees inference
+   IQ-TREE:
+      name: &iqtree_name 'IQ-TREE'
+      input:
+         files:
+            - &iqtree_input_file !ref [*data_alignments_path]
+      output:
+         file: &iqtree_output_file !ref [*data_gene_trees_path]
+      slurm:
+         options: !ref [*iqtree_slurm_options]
+         modules: !ref [*iqtree_modules]
+         array:
+            input:
+               file:  &iqtree_slurm_array_input_file  !ref [*iqtree_input_file]
+               field: &iqtree_slurm_array_input_field 2
+               var:   &iqtree_slurm_array_input_var   'MSA_FILE'
+               name:  &iqtree_slurm_array_input_name  !concat ['${', *iqtree_slurm_array_input_var, '}']
+            results:
+               file:  &iqtree_slurm_array_results_file  !ref [*iqtree_input_file]
+               field: &iqtree_slurm_array_results_field 1
+               var:   &iqtree_slurm_array_results_var   'FAM_ID'
+               name:  &iqtree_slurm_array_results_name  !concat ['${', *iqtree_slurm_array_results_var, '}']
+               ext:   &iqtree_slurm_array_results_ext   !ref [*iqtree_ufboot_ext]
+         results:
+            dirs:
+               - &iqtree_results_prefix !join [*dir_results, *iqtree_name, *iqtree_slurm_array_results_name]
+            files:
+               - &iqtree_slurm_results_file_ufboot !concat [*iqtree_results_prefix, *iqtree_ufboot_ext]
+         cmd:
+            - !concat [*iqtree_exec, ' \']
+            - !concat ['   -s ',*iqtree_slurm_array_input_name,' \']
+            - !concat ['   ',*iqtree_options,' \']
+            - !concat ['   -pre ',*iqtree_results_prefix]
+

@@ -83,9 +83,7 @@ tools:
    - &sppdcj_ilp_slurm_options       '--mem=256G --time=12:00:00'
    - &sppdcj_slurm_options           '--mem=50G --time=12:00:00'
 
-## DO NOT EDIT #############################################################################
-## AGO pipeline
-
+# DO NOT EDIT
 log:
    ext:
       log:  &log_ext_log  '.log'
@@ -97,7 +95,7 @@ log:
       warning: &log_msg_warning 'WARNING'
       missing: &log_msg_missing 'file is missing'
 
-tools:   
+   # DO NOT EDIT
    # MACSE: multiple sequences alignment
    MACSE:
       name: &macse_name 'MACSE'
@@ -142,6 +140,7 @@ tools:
             - !concat ["sed -i 's/!/-/g' ",*macse_slurm_results_file_2]
             - !concat ["sed -i 's/?/-/g' ",*macse_slurm_results_file_2]
 
+   # DO NOT EDIT
    # GeneRax: computing reconciled gene trees
    GeneRax:
       name: &generax_name 'GeneRax'
@@ -201,6 +200,7 @@ tools:
             - !ref [*generax_stats_file_species]
             - !ref [*generax_stats_file_families]
 
+   # DO NOT EDIT
    # DeCoSTAR: computing ancestral adjacencies
    DeCoSTAR:
       name: &decostar_name 'DeCoSTAR'
@@ -283,6 +283,7 @@ tools:
             - !ref [*decostar_stats_thresholds]
             - !ref [*decostar_stats_file_species]
 
+   # DO NOT EDIT
    # SPPDCJ_ILP: Writing the SPPDCJ ILP file
    SPPDCJ_ILP:
       name:   &sppdcj_ilp_name 'SPPDCJ_ILP'
@@ -421,3 +422,4 @@ tools:
             - !ref [*data_adjacencies_path]
             - !ref [*sppdcj_results_file_adjacencies]
             - !ref [*sppdcj_stats_file]
+

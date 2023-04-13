@@ -1,0 +1,60 @@
+   # DO NOT EDIT
+   # GeneRax: computing reconciled gene trees
+   GeneRax:
+      name: &generax_name 'GeneRax'
+      input:
+         dirs:
+            - &generax_input_dir  !join [*dir_aux, *generax_name]
+         files:
+            - &generax_input_file !join [*generax_input_dir, 'families.txt']
+         script:
+            - !join [*run_dir_scripts, 'GeneRax_create_input_files.py']
+            - !ref [*data_families_path]
+            - !ref [*data_gene_orders_path]
+            - !ref [*data_alignments_path]
+            - !ref [*data_alignments_NT_ext]
+            - !ref [*generax_alignment_model]
+            - !ref [*generax_input_file]
+            - !ref [*generax_input_dir]
+      output:
+         file:  &generax_output_file !ref [*data_reconciliations_path]
+      slurm:
+         options: !ref [*generax_slurm_options] 
+         modules: !ref [*generax_modules]
+         array:
+            results:
+               file:  &generax_slurm_array_results_file  !ref [*data_alignments_path]
+               field: &generax_slurm_array_results_field 1
+               var:   &generax_slurm_array_results_var   'FAM_ID'
+               name:  &generax_slurm_array_results_var   !concat ['${', *generax_slurm_array_results_var, '}']
+         results:
+            dirs:
+               - &generax_results_dir !join [*dir_results, *generax_name]
+            names:
+               - &generax_slurm_results_file_name !concat [*generax_slurm_array_results_var, *data_reconciliations_ext]
+            files: 
+               - &generax_slurm_results_file !join [*generax_results_dir, 'reconciliations', *generax_slurm_results_file_name]
+         cmd:
+            - !concat [*generax_exec, ' \']
+            - !concat ['   -f ', *generax_input_file, ' \']
+            - !concat ['   -s ', *data_species_tree_path, ' \']
+            - !concat ['   -p ', *generax_results_dir, ' \']
+            - !concat ['   ', *generax_options]
+            - ' '
+            - !concat [!join [*run_dir_scripts, 'GeneRax_reformat.py'], ' \']
+            - !concat ['   ', *generax_input_file, ' \']
+            - !concat ['   ', *generax_results_dir, ' \']
+            - !concat ['   ', *data_reconciliations_ext]
+      stats:
+         names:
+            - &generax_stats_file_species_name  !concat [*generax_name, '_species', *log_ext_stat]
+            - &generax_stats_file_families_name !concat [*generax_name, '_families', *log_ext_stat]
+         files:
+            - &generax_stats_file_species  !join [*dir_stats, *generax_name, *generax_stats_file_species_name]
+            - &generax_stats_file_families !join [*dir_stats, *generax_name, *generax_stats_file_families_name]
+         cmd:
+            - !join [*run_dir_scripts, 'recPhyloXML_statistics.py']
+            - !ref [*generax_output_file]
+            - !ref [*generax_stats_file_species]
+            - !ref [*generax_stats_file_families]
+

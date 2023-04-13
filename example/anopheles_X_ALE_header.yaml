@@ -1,0 +1,94 @@
+## Reconstruting ancestral gene orders of the X chromosome of Anopheles mosquito genomes
+
+run:
+   name: &run_name  anopheles_X_ALE
+   dir:
+      # Root directory for parameters and tool-specific scripts
+      - &run_dir_root    '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
+      # VectorBase data
+      - &run_vectorbase_data    !join [*run_dir_root, 'data/VectorBase']
+      - &run_dir_scripts !join [*run_dir_root, 'scripts']
+      - &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
+      - &run_dir_bin     !join [*run_dir_root, 'bin']
+slurm:
+   account: &slurm_account 'def-chauvec'
+dir:
+   data:    &dir_data    !join [*run_dir_exp, 'data']
+   aux:     &dir_aux     !join [*run_dir_exp, 'aux']
+   log:     &dir_log     !join [*run_dir_exp, 'log']
+   stats:   &dir_stats   !join [*run_dir_exp, 'statistics']
+   results: &dir_results !join [*run_dir_exp, 'results']
+data:
+   # Starting data
+   species_tree:
+      path: &data_species_tree_path      !join [*run_vectorbase_data, 'species_tree_4.newick']
+   species:
+      path: &data_species_path           !join [*run_vectorbase_data, 'species_4.txt']
+   families:
+      path: &data_families_path          !join [*run_vectorbase_data, 'families_X_4.txt']
+      sep:  &species_gene_name_separator '|'
+   gene_orders:
+      path: &data_gene_orders_path       !join [*run_vectorbase_data, 'gene_orders_X_4.txt']
+   sequences:
+      path: &data_sequences_path         !join [*run_vectorbase_data, 'sequences_X_4.txt']
+   # Computed data
+   alignments:
+      path: &data_alignments_path        !join [*dir_data, 'alignments_X.txt']
+      NT_ext: &data_alignments_NT_ext    '_NT.fasta'
+      AA_ext: &data_alignments_AA_ext    '_AA.fasta'
+   gene_trees:
+      path: &data_gene_trees_path        !join [*dir_data, 'gene_trees_X.txt']
+   reconciliations:
+      path:  &data_reconciliations_path  !join [*dir_data, 'reconciliations_X.txt']
+      ext:   &data_reconciliations_ext   '.recphyloxml'
+   adjacencies:
+      path:  &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
+      path:  &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
+# External tools options
+tools:
+   # MACSE
+   - &macse_exec                     !join [*run_dir_bin, 'macse_v2.06.jar']
+   - &macse_modules                  'java'
+   - &macse_slurm_options            '--mem=8G --time=02:00:00'
+   # IQ-TREE
+   - &iqtree_exec                    'iqtree'
+   - &iqtree_options                 '-m MFP -bb 1000 -wbtl'
+   - &iqtree_ufboot_ext              '.ufboot'
+   - &iqtree_modules                 'iq-tree/2.0.7'
+   - &iqtree_slurm_options           '--mem=1G --time=00:20:00'
+   # ALE
+   - &ale_object_exec                !join [*run_dir_bin,'ALE/bin/ALEobserve']
+   - &ale_object_ext                 '.ale'
+   - &ale_uml_exec                   !join [*run_dir_bin,'ALE/bin/ALEml_undated']
+   - &ale_uml_options                !concat ['sample=1 separators="', *species_gene_name_separator, '"']
+   - &ale_uml_rec_ext                '.uml_rec'
+   - &ale_modules                    ''
+   - &ale_slurm_options              '--mem=2G --time=02:00:00'
+   # DeCoSTAR
+   - &decostar_exec                  !join [*run_dir_bin, 'DeCoSTAR']
+   - &decostar_input_path            !ref [*data_reconciliations_path]
+   - &decostar_already_reconciled    'true'
+   - &decostar_dupli_cost            '0'
+   - &decostar_loss_cost             '0'
+   - &decostar_dated_species_tree    'true'
+   - &decostar_rooted                'true'
+   - &decostar_nb_sample             '1000'
+   - &decostar_boltzmann_temperature '0.1'
+   - &decostar_stats_thresholds      "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0"
+   - &decostar_modules               ''
+   - &decostar_slurm_options         '--mem=4G --time=24:00:00'
+   # SPP-DCJ
+   - &sppdcj_gurobi_exec             'gurobi_cl'
+   - &sppdcj_gurobi_options          'MIPGap=0.05'
+   - &sppdcj_bin_dir                 !join [*run_dir_bin, 'spp_dcj', 'scripts']
+   - &sppdcj_writesol_exec           !join [*sppdcj_bin_dir, 'sol2adjacencies.py']
+   - &sppdcj_ilp_exec                !join [*sppdcj_bin_dir, 'spp_dcj.py']
+   - &sppdcj_ilp_threshold           '0.5'
+   - &sppdcj_ilp_alpha               '0.5'
+   - &sppdcj_ilp_beta                '0.25'
+   - &sppdcj_input_species           'all'
+   - &sppdcj_input_suffix            'all'
+   - &sppdcj_ilp_modules             ''
+   - &sppdcj_modules                 'gurobi'
+   - &sppdcj_ilp_slurm_options       '--mem=256G --time=12:00:00'
+   - &sppdcj_slurm_options           '--mem=50G --time=12:00:00'
