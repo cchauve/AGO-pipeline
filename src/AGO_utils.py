@@ -13,10 +13,17 @@ from collections import defaultdict
 import subprocess
 from AGO_parameters import Parameters
 
+'''Create a parameters file '''
+def create_parameters_file(header_file_path, yaml_dir, tools_list, out_file_path):
+    files_list = [header_file_path, os.path.join(yaml_dir, 'LOG.yaml')]
+    files_list += [os.path.join(yaml_dir, f'{tool}.yaml') for tool in tools_list]
+    with open(out_file_path, 'w') as out_file:
+        for file_path in files_list:
+            with open(file_path) as in_file:
+                out_file.write(in_file.read())
+
 ''' Generic function to create SLURM script '''
 def create_slurm_script(parameters, tool):
-    '''
-    '''
     aux_dir = parameters.get_dir_aux(tool)
     script_name = f'{parameters.get_tool_name(tool, suffix=True)}.sh'
     script_file = os.path.join(aux_dir, script_name)
@@ -48,8 +55,6 @@ def create_slurm_script(parameters, tool):
 
 ''' Generic function to create BASH script '''
 def create_bash_script(parameters, tool):
-    '''
-    '''
     aux_dir = parameters.get_dir_aux(tool)
     script_name = f'{parameters.get_tool_name(tool, suffix=True)}.sh'
     script_file = os.path.join(aux_dir, script_name)
