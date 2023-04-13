@@ -35,7 +35,7 @@ def create_slurm_script(parameters, tool):
             array_size = parameters.get_slurm_array_input_len(tool)
             script.write(f'\n#SBATCH --array=1-{array_size}\n')
             array_specs = parameters.get_slurm_array_data(tool)
-            for array_spec in array_specs.values():
+            for array_spec in array_specs.values():                
                 script.write(
                     f'\n{array_spec["var"]}='
                     f'$(sed "{TASK_ID}q;d" {array_spec["file"]} |'
@@ -46,9 +46,43 @@ def create_slurm_script(parameters, tool):
         script.write(f'\n\n{slurm_cmd}')
     return [script_file]
 
+''' Generic function to create BASH script '''
+def create_bash_script(parameters, tool):
+    '''
+    '''
+    aux_dir = parameters.get_dir_aux(tool)
+    script_name = f'{parameters.get_tool_name(tool, suffix=True)}.sh'
+    script_file = os.path.join(aux_dir, script_name)
+    if parameters.check_tool_input_script(tool):
+        for cmd in parameters.get_tool_input_script(tool):
+            subprocess.run(cmd)
+    with open(script_file, 'w') as script:
+        script.write('#!/bin/bash\n\n')
+        bash_modules = parameters.get_slurm_modules(tool)
+        if bash_modules is not None:
+            script.write(f'\n\nmodule load {bash_modules}')        
+        if parameters.check_slurm_array_input(tool):
+            TASK_ID = '${TASK_ID}'
+            array_size = parameters.get_slurm_array_input_len(tool)
+            script.write(f'for ((TASK_ID=1;TASK_ID<={array_size};TASK_ID++));\ndo\n')
+            array_specs = parameters.get_slurm_array_data(tool)            
+            for array_spec in array_specs.values():
+                script.write(
+                    f'\n\t{array_spec["var"]}='
+                    f'$(sed "{TASK_ID}q;d" {array_spec["file"]} |'
+                    f'cut -f {array_spec["field"]})'
+                )
+            script.write('\n\n\t')
+            script.write(parameters.get_slurm_cmd(tool, concat='\n\t'))
+            script.write('\ndone\n')
+        else:
+            bash_cmd = parameters.get_slurm_cmd(tool, concat='\n')
+            script.write(f'\n\n{bash_cmd}')
+    return [script_file]
+
 
 ''' Generic function to create a log file '''
-def create_slurm_log_file(parameters, tool):
+def create_log_file(parameters, tool):
     # File where to write the link to output files
     log_file = parameters.get_log_file(tool, suffix=True)
     # Separators
@@ -83,7 +117,7 @@ def create_slurm_log_file(parameters, tool):
     return log_file
 
 ''' Generic function to create an output file from Slurm results '''
-def create_slurm_output_file(parameters, tool):
+def create_output_file(parameters, tool):
     output_file = parameters.get_output_file(tool)
     if output_file is not None:
         sep1 = parameters.get_sep_fields()        
@@ -110,13 +144,13 @@ def create_slurm_output_file(parameters, tool):
         return 'No output file is created'
 
 ''' Generic function to check the results of a Slurm process and create a log file '''
-def check_slurm_results(parameters, tool):
-    log_file = create_slurm_log_file(parameters, tool)
-    output_file = create_slurm_output_file(parameters, tool)
+def check_results(parameters, tool):
+    log_file = create_log_file(parameters, tool)
+    output_file = create_output_file(parameters, tool)
     return (log_file, output_file)
 
 ''' Generic function to delete the results file creates by a Slurm process '''
-def clean_slurm_results(parameters, tool):
+def clean_results(parameters, tool):
     nb_deleted_files = 0
     for results_file in parameters.get_slurm_results_files(tool):
         res_path = results_file[1]

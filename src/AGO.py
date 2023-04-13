@@ -13,15 +13,17 @@ import sys
 from AGO_parameters import Parameters
 from AGO_utils import (
     create_slurm_script,
-    check_slurm_results,
-    clean_slurm_results,
+    create_bash_script,
+    check_results,
+    clean_results,
     compute_statistics
 )
 
 CMD = {
-    'script': create_slurm_script,
-    'check': check_slurm_results,
-    'clean': clean_slurm_results,
+    'slurm': create_slurm_script,
+    'bash': create_bash_script,    
+    'check': check_results,
+    'clean': clean_results,
     'stats': compute_statistics
 }
 
