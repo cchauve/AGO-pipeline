@@ -43,16 +43,6 @@ data:
       path:  &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
 # External tools options
 tools:
-   # MACSE
-   - &macse_exec                     !join [*run_dir_bin, 'macse_v2.06.jar']
-   - &macse_modules                  'java'
-   - &macse_slurm_options            '--mem=8G --time=02:00:00'
-   # IQ-TREE
-   - &iqtree_exec                    'iqtree'
-   - &iqtree_options                 '-m MFP -bb 1000 -wbtl'
-   - &iqtree_ufboot_ext              '.ufboot'
-   - &iqtree_modules                 'iq-tree/2.0.7'
-   - &iqtree_slurm_options           '--mem=1G --time=00:20:00'
    # DeCoSTAR
    - &decostar_exec                  !join [*run_dir_bin, 'DeCoSTAR']
    - &decostar_input_path            !ref [*data_gene_trees_path]
