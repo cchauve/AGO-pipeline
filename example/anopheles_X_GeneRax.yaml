@@ -174,7 +174,7 @@ tools:
             dirs:
                - &generax_results_dir !join [*dir_results, *generax_name]
             names:
-               - &generax_slurm_results_file_name !concat [*generax_slurm_array_results_var, *data_reconciliations_ext]
+               - &generax_slurm_results_file_name !concat [*generax_slurm_array_results_name, *data_reconciliations_ext]
             files: 
                - &generax_slurm_results_file !join [*generax_results_dir, 'reconciliations', *generax_slurm_results_file_name]
          cmd:

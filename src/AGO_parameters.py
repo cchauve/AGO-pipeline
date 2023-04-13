@@ -137,7 +137,7 @@ class Parameters:
         tool_name = self.get_tool_name(tool, suffix=suffix)
         LOG_ARRAY = {True: '_%a', False: ''}
         return os.path.join(
-            log_dir, f'{tool_name}{LOG_ARRAY[array]}.{self.get_ext(key)}'
+            log_dir, f'{tool_name}{LOG_ARRAY[array]}{self.get_ext(key)}'
         )
     def get_slurm_log_file(self, tool, suffix=False):
         return self.get_slurm_log_file_ext(tool, 'log', suffix=suffix)
