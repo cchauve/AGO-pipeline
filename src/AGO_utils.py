@@ -119,7 +119,7 @@ def create_log_file(parameters, tool):
                     f'{res_index}{sep1}'
                     f'{res_path}\n'
                 )
-    return log_file, len(errors)
+    return log_file,len(errors)
 
 ''' Generic function to create an output file from Slurm results '''
 def create_output_file(parameters, tool):
@@ -150,9 +150,9 @@ def create_output_file(parameters, tool):
 
 ''' Generic function to check the results of a Slurm process and create a log file '''
 def check_results(parameters, tool):
-    log_file, nb_errors = create_log_file(parameters, tool)
+    log_file,nb_errors = create_log_file(parameters, tool)
     output_file = create_output_file(parameters, tool)
-    return (f'Errors: {nb_errors}', log_file, output_file)
+    return [f'ERRORS: {nb_errors}', log_file, output_file]
 
 ''' Generic function to delete the results file creates by a Slurm process '''
 def clean_results(parameters, tool):
