@@ -279,7 +279,7 @@ tools:
                file:  &ale_slurm_array_results_file  !ref [*data_gene_trees_path]
                field: &ale_slurm_array_results_field 1
                var:   &ale_slurm_array_results_var   'FAM_ID'
-               var:   &ale_slurm_array_results_name  ['${', *ale_slurm_array_results_var, '}']
+               name:  &ale_slurm_array_results_name  !concat ['${', *ale_slurm_array_results_var, '}']
                ext:   &ale_slurm_array_results_ext   !ref [*data_reconciliations_ext]
          results:
             dirs:
