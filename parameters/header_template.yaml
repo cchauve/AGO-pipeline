@@ -42,7 +42,7 @@ data:
       path:  &data_adjacencies_path      # REQUIRED for tool.DCoSTAR, tool.SPPDCJ_ILP and tool.SPPDCJ: path to adjacencies file
       path:  &data_ago_adjacencies_path  # REQUIRED for tool.DCoSTAR, tool.SPPDCJ_ILP and tool.SPPDCJ: path to reconstructed extant and ancestral adjacencies file
 # External tools options
-# DO EDIT FOR USED TOOLS, DELETE UNUSED TOOLS SECTIONS
+# DO EDIT SECTIONS FOR USED TOOLS, DELETE UNUSED TOOLS SECTIONS
 tools:
    # MACSE
    - &macse_exec                     # REQUIRED: path to java MACSE .jar file                      (ex: !join [*run_dir_bin, 'macse_v2.06.jar'])
