@@ -5,8 +5,8 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "0.99"
-__status__    = "Development"
+__version__   = "1.0"
+__status__    = "Released"
 
 import os
 from collections import defaultdict
