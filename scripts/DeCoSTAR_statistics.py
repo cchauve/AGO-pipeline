@@ -180,6 +180,7 @@ def decostar_write_statistics(
                     [str(int(stats[k])) for k in stats_keys]
                 )                        
                 out_stats.write(f'{pref_str}\t{stats_str}')
+        out_stats.write('\n')
 
 def main():
     in_species_file = sys.argv[1]

@@ -96,15 +96,16 @@
                file:  &sppdcj_slurm_array_results_file  !ref [*data_species_path]
                field: &sppdcj_slurm_array_results_field 1
                var:   &sppdcj_slurm_array_results_var   'SPECIES'
-               name:   &sppdcj_slurm_array_results_name !concat ['${', *sppdcj_slurm_array_results_var, '}']
+               name:  &sppdcj_slurm_array_results_name !concat ['${', *sppdcj_slurm_array_results_var, '}']
+               ext:   &sppdcj_slurm_array_results_ext  !ref [*data_ago_adjacencies_ext]
          results:
             dirs:
                - &sppdcj_results_dir  !join [*dir_results, *sppdcj_name]
             names: 
-               - &sppdcj_slurm_results_file_name       !concat [*sppdcj_slurm_array_results_name, '_adjacencies.txt']
+               - &sppdcj_slurm_results_file_name       !concat [*sppdcj_slurm_array_results_name, *sppdcj_slurm_array_results_ext]
                - &sppdcj_results_file_sol_name         !concat [*sppdcj_results_prefix, '.sol']
                - &sppdcj_results_file_log_name         !concat [*sppdcj_results_prefix, '.log']
-               - &sppdcj_results_file_adjacencies_name !concat [*sppdcj_results_prefix, '_adjacencies.txt']
+               - &sppdcj_results_file_adjacencies_name !concat [*sppdcj_results_prefix, *data_ago_adjacencies_ext]
             files: 
                - &sppdcj_slurm_results_file !join [*sppdcj_results_dir, *sppdcj_slurm_results_file_name]
             other:

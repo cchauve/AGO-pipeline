@@ -26,11 +26,12 @@
                field: &decostar_slurm_array_results_field 1
                var:   &decostar_slurm_array_results_var   'SPECIES'
                name:  &decostar_slurm_array_results_name  !concat ['${', *decostar_slurm_array_results_var, '}']
+               ext:   &decostar_slurm_array_results_ext   !ref [*data_adjacencies_ext]
          results:
             dirs:
                - &decostar_results_dir !join [*dir_results, *decostar_name]
             names:
-               - &decostar_slurm_results_species_adjacencies_name !concat [*decostar_slurm_array_results_name, '_adjacencies.txt']
+               - &decostar_slurm_results_species_adjacencies_name !concat [*decostar_slurm_array_results_name, *decostar_slurm_array_results_ext]
             files:
                - &decostar_slurm_results_species_adjacencies !join [*decostar_results_dir, *decostar_slurm_results_species_adjacencies_name]
             other:

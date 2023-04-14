@@ -21,7 +21,7 @@
                field: &macse_slurm_array_results_field 1
                var:   &macse_slurm_array_results_var   'FAM_ID'
                name:  &macse_slurm_array_results_name  !concat ['${', *macse_slurm_array_results_var, '}']
-               ext:   &macse_slurm_array_results_ext   !ref [*data_alignments_NT_ext]
+               ext:   &macse_slurm_array_results_ext   !ref [*data_alignments_ext]
          results:
             dirs:
                - &macse_results_dir  !join [*dir_results, *macse_name]

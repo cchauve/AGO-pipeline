@@ -33,14 +33,18 @@ data:
       path: &data_alignments_path        # REQUIRED for tool.GeneRax and tool.IQ-TREE: path to MSA file
       NT_ext: &data_alignments_NT_ext    # REQUIRED for tool.MACSE, suffixes for nucleotides alignments files (ex: '_NT.fasta')
       AA_ext: &data_alignments_AA_ext    # REQUIRED for tool.MACSE, suffixes for amino-acids alignments files (ex: '_AA.fasta')
+      ext:    &data_alignments_ext       # REQUIRED for tool.MACSE, chosen suffix (!ref [*data_alignments_NT_ext] or !ref [*data_alignments_AA_ext]
    gene_trees:
       path: &data_gene_trees_path        # REQUIRED for tool.IQ-TREE and tool.ALE: path to gene trees file
    reconciliations:
       path:  &data_reconciliations_path  # REQUIRED for tool.GeneRax, tool.ALE and tool.DeCoSTAR: path to reconciled gene trees file
       ext:   &data_reconciliations_ext   # REQUIRED for tool.GeneRax, tool.ALE and tool.DeCoSTAR: extension to reconciled gene trees files (ex: '.recphyloxml')
    adjacencies:
-      path:  &data_adjacencies_path      # REQUIRED for tool.DCoSTAR, tool.SPPDCJ_ILP and tool.SPPDCJ: path to adjacencies file
-      path:  &data_ago_adjacencies_path  # REQUIRED for tool.DCoSTAR, tool.SPPDCJ_ILP and tool.SPPDCJ: path to reconstructed extant and ancestral adjacencies file
+      path:  &data_adjacencies_path      # REQUIRED for tool.DeCoSTAR, tool.SPPDCJ_ILP and tool.SPPDCJ: path to adjacencies file
+      ext:   &data_adjacencies_ext       # REQUIRED for tool.DeCoSTAR, tool.SPPDCJ_ILP and tool.SPPDCJ: extension to adjacencies files (ex: '_adjacencies.txt')
+   ago_adjacencies:
+      path:  &data_ago_adjacencies_path  # REQUIRED for tool.SPPDCJ_ILP and tool.SPPDCJ: path to reconstructed ancestral adjacencies file
+      ext:   &data_ago_adjacencies_ext   # REQUIRED for tool.SPPDCJ_ILP and tool.SPPDCJ: extension to adjacencies files (ex: !ref [*data_adjacencies_ext])
 # External tools options
 # DO EDIT SECTIONS FOR USED TOOLS, DELETE UNUSED TOOLS SECTIONS
 tools:
@@ -51,7 +55,6 @@ tools:
    # IQ-TREE
    - &iqtree_exec                    # REQUIRED: IQ-TREE command-line                              (ex: 'iqtree')
    - &iqtree_options                 # REQUIRED: IQ-TREE command-line options                      (ex: '-m MFP -bb 1000 -wbtl')
-   - &iqtree_ufboot_ext              # REQUIRED: IQ-TREE gene trees file extension                 (ex: '.ufboot')
    - &iqtree_modules                 # REQUIRED: modules needed to run IQ-TREE                     (ex: 'iq-tree/2.0.7', use '' if non is needed)
    - &iqtree_slurm_options           # REQUIRED: IQ-TREE slurm options                             (ex: '--mem=1G --time=00:20:00')
    # ALE
@@ -59,7 +62,6 @@ tools:
    - &ale_object_ext                 # REQUIRED: ALE object file extension                         (ex: '.ale')
    - &ale_uml_exec                   # REQUIRED: ALEml_undated command-line                        (ex: !join [*run_dir_bin,'ALE/bin/ALEml_undated']
    - &ale_uml_options                # REQUIRED: ALEml_undated command-line options                (ex: !concat ['sample=1 separators="', *species_gene_name_separator, '"'])
-   - &ale_uml_rec_ext                # REQUIRED: ALEml_undated reconciliation file extension       (ex: '.uml_rec')
    - &ale_modules                    # REQUIRED: modules needed to run ALE                         (ex: '', no module needed)
    - &ale_slurm_options              # REQUIRED: ALE slurm options                                 (ex: '--mem=2G --time=02:00:00')
    # GeneRax

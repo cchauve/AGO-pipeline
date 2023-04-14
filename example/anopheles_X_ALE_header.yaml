@@ -36,20 +36,23 @@ data:
       path: &data_alignments_path        '/scratch/chauvec/SPP/anopheles_X_GeneRax/data/alignments_X.txt'
       NT_ext: &data_alignments_NT_ext    '_NT.fasta'
       AA_ext: &data_alignments_AA_ext    '_AA.fasta'
+      ext:    &data_alignments_ext       !ref [*data_alignments_NT_ext]
    gene_trees:
       path: &data_gene_trees_path        !join [*dir_data, 'gene_trees_X.txt']
    reconciliations:
       path:  &data_reconciliations_path  !join [*dir_data, 'reconciliations_X.txt']
       ext:   &data_reconciliations_ext   '.recphyloxml'
    adjacencies:
-      path:  &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
-      path:  &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
+      path: &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
+      ext:  &data_adjacencies_ext       '_adjacencies.txt'
+   ago_adjacencies:
+      path: &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
+      ext:  &data_ago_adjacencies_ext   !ref [*data_adjacencies_ext]
 # External tools options
 tools:
    # IQ-TREE
    - &iqtree_exec                    'iqtree'
    - &iqtree_options                 '-m MFP -bb 1000 -wbtl'
-   - &iqtree_ufboot_ext              '.ufboot'
    - &iqtree_modules                 'iq-tree/2.0.7'
    - &iqtree_slurm_options           '--mem=1G --time=00:20:00'
    # ALE
@@ -57,7 +60,6 @@ tools:
    - &ale_object_ext                 '.ale'
    - &ale_uml_exec                   !join [*run_dir_bin,'ALE/bin/ALEml_undated']
    - &ale_uml_options                !concat ['sample=1 separators="', *species_gene_name_separator, '"']
-   - &ale_uml_rec_ext                '.uml_rec'
    - &ale_modules                    ''
    - &ale_slurm_options              '--mem=2G --time=02:00:00'
    # DeCoSTAR
@@ -70,7 +72,7 @@ tools:
    - &decostar_abreak_cost           '1'
    - &decostar_loss_aware            'false'
    - &decostar_loss_iteration        '2'
-   - &decostar_c1_advantage          '0.5'
+   - &decostar_c1_advantage          '1'
    - &decostar_all_pairs             'false'
    - &decostar_always_again          'true'
    - &decostar_absence_penalty       '-1'

@@ -36,12 +36,16 @@ data:
       path: &data_alignments_path        !join [*dir_data, 'alignments_X.txt']
       NT_ext: &data_alignments_NT_ext    '_NT.fasta'
       AA_ext: &data_alignments_AA_ext    '_AA.fasta'
+      ext:    &data_alignments_ext       !ref [*data_alignments_NT_ext]
    reconciliations:
       path:  &data_reconciliations_path  !join [*dir_data, 'reconciliations_X.txt']
       ext:   &data_reconciliations_ext   '.recphyloxml'
    adjacencies:
-      path:  &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
-      path:  &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
+      path: &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
+      ext:  &data_adjacencies_ext       '_adjacencies.txt'
+   ago_adjacencies:
+      path: &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
+      ext:  &data_ago_adjacencies_ext   !ref [*data_adjacencies_ext]
 # External tools options
 tools:
    # MACSE
@@ -64,7 +68,7 @@ tools:
    - &decostar_abreak_cost           '1'
    - &decostar_loss_aware            'false'
    - &decostar_loss_iteration        '2'
-   - &decostar_c1_advantage          '0.5'
+   - &decostar_c1_advantage          '1'
    - &decostar_all_pairs             'false'
    - &decostar_always_again          'true'
    - &decostar_absence_penalty       '-1'

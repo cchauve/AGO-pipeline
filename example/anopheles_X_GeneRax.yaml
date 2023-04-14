@@ -36,12 +36,16 @@ data:
       path: &data_alignments_path        !join [*dir_data, 'alignments_X.txt']
       NT_ext: &data_alignments_NT_ext    '_NT.fasta'
       AA_ext: &data_alignments_AA_ext    '_AA.fasta'
+      ext:    &data_alignments_ext       !ref [*data_alignments_NT_ext]
    reconciliations:
       path:  &data_reconciliations_path  !join [*dir_data, 'reconciliations_X.txt']
       ext:   &data_reconciliations_ext   '.recphyloxml'
    adjacencies:
-      path:  &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
-      path:  &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
+      path: &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
+      ext:  &data_adjacencies_ext       '_adjacencies.txt'
+   ago_adjacencies:
+      path: &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
+      ext:  &data_ago_adjacencies_ext   !ref [*data_adjacencies_ext]
 # External tools options
 tools:
    # MACSE
@@ -64,7 +68,7 @@ tools:
    - &decostar_abreak_cost           '1'
    - &decostar_loss_aware            'false'
    - &decostar_loss_iteration        '2'
-   - &decostar_c1_advantage          '0.5'
+   - &decostar_c1_advantage          '1'
    - &decostar_all_pairs             'false'
    - &decostar_always_again          'true'
    - &decostar_absence_penalty       '-1'
@@ -129,7 +133,7 @@ tools:
                field: &macse_slurm_array_results_field 1
                var:   &macse_slurm_array_results_var   'FAM_ID'
                name:  &macse_slurm_array_results_name  !concat ['${', *macse_slurm_array_results_var, '}']
-               ext:   &macse_slurm_array_results_ext   !ref [*data_alignments_NT_ext]
+               ext:   &macse_slurm_array_results_ext   !ref [*data_alignments_ext]
          results:
             dirs:
                - &macse_results_dir  !join [*dir_results, *macse_name]
@@ -239,11 +243,12 @@ tools:
                field: &decostar_slurm_array_results_field 1
                var:   &decostar_slurm_array_results_var   'SPECIES'
                name:  &decostar_slurm_array_results_name  !concat ['${', *decostar_slurm_array_results_var, '}']
+               ext:   &decostar_slurm_array_results_ext   !ref [*data_adjacencies_ext]
          results:
             dirs:
                - &decostar_results_dir !join [*dir_results, *decostar_name]
             names:
-               - &decostar_slurm_results_species_adjacencies_name !concat [*decostar_slurm_array_results_name, '_adjacencies.txt']
+               - &decostar_slurm_results_species_adjacencies_name !concat [*decostar_slurm_array_results_name, *decostar_slurm_array_results_ext]
             files:
                - &decostar_slurm_results_species_adjacencies !join [*decostar_results_dir, *decostar_slurm_results_species_adjacencies_name]
             other:
@@ -406,15 +411,16 @@ tools:
                file:  &sppdcj_slurm_array_results_file  !ref [*data_species_path]
                field: &sppdcj_slurm_array_results_field 1
                var:   &sppdcj_slurm_array_results_var   'SPECIES'
-               name:   &sppdcj_slurm_array_results_name !concat ['${', *sppdcj_slurm_array_results_var, '}']
+               name:  &sppdcj_slurm_array_results_name !concat ['${', *sppdcj_slurm_array_results_var, '}']
+               ext:   &sppdcj_slurm_array_results_ext  !ref [*data_ago_adjacencies_ext]
          results:
             dirs:
                - &sppdcj_results_dir  !join [*dir_results, *sppdcj_name]
             names: 
-               - &sppdcj_slurm_results_file_name       !concat [*sppdcj_slurm_array_results_name, '_adjacencies.txt']
+               - &sppdcj_slurm_results_file_name       !concat [*sppdcj_slurm_array_results_name, *sppdcj_slurm_array_results_ext]
                - &sppdcj_results_file_sol_name         !concat [*sppdcj_results_prefix, '.sol']
                - &sppdcj_results_file_log_name         !concat [*sppdcj_results_prefix, '.log']
-               - &sppdcj_results_file_adjacencies_name !concat [*sppdcj_results_prefix, '_adjacencies.txt']
+               - &sppdcj_results_file_adjacencies_name !concat [*sppdcj_results_prefix, *data_ago_adjacencies_ext]
             files: 
                - &sppdcj_slurm_results_file !join [*sppdcj_results_dir, *sppdcj_slurm_results_file_name]
             other:

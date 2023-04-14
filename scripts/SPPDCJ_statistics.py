@@ -38,7 +38,7 @@ def write_statistics(statistics, out_statistics_file):
         for species,stats in statistics.items():
             stats_str = ':'.join([str(round(stats[k],2)) for k in ['nb1','weight1','nb2','weight2']])
             out_file.write(f'\n{species}\t{stats_str}')
-    
+        out_file.write('\n')
 
 def main():
     in_data_adjacencies_file = sys.argv[1]

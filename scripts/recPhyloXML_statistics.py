@@ -163,6 +163,7 @@ def write_statistics_species(
             out_stats_file.write(
                 f'\n{_stats_str(stats, species, sep=sep1)}'
             )
+        out_stats_file.write('\n')
 
 def write_statistics_families(
         in_statistics_families,

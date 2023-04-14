@@ -21,12 +21,12 @@
                field: &iqtree_slurm_array_results_field 1
                var:   &iqtree_slurm_array_results_var   'FAM_ID'
                name:  &iqtree_slurm_array_results_name  !concat ['${', *iqtree_slurm_array_results_var, '}']
-               ext:   &iqtree_slurm_array_results_ext   !ref [*iqtree_ufboot_ext]
+               ext:   &iqtree_slurm_array_results_ext   '.ufboot'
          results:
             dirs:
                - &iqtree_results_prefix !join [*dir_results, *iqtree_name, *iqtree_slurm_array_results_name]
             files:
-               - &iqtree_slurm_results_file_ufboot !concat [*iqtree_results_prefix, *iqtree_ufboot_ext]
+               - &iqtree_slurm_results_file_ufboot !concat [*iqtree_results_prefix, *iqtree_slurm_array_results_ext]
          cmd:
             - !concat [*iqtree_exec, ' \']
             - !concat ['   -s ',*iqtree_slurm_array_input_name,' \']
