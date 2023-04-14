@@ -320,24 +320,54 @@ AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml init
 Submitted batch job 65083109
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check DeCoSTAR
+        ERRORS: 0
+        LOG:    /scratch/chauvec/SPP/anopheles_X_ecceTERA/log/DeCoSTAR.log
+        OUTPUT: /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_X.txt
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml stats DeCoSTAR
         /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv
         /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
 AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv; \
 	      grep -P ':0.5\t' /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv | sort
+#species:nb_genes_in_adj:min_weight     nb_genes_in_adj:nb_adjacencies:nb_ext_in_conflict:nb_free_ext
+AnophelesalbimanusSTECLA:489:0.5        489:488:0:2
+AnophelesatroparvusEBRO:503:0.5 503:502:0:2
+AnophelesfunestusFUMOZ:472:0.5  472:471:0:2
+AnophelesgambiaePEST:471:0.5    471:470:0:2
+node0:472:0.5   453:422:5:105
+node1:498:0.5   444:356:5:289
+node2:483:0.5   329:224:0:518
 ```
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml slurm SPPDCJ_ILP
+        /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
 AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
-Submitted batch job 
+Submitted batch job 65083739
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check SPPDCJ_ILP
+        ERRORS: 0
+        LOG:    /scratch/chauvec/SPP/anopheles_X_ecceTERA/log/SPPDCJ_ILP.log
+        OUTPUT: No output file is created
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml slurm SPPDCJ
+        /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ.sh
 AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ.sh
-Submitted batch job 
+Submitted batch job 65084100
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check SPPDCJ
+        ERRORS: 0
+        LOG:    /scratch/chauvec/SPP/anopheles_X_ecceTERA/log/SPPDCJ.log
+        OUTPUT: /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt
+AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml stats SPPDCJ
+        /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/SPPDCJ/SPPDCJ_species.csv
+AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/SPPDCJ/SPPDCJ_species.csv
+#species        number of adjacencies:total weight:kept adjacencies:kept weight
+node2   225:222.61:224:222.26
+node1   369:356.18:351:347.5
+AnophelesalbimanusSTECLA        488:488.0:488:488.0
+node0   424:418.81:418:415.99
+AnophelesatroparvusEBRO 502:502.0:502:502.0
+AnophelesgambiaePEST    470:470.0:470:470.0
+AnophelesfunestusFUMOZ  471:471.0:471:471.0
 AGO-pipeline > python scripts/gene_orders_utils.py \
 	      /scratch/chauvec/SPP/anopheles_X_ecceTERA/results/DeCoSTAR/genes_reformatted.txt \
 	      /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt \
