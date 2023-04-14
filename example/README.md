@@ -314,9 +314,9 @@ AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml init
 ```
 
 ```
-(AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml slurm DeCoSTAR
+AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml slurm DeCoSTAR
         /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/DeCoSTAR/DeCoSTAR.sh
-(AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/DeCoSTAR/DeCoSTAR.sh
+AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/DeCoSTAR/DeCoSTAR.sh
 Submitted batch job 65083109
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check DeCoSTAR

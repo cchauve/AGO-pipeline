@@ -66,10 +66,20 @@ tools:
    - &decostar_already_reconciled    'true'
    - &decostar_dupli_cost            '0'
    - &decostar_loss_cost             '0'
+   - &decostar_again_cost            '2'
+   - &decostar_abreak_cost           '1'
+   - &decostar_loss_aware            'false'
+   - &decostar_loss_iteration        '2'
+   - &decostar_c1_advantage          '0.5'
+   - &decostar_all_pairs             'false'
+   - &decostar_always_again          'true'
+   - &decostar_absence_penalty       '-1'
    - &decostar_dated_species_tree    'true'
    - &decostar_rooted                'true'
-   - &decostar_nb_sample             '1000'
    - &decostar_boltzmann_temperature '0.1'
+   - &decostar_nb_sample             '1000'
+   - &decostar_write_newick          'true'
+   - &decostar_write_adjacency_trees 'false'
    - &decostar_stats_thresholds      "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0"
    - &decostar_modules               ''
    - &decostar_slurm_options         '--mem=4G --time=24:00:00'
@@ -271,21 +281,34 @@ tools:
                - &decostar_slurm_results_species_file     !join [*decostar_results_dir, 'species.txt']
          cmd:
             - !concat [*decostar_exec, ' \']
+            # Input files
             - !concat ['   species.file=', *data_species_tree_path, ' \']
             - !concat ['   adjacencies.file=', *decostar_input_file_adjacencies, ' \']
             - !concat ['   gene.distribution.file=', *decostar_input_file_trees, ' \']
+            # Output
             - !concat ['   output.dir=', *decostar_results_dir, ' \']
-            - '   write.newick=true \'
-            - '   write.adjacencies=true \'
-            - '   write.genes=true \'
+            - !concat ['   write.newick=', *decostar_write_newick, ' \']
+            - !concat ['   write.adjacency.trees=', *decostar_write_adjacency_trees, ' \']
+            # Model
             - !concat ['   already.reconciled=', *decostar_already_reconciled, ' \']
+            - !concat ['   rooted=', *decostar_rooted, ' \']
+            - !concat ['   nb.sample=', *decostar_nb_sample, ' \']
             - !concat ['   dupli.cost=', *decostar_dupli_cost, ' \']
             - !concat ['   loss.cost=', *decostar_loss_cost, ' \']
-            - !concat ['   rooted=', *decostar_rooted, ' \']
+            - !concat ['   AGain.cost=', *decostar_again_cost, ' \']
+            - !concat ['   ABreak.cost=', *decostar_abreak_cost, ' \']
+            - !concat ['   Loss.aware=', *decostar_loss_aware, ' \']
+            - !concat ['   Loss.iteration=', *decostar_loss_iteration, ' \']
+            - !concat ['   C1.Advantage=', *decostar_c1_advantage, ' \']
+            - !concat ['   all.pair.equivalence.class=', *decostar_all_pairs, ' \']
+            - !concat ['   always.AGain=', *decostar_always_again, ' \']
+            - !concat ['   absence.penalty=', *decostar_absence_penalty, ' \']
+            - !concat ['   all.pair.equivalence.class=', *decostar_all_pairs, ' \']
+            - !concat ['   boltzmann.temperature=', *decostar_boltzmann_temperature, ' \']
+            - '   write.adjacencies=true \'
+            - '   write.genes=true \'
             - '   use.boltzmann=true \'
             - '   char.sep="|" \'
-            - !concat ['   boltzmann.temperature=', *decostar_boltzmann_temperature, ' \']
-            - !concat ['   nb.sample=', *decostar_nb_sample, ' \']
             - '   with.transfer=false \'
             - '   verbose=2'
             - ' '

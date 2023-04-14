@@ -74,10 +74,20 @@ tools:
    - &decostar_already_reconciled    # REQUIRED: 'true' if ALE or GeneRax, 'false' if IQ-TREE only       
    - &decostar_dupli_cost            # REQUIRED: used only if *decostar_already_reconciled is true (ex: '2', DeCoSTAR default)
    - &decostar_loss_cost             # REQUIRED: used only if *decostar_already_reconciled is true (ex: '1', DeCoSTAR default)
+   - &decostar_again_cost            # REQUIRED: adjacency gain cost                               (ex: '2', DeCoSTAR default)
+   - &decostar_abreak_cost           # REQUIRED: adjacency break cost                              (ex: '1', DeCoSTAR default)
+   - &decostar_loss_aware            # REQUIRED: loss aware mode (true/false)                      (ex: 'false', DeCoSTAR default)
+   - &decostar_loss_iteration        # REQUIRED: number of iterations if loss aware mode is true   (ex: '2', DeCoSTAR default)
+   - &decostar_c1_advantage          # REQUIRED: proba to chose presence of adj at the root        (ex: '0.5', DeCoSTAR default)
+   - &decostar_all_pairs             # REQUIRED: consider all pairs of gene families               (ex: 'false', DeCoSTAR default)
+   - &decostar_always_again          # REQUIRED: always put a gain at the top of an adj tree       (ex: 'true', DeCoSTAR default)
+   - &decostar_absence_penalty       # REQUIRED: cost of creating extant adjacency                 (ex: '-1', DeCoSTAR default)
    - &decostar_dated_species_tree    # REQUIRED: 'true', 'false'
    - &decostar_rooted                # REQUIRED: 'true' if ALE or GeneRax, 'false' if IQ-TREE only
-   - &decostar_nb_sample             # REQUIRED: number of sampled adjacency forests per family    (ex: '1000')
-   - &decostar_boltzmann_temperature # REQUIRED: Boltzmann temperature for sampling                (ex: '0.1')
+   - &decostar_boltzmann_temperature # REQUIRED: Boltzmann temperature for sampling                (ex: '0.1', DeCoSTAR default)
+   - &decostar_nb_sample             # REQUIRED: number of sampled adjacency forests per family    (ex: '1000', DeCoSTAR default = 1)
+   - &decostar_write_newick          # REQUIRED: write rec/adj trees in Newick format              (ex: 'false', DeCoSTAR default)
+   - &decostar_write_adjacency_trees # REQUIRED: write adjacency trees                             (ex: 'false', DeCoSTAR default)
    - &decostar_stats_thresholds      # REQUIRED: weight thresholds for ancestral adjacencies stats (ex: "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0")
    - &decostar_modules               # REQUIRED: modules needed to run DeCoSTAR                    (ex: '')
    - &decostar_slurm_options         # REQUIRED: DeCoSTAR slurm options                            (ex: '--mem=4G --time=24:00:00')
