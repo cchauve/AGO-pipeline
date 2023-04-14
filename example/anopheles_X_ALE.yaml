@@ -175,17 +175,21 @@ tools:
             dirs:
                - &ale_results_dir !join [*dir_results, *ale_name]
             names:
-               - &ale_slurm_recphyloxml_file_name  !concat [*ale_slurm_array_results_name, *data_reconciliations_ext]
-               - &ale_slurm_object_file_name       !concat [*ale_slurm_array_input_name, *ale_object_ext]
-               - &ale_slurm_uml_rec_file_name      !concat [*ale_input_species_tree_name, '_', *ale_slurm_object_file_name, *ale_uml_rec_ext]
+               - &ale_slurm_recphyloxml_file_name   !concat [*ale_slurm_array_results_name, *data_reconciliations_ext]
+               - &ale_slurm_object_file_name        !concat [*ale_slurm_array_input_name, *ale_object_ext]
+               - &ale_slurm_uml_rec_file_prefix     !concat [*ale_input_species_tree_name, '_', *ale_slurm_object_file_name]
+               - &ale_slurm_uml_rec_file_name       !concat [*ale_slurm_uml_rec_file_prefix, *ale_uml_rec_ext]
+               - &ale_slurm_uml_rec_stree_file_name !concat [*ale_slurm_uml_rec_file_prefix, '.stree']
+               - &ale_slurm_uml_rec_recs_file_name  !concat [*ale_slurm_uml_rec_file_prefix, '.recs']
+               - &ale_slurm_uml_rec_xml_file_name   !concat [*ale_slurm_uml_rec_file_prefix, '.recs.xml']
             files:
                - &ale_slurm_results_file_ale_object_aux   !concat [*ale_slurm_array_input_path, *ale_object_ext]
                - &ale_slurm_results_file_ale_object       !join [*ale_results_dir, *ale_slurm_object_file_name]
                - &ale_result_file_recphyloxml             !join [*ale_results_dir, *ale_slurm_recphyloxml_file_name]
                - &ale_slurm_results_file_uml_rec          !join [*ale_results_dir, *ale_slurm_uml_rec_file_name]
-               - &ale_slurm_results_file_uml_rec_stree    !concat [*ale_slurm_results_file_uml_rec, '.stree']
-               - &ale_slurm_results_file_uml_rec_recs     !concat [*ale_slurm_results_file_uml_rec, '.recs']
-               - &ale_slurm_results_file_uml_rec_recs_xml !concat [*ale_slurm_results_file_uml_rec_recs, '.xml']
+               - &ale_slurm_results_file_uml_rec_stree    !join [*ale_results_dir, *ale_slurm_uml_rec_stree_file_name]
+               - &ale_slurm_results_file_uml_rec_recs     !join [*ale_results_dir, *ale_slurm_uml_rec_recs_file_name]
+               - &ale_slurm_results_file_uml_rec_recs_xml !join [*ale_results_dir, *ale_slurm_uml_rec_xml_file_name]
          cmd:
             - !concat ['cd ',*ale_results_dir]
             - ' '
@@ -406,7 +410,7 @@ tools:
                file:  &sppdcj_slurm_array_results_file  !ref [*data_species_path]
                field: &sppdcj_slurm_array_results_field 1
                var:   &sppdcj_slurm_array_results_var   'SPECIES'
-               var:   &sppdcj_slurm_array_results_name  !concat ['${', *sppdcj_slurm_array_results_var, '}']
+               name:   &sppdcj_slurm_array_results_name !concat ['${', *sppdcj_slurm_array_results_var, '}']
          results:
             dirs:
                - &sppdcj_results_dir  !join [*dir_results, *sppdcj_name]

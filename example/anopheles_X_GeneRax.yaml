@@ -382,7 +382,7 @@ tools:
                file:  &sppdcj_slurm_array_results_file  !ref [*data_species_path]
                field: &sppdcj_slurm_array_results_field 1
                var:   &sppdcj_slurm_array_results_var   'SPECIES'
-               var:   &sppdcj_slurm_array_results_name  !concat ['${', *sppdcj_slurm_array_results_var, '}']
+               name:   &sppdcj_slurm_array_results_name !concat ['${', *sppdcj_slurm_array_results_var, '}']
          results:
             dirs:
                - &sppdcj_results_dir  !join [*dir_results, *sppdcj_name]
