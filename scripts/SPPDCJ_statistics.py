@@ -34,7 +34,7 @@ def SPPDCJ_statistics(decostar_adjacencies, filtered_adjacencies):
 
 def write_statistics(statistics, out_statistics_file):
     with open(out_statistics_file,'w') as out_file:
-        out_file.write('#species\t<number of adjacencies>:<total weight>:<kept adjacencies>:<kept weight>')
+        out_file.write('#species\tnumber of adjacencies:total weight:kept adjacencies:kept weight')
         for species,stats in statistics.items():
             stats_str = ':'.join([str(round(stats[k],2)) for k in ['nb1','weight1','nb2','weight2']])
             out_file.write(f'\n{species}\t{stats_str}')

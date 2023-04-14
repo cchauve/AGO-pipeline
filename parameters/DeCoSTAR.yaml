@@ -47,13 +47,14 @@
             - '   write.newick=true \'
             - '   write.adjacencies=true \'
             - '   write.genes=true \'
-            - '   already.reconciled=true \'
+            - !concat ['   already.reconciled=', *decostar_already_reconciled, ' \']
+            - !concat ['   dupli.cost=', *decostar_dupli_cost, ' \']
+            - !concat ['   loss.cost=', *decostar_loss_cost, ' \']
+            - !concat ['   rooted=', *decostar_rooted, ' \']
             - '   use.boltzmann=true \'
             - '   char.sep="|" \'
             - !concat ['   boltzmann.temperature=', *decostar_boltzmann_temperature, ' \']
             - !concat ['   nb.sample=', *decostar_nb_sample, ' \']
-            - '   dated.species.tree=false \'
-            - '   rooted=true \'
             - '   with.transfer=false \'
             - '   verbose=2'
             - ' '
