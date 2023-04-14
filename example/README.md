@@ -1,7 +1,7 @@
 # Reconstructing Anopheles ancestral X chromosome gene orders
 
 ```
-Mon Apr 10 12:19:06 PDT 2023 - Tue Apr 11 21:12:14 PDT 2023
+Thu Apr 13 20:41:55 PDT 2023
 ```
 
 ## Data
@@ -24,14 +24,16 @@ from
 Then we created the pipeline parameters file:
 
 ```
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml create example/anopheles_X_GeneRax_header.yaml parameters MACSE GeneRax DeCoSTAR SPPDCJ
+AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml create \
+	     example/anopheles_X_GeneRax_header.yaml \
+	     parameters MACSE GeneRax DeCoSTAR SPPDCJ
         example/anopheles_X_GeneRax.yaml
 ```
 
 The next step was to initialize the pipeline.
 
 ```
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml init
+AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml init
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /scratch/chauvec/SPP/anopheles_X_GeneRax/data/species_tree_4.newick.
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /scratch/chauvec/SPP/anopheles_X_GeneRax/data/species_4.txt.
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_GeneRax/data/families_X_4.txt.
@@ -42,12 +44,12 @@ The next step was to initialize the pipeline.
         /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_ago_X.txt will be computed.
 ```
 
-Then we ran in sequence the pipeline tools. First MACSE
+Then we ran in sequence the pipeline tools. First MACSE.
 
 ```
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml slurm MACSE
+AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml slurm MACSE
         /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/MACSE/MACSE.sh
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/MACSE/MACSE.sh
+AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/MACSE/MACSE.sh
 Submitted batch job 65060860
 	  	    ... wait for the slurm processes to complete ...
 (AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check MACSE
@@ -69,10 +71,10 @@ Submitted batch job 65065308
         ERRORS: 0
         LOG:    /scratch/chauvec/SPP/anopheles_X_GeneRax/log/GeneRax.log
         OUTPUT: /scratch/chauvec/SPP/anopheles_X_GeneRax/data/reconciliations_X.txt
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml stats GeneRax
+AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml stats GeneRax
         /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_species.csv
         /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_families.csv
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_species.csv
+AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_species.csv
 #species:genes:duplications:losses:transfers
 node2:492:41:0:0
 AnophelesgambiaePEST:471:6:30:0
@@ -101,14 +103,14 @@ redirecting the standard output and error output into specific files.
 (AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/DeCoSTAR/DeCoSTAR.sh \
 	      2> /scratch/chauvec/SPP/anopheles_X_GeneRax/log/DeCoSTAR/DeCoSTAR.err \
 	      1> /scratch/chauvec/SPP/anopheles_X_GeneRax/log/DeCoSTAR/DeCoSTAR.log
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check DeCoSTAR
+AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check DeCoSTAR
         ERRORS: 0
         LOG:    /scratch/chauvec/SPP/anopheles_X_GeneRax/log/DeCoSTAR.log
         OUTPUT: /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_X.txt
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml stats DeCoSTAR
+AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml stats DeCoSTAR
         /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv
         /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv; \
+AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv; \
 	      grep -P ':0.5\t' /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv | sort
 #species:nb_genes_in_adj:min_weight     nb_genes_in_adj:nb_adjacencies:nb_ext_in_conflict:nb_free_ext
 AnophelesalbimanusSTECLA:489:0.5        489:488:0:2
@@ -128,26 +130,26 @@ conflicting adjacencies and free extremities in the ancestral species.
 Finally, we cleard the conflict in ancestral adjacencies using spp_dcj.
 
 ```
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ_ILP
+AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ_ILP
         /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
+AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
 Submitted batch job 65067302
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ_ILP
+AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ_ILP
         ERRORS: 0
         LOG:    /scratch/chauvec/SPP/anopheles_X_GeneRax/log/SPPDCJ_ILP.log
         OUTPUT: No output file is created
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ
+AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ
         /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ/SPPDCJ.sh
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ/SPPDCJ.sh
+AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ/SPPDCJ.sh
 Submitted batch job 65069036
 	  	    ... wait for the slurm processes to complete ...
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ
+AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ
         ERRORS: 0
         LOG:    /scratch/chauvec/SPP/anopheles_X_GeneRax/log/SPPDCJ.log
         OUTPUT: /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_ago_X.txt
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml stats SPPDCJ
+AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml stats SPPDCJ
         /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/SPPDCJ/SPPDCJ_species.csv
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/SPPDCJ/SPPDCJ_species.csv
+AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/SPPDCJ/SPPDCJ_species.csv
 #species        number of adjacencies:total weight:kept adjacencies:kept weight
 node2   231:225.98:224:223.25
 node1   405:372.69:357:351.57
@@ -156,7 +158,7 @@ node0   462:437.18:416:409.72
 AnophelesatroparvusEBRO 502:502.0:502:502.0
 AnophelesgambiaePEST    470:470.0:470:470.0
 AnophelesfunestusFUMOZ  471:471.0:471:471.0
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python scripts/gene_orders_utils.py \
+AGO-pipeline > python scripts/gene_orders_utils.py \
 	      /scratch/chauvec/SPP/anopheles_X_GeneRax/results/DeCoSTAR/genes_reformatted.txt \
 	      /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_ago_X.txt \
 	      /scratch/chauvec/SPP/anopheles_X_GeneRax/results/SPPDCJ/ \
@@ -176,9 +178,11 @@ low.
 We reuse the alignments obtained with MACSE for the previous experiment.
 
 ```
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml create example/anopheles_X_ALE_header.yaml parameters IQ-TREE ALE DeCoSTAR SPPDCJ
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml create \
+	      example/anopheles_X_ALE_header.yaml \
+	      parameters IQ-TREE ALE DeCoSTAR SPPDCJ
         example/anopheles_X_ALE.yaml
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml init
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml init
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /scratch/chauvec/SPP/anopheles_X_ALE/data/species_tree_4.newick.
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /scratch/chauvec/SPP/anopheles_X_ALE/data/species_4.txt.
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_ALE/data/families_X_4.txt.
@@ -205,7 +209,7 @@ Submitted batch job 65075228
 (AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/ALE/ALE.sh
 Submitted batch job 65078272
 	  	    ... wait for the slurm processes to complete ...
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check ALE
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check ALE
         ERRORS: 64
         LOG:    /scratch/chauvec/SPP/anopheles_X_ALE/log/ALE.log
         OUTPUT: /scratch/chauvec/SPP/anopheles_X_ALE/data/reconciliations_X.txt
@@ -214,10 +218,10 @@ Submitted batch job 65078272
 There were 64 families involving transfers. They will be discarded from further steps.
 
 ```
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats ALE
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats ALE
         /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_species.csv
         /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_families.csv
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_species.csv
+AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_species.csv
 #species:genes:duplications:losses:transfers
 node2:388:1:0:0
 AnophelesgambiaePEST:394:6:0:0
@@ -230,18 +234,18 @@ node1:388:0:0:0
 Very few gene duplication/loss events are left in the non-discarded families.
 
 ```
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml slurm DeCoSTAR
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml slurm DeCoSTAR
         /scratch/chauvec/SPP/anopheles_X_ALE/aux/DeCoSTAR/DeCoSTAR.sh
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/DeCoSTAR/DeCoSTAR.sh
+AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/DeCoSTAR/DeCoSTAR.sh
 Submitted batch job 65079928
 	  	    ... wait for the slurm processes to complete ...
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check DeCoSTAR
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check DeCoSTAR
         ERRORS: 0
         LOG:    /scratch/chauvec/SPP/anopheles_X_ALE/log/DeCoSTAR.log
         OUTPUT: /scratch/chauvec/SPP/anopheles_X_ALE/data/adjacencies_X.txt
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats DeCoSTAR
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats DeCoSTAR
         /scratch/chauvec/SPP/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv; \
+AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv; \
 	      grep -P ':0.5\t' /scratch/chauvec/SPP/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv | sort
 #species:nb_genes_in_adj:min_weight     nb_genes_in_adj:nb_adjacencies:nb_ext_in_conflict:nb_free_ext
 AnophelesalbimanusSTECLA:392:0.5        392:391:0:2
@@ -254,27 +258,27 @@ node2:388:0.5   235:159:0:458
 ```
 
 ```
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml slurm SPPDCJ_ILP
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml slurm SPPDCJ_ILP
         /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
+AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
 Submitted batch job 65081116
 	  	    ... wait for the slurm processes to complete ...
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check SPPDCJ_ILP
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check SPPDCJ_ILP
         ERRORS: 0
         LOG:    /scratch/chauvec/SPP/anopheles_X_ALE/log/SPPDCJ_ILP.log
         OUTPUT: No output file is created
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml slurm SPPDCJ
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml slurm SPPDCJ
         /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ/SPPDCJ.sh
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ/SPPDCJ.sh
+AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ/SPPDCJ.sh
 Submitted batch job 
 	  	    ... wait for the slurm processes to complete ...
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check SPPDCJ
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check SPPDCJ
         ERRORS: 0
         LOG:    /scratch/chauvec/SPP/anopheles_X_ALE/log/SPPDCJ.log
         OUTPUT: /scratch/chauvec/SPP/anopheles_X_ALE/data/adjacencies_ago_X.txt
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats SPPDCJ
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats SPPDCJ
         /scratch/chauvec/SPP/anopheles_X_ALE/statistics/SPPDCJ/SPPDCJ_species.csv
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_ALE/statistics/SPPDCJ/SPPDCJ_species.csv
+AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_ALE/statistics/SPPDCJ/SPPDCJ_species.csv
 #species        number of adjacencies:total weight:kept adjacencies:kept weight
 node2   159:158.52:159:158.52
 node1   267:266.52:267:266.52
@@ -283,7 +287,7 @@ node0   339:337.52:338:337.52
 AnophelesatroparvusEBRO 389:389.0:389:389.0
 AnophelesgambiaePEST    393:393.0:393:393.0
 AnophelesfunestusFUMOZ  389:389.0:389:389.0
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python scripts/gene_orders_utils.py \
+AGO-pipeline > python scripts/gene_orders_utils.py \
 	      /scratch/chauvec/SPP/anopheles_X_ALE/results/DeCoSTAR/genes_reformatted.txt \
 	      /scratch/chauvec/SPP/anopheles_X_ALE/data/adjacencies_ago_X.txt \
 	      /scratch/chauvec/SPP/anopheles_X_ALE/results/SPPDCJ/ \
@@ -295,9 +299,10 @@ AnophelesfunestusFUMOZ  389:389.0:389:389.0
 We reuse the gene trees obtained with IQ-TREE for the previous experiment.
 
 ```
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml create example/anopheles_X_ecceTERA_header.yaml parameters DeCoSTAR SPPDCJ
+AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml create \
+	     example/anopheles_X_ecceTERA_header.yaml parameters DeCoSTAR SPPDCJ
         example/anopheles_X_ecceTERA.yaml
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml init
+AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml init
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/species_tree_4.newick.
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/species_4.txt.
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/families_X_4.txt.
@@ -314,26 +319,26 @@ We reuse the gene trees obtained with IQ-TREE for the previous experiment.
 (AGO_python3) [chauvec@cedar5.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/DeCoSTAR/DeCoSTAR.sh
 Submitted batch job 65083109
 	  	    ... wait for the slurm processes to complete ...
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check DeCoSTAR
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml stats DeCoSTAR
+AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check DeCoSTAR
+AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml stats DeCoSTAR
         /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv
         /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv; \
+AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv; \
 	      grep -P ':0.5\t' /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv | sort
 ```
 
 ```
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml slurm SPPDCJ_ILP
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
+AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml slurm SPPDCJ_ILP
+AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
 Submitted batch job 
 	  	    ... wait for the slurm processes to complete ...
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check SPPDCJ_ILP
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml slurm SPPDCJ
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ.sh
+AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check SPPDCJ_ILP
+AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml slurm SPPDCJ
+AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ.sh
 Submitted batch job 
 	  	    ... wait for the slurm processes to complete ...
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check SPPDCJ
-(AGO_python3) [chauvec@cedar1.cedar.computecanada.ca] AGO-pipeline > python scripts/gene_orders_utils.py \
+AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check SPPDCJ
+AGO-pipeline > python scripts/gene_orders_utils.py \
 	      /scratch/chauvec/SPP/anopheles_X_ecceTERA/results/DeCoSTAR/genes_reformatted.txt \
 	      /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt \
 	      /scratch/chauvec/SPP/anopheles_X_ecceTERA/results/SPPDCJ/ \
