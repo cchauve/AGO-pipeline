@@ -1,8 +1,5 @@
 # AGO, a Pipeline for Ancestral Gene Orders Reconstruction
 
-### Evan Cribbie, Daniel Doerr, Cedric Chauve.
-### Contact: cedric.chauve@sfu.ca
-
 ## Overview
 
 AGO is a tool aimed at creating a pipeline of existing bioinformatics
@@ -42,7 +39,7 @@ AGO has been developed using <a
 href="https://www.python.org/downloads/release/python-3810/">python
 version 3.8.10</a>. We recommend to run AGO within a python virtual
 environment (https://docs.python.org/3.8/library/venv.html) including
-the following python packages, that are required to run AGO:
+the following python packages, that are required:
 - <a href="https://pypi.org/project/ete3/3.1.2/">ete3, version 3.1.2</a>
 - <a href="https://matplotlib.org/3.7.1/">matplotlib, version 3.7.0</a>.
 - <a href="https://pypi.org/project/networkx/3.1/">networkx, version 3.1</a>.
@@ -82,6 +79,7 @@ described above:
 - Computing gene trees from MSAs using <a href="http://www.iqtree.org/">IQ-TREE</a> and reconciled gene trees from the gene trees using <a href="https://github.com/ssolo/ALE">ALE</a>.
 - Computing gene trees from MSAs using <a href="http://www.iqtree.org/">IQ-TREE</a> and reconciled gene trees using <a href="https://github.com/WandrilleD/DeCoSTAR">DeCoSTAR</a>.
 
-These experiments ar described in [example/README.md](./example/README.md).
+These experiments are described in [example/README.md](./example/README.md).
 
-
+### Contact
+cedric.chauve@sfu.ca
