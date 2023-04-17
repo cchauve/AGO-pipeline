@@ -6,10 +6,10 @@ run:
       # Root directory for parameters and tool-specific scripts
       - &run_dir_root    '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
       # VectorBase data
-      - &run_vectorbase_data    !join [*run_dir_root, 'data/VectorBase']
-      - &run_dir_scripts !join [*run_dir_root, 'scripts']
-      - &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
-      - &run_dir_bin     !join [*run_dir_root, 'bin']
+      - &run_vectorbase_data !join [*run_dir_root, 'data', 'VectorBase']
+      - &run_dir_scripts     !join [*run_dir_root, 'scripts']
+      - &run_dir_exp         !join [*run_dir_root, 'example, *run_name]
+      - &run_dir_bin         !join [*run_dir_root, 'bin']
 slurm:
    account: &slurm_account 'def-chauvec'
 dir:
@@ -33,7 +33,7 @@ data:
       path: &data_sequences_path         !join [*run_vectorbase_data, 'sequences_X_4.txt']
    # Computed data
    alignments:
-      path: &data_alignments_path        '/scratch/chauvec/SPP/anopheles_X_GeneRax/data/alignments_X.txt'
+      path: &data_alignments_path        !join [*run_dir_root, 'example', 'anopheles_X_GeneRax', 'data', 'alignments_X.txt']
       NT_ext: &data_alignments_NT_ext    '_NT.fasta'
       AA_ext: &data_alignments_AA_ext    '_AA.fasta'
       ext:    &data_alignments_ext       !ref [*data_alignments_NT_ext]

@@ -6,10 +6,10 @@ run:
       # Root directory for parameters and tool-specific scripts
       - &run_dir_root    '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
       # VectorBase data
-      - &run_vectorbase_data    !join [*run_dir_root, 'data/VectorBase']
-      - &run_dir_scripts !join [*run_dir_root, 'scripts']
-      - &run_dir_exp     !join ['/scratch/chauvec/SPP', *run_name]
-      - &run_dir_bin     !join [*run_dir_root, 'bin']
+      - &run_vectorbase_data !join [*run_dir_root, 'dat', 'VectorBase']
+      - &run_dir_scripts     !join [*run_dir_root, 'scripts']
+      - &run_dir_exp         !join ['/scratch/chauvec/SPP', *run_name]
+      - &run_dir_bin         !join [*run_dir_root, 'bin']
 slurm:
    account: &slurm_account 'def-chauvec'
 dir:
