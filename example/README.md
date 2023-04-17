@@ -57,22 +57,29 @@ corresponding HPC system or have been installed in the directory
 `/home/chauvec/projects/ctb-chauvec/AGO-pipeline/bin`): this would
 need to be updated to be reproduced on another system.
 
+Finally, all computations we ran within a python 3 virtual environment
+`AGO-pipeline` including all the required packages (see
+[README.md](../README.md) and intensive computations were ran using
+the `slurm` scheduling system.
+
 ## GeneRax-based pipeline
 
 We first create a parameters file for a pipeline that uses, in
-sequence, MACSE to compute alignments based on nucleotide sequences,
-GeneRax to compute reconciled gene tres from these alignments,
-DeCoSTAR to compute ancestral adjacencies, and spp_dcj to compute a
-set of conflict-free adjacencies defining ancestral gen orders.
+sequence, `MACSE` to compute MSAs based on nucleotide sequences,
+`GeneRax` to compute reconciled gene tres from these alignments,
+`DeCoSTAR` to compute ancestral adjacencies, and `spp_dcj` to compute a
+set of conflict-free adjacencies defining ancestral gene orders.
 
-To create this pipeline, we first created the pipeline-specific YAML file
-[Anopheles example parameters file header, GeneRax pipeline](example/anopheles_X_GeneRax_header.yaml)
-from
-[header template](parameters/header_template.yaml).
+To do so, we first create and edit a copy of [header
+template](../parameters/header_template.yaml) into the parameters
+header file [GeneRax pipeline
+header](anopheles_X_GeneRax_header.yaml).  We refer to the
+documentation of each tool for the specifics of the chosen parameters
+chosen for each tool.  Note that in this header file, we edit only the
+sections corresponding to the tools that will be used in the pipeline
+and delete the sections for unused tools (`IQ-TREE`, `ALE`).
 
-*TODO: explain pipeline choices*
-
-Then we created the pipeline parameters file:
+Then we create the pipeline parameters file:
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml create example/anopheles_X_GeneRax_header.yaml parameters MACSE GeneRax DeCoSTAR SPPDCJ
@@ -83,47 +90,47 @@ The next step was to initialize the pipeline.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml init
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /scratch/chauvec/SPP/anopheles_X_GeneRax/data/species_tree_4.newick.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /scratch/chauvec/SPP/anopheles_X_GeneRax/data/species_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_GeneRax/data/families_X_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_GeneRax/data/gene_orders_X_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_GeneRax/data/sequences_X_4.txt.
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/data/alignments_X.txt will be computed.
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/data/reconciliations_X.txt will be computed.
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_X.txt will be computed.
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_ago_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/species_tree_4.newick.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/species_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/families_X_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/gene_orders_X_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/sequences_X_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/alignments_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/reconciliations_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/adjacencies_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/adjacencies_ago_X.txt will be computed.
 ```
 
-Then we run in sequence the pipeline tools. First we run MACSE to
-compute a multiple sequence alignment for each family.
+Then we run in sequence the pipeline tools. First we run `MACSE` to
+compute an MSA for each family.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml slurm MACSE
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/MACSE/MACSE.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/MACSE/MACSE.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/aux/MACSE/MACSE.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/aux/MACSE/MACSE.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check MACSE
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_GeneRax/log/MACSE.log
-        OUTPUT: /scratch/chauvec/SPP/anopheles_X_GeneRax/data/alignments_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/log/MACSE.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/alignments_X.txt
 ```
 
-This shows that MACSE succeeded to compute an MSA for all gene
-families. The next step is GeneRax.
+This shows that `MACSE` succeeded to compute an MSA for all gene
+families. The next step is `GeneRax` to compute reconciled gene trees.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml slurm GeneRax
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/GeneRax/GeneRax.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/GeneRax/GeneRax.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/aux/GeneRax/GeneRax.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/aux/GeneRax/GeneRax.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check GeneRax
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_GeneRax/log/GeneRax.log
-        OUTPUT: /scratch/chauvec/SPP/anopheles_X_GeneRax/data/reconciliations_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/log/GeneRax.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/reconciliations_X.txt
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml stats GeneRax
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_species.csv
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_families.csv
-AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_species.csv
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_species.csv
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_families.csv
+AGO-pipeline > cat /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/statistics/GeneRax/GeneRax_species.csv
 #species:genes:duplications:losses:transfers
 node2:492:41:0:0
 AnophelesgambiaePEST:471:6:30:0
@@ -135,30 +142,30 @@ AnophelesalbimanusSTECLA:489:8:11:0
 ```
 
 Again, all expected output files are present and there is no error
-in running GeneRax.
+in running `GeneRax`.
   
-We can observe that the number of ancestral genes is slightly higher
-than the number of extant genes and oe can suspect the well-documented
-issue of the reconciliation algorithm having a tendancy to locate
-duplications higher in the species tree.
+We can observe from the statistics that the number of ancestral genes
+is slightly higher than the number of extant genes and one can suspect
+the well-documented issue of the reconciliation algorithm having a
+tendancy to locate duplications higher in the species tree.
   
 Next to illustrate the feature that the AGO pipeline tools can be ran
-either through slurm or locally, we ran DeCoSTAR as a bash script,
+either through `slurm` or a `bash` script, we run `DeCoSTAR` as a bash script,
 redirecting the standard output and error output into specific files.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml bash DeCoSTAR
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/DeCoSTAR/DeCoSTAR.sh
-AGO-pipeline > chmod 755 /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/DeCoSTAR/DeCoSTAR.sh
-AGO-pipeline > /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/DeCoSTAR/DeCoSTAR.sh 2> /scratch/chauvec/SPP/anopheles_X_GeneRax/log/DeCoSTAR/DeCoSTAR.err 1> /scratch/chauvec/SPP/anopheles_X_GeneRax/log/DeCoSTAR/DeCoSTAR.log
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/aux/DeCoSTAR/DeCoSTAR.sh
+AGO-pipeline > chmod 755 /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/aux/DeCoSTAR/DeCoSTAR.sh
+AGO-pipeline > /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/aux/DeCoSTAR/DeCoSTAR.sh 2> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/log/DeCoSTAR/DeCoSTAR.err 1> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/log/DeCoSTAR/DeCoSTAR.log
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check DeCoSTAR
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_GeneRax/log/DeCoSTAR.log
-        OUTPUT: /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/log/DeCoSTAR.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/adjacencies_X.txt
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml stats DeCoSTAR
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
-AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv; grep -P ':0.5\t' /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv | sort
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
+AGO-pipeline > head -1 /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv; grep -P ':0.5\t' /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/statistics/DeCoSTAR/DeCoSTAR.csv | sort
 #species:nb_genes_in_adj:min_weight     nb_genes_in_adj:nb_adjacencies:nb_ext_in_conflict:nb_free_ext
 AnophelesalbimanusSTECLA:489:0.5        489:488:0:2
 AnophelesatroparvusEBRO:503:0.5 503:502:0:2
@@ -169,33 +176,39 @@ node1:529:0.5   462:368:11:333
 node2:492:0.5   331:224:0:536
 ```
 
-We can observe that DeCoSTAR ran with no problem. But the statistics on
-the resulting ancestral adjacencies show that we can expect highly
+We can observe that `DeCoSTAR` runs with no error. But the statistics
+on the resulting ancestral adjacencies show that we can expect highly
 fragmented ancestral gene orders, as there is a significant level of
-conflicting adjacencies and free extremities in the ancestral species.
+free gene extremities in the ancestral gene adjacencies. The level of
+conflict in the ancestral gene adjacencies is howver very low.
   
-Finally, we clear the conflict in ancestral adjacencies using spp_dcj.
+Finally, we clear the conflict in ancestral adjacencies using
+`spp_dcj`. This requires to first compute the Mixed Integer Linear
+Program (MILP) and then to solve it using `gurobi`.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ_ILP
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ_ILP
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_GeneRax/log/SPPDCJ_ILP.log
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/log/SPPDCJ_ILP.log
         OUTPUT: No output file is created
+```
+We solve the MILP.
+```
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ/SPPDCJ.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_GeneRax/aux/SPPDCJ/SPPDCJ.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/aux/SPPDCJ/SPPDCJ.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/aux/SPPDCJ/SPPDCJ.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_GeneRax/log/SPPDCJ.log
-        OUTPUT: /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_ago_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/log/SPPDCJ.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/adjacencies_ago_X.txt
 AGO-pipeline > python src/AGO.py example/anopheles_X_GeneRax.yaml stats SPPDCJ
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/SPPDCJ/SPPDCJ_species.csv
-AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_GeneRax/statistics/SPPDCJ/SPPDCJ_species.csv
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/statistics/SPPDCJ/SPPDCJ_species.csv
+AGO-pipeline > cat /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/statistics/SPPDCJ/SPPDCJ_species.csv
 #species        number of adjacencies:total weight:kept adjacencies:kept weight
 node2   231:225.74:224:223.24
 node1   404:372.4:357:351.14
@@ -204,62 +217,94 @@ node0   460:436.96:416:409.12
 AnophelesatroparvusEBRO 502:502.0:502:502.0
 AnophelesgambiaePEST    470:470.0:470:470.0
 AnophelesfunestusFUMOZ  471:471.0:471:471.0
-AGO-pipeline > python scripts/gene_orders_utils.py /scratch/chauvec/SPP/anopheles_X_GeneRax/results/DeCoSTAR/genes_reformatted.txt /scratch/chauvec/SPP/anopheles_X_GeneRax/data/adjacencies_ago_X.txt /scratch/chauvec/SPP/anopheles_X_GeneRax/results/SPPDCJ/ /scratch/chauvec/SPP/anopheles_X_GeneRax/data/gene_orders_ago_X.txt
+```
+
+The `spp_dcj` statistics show that, as expected, very few adjacencies
+need to be discarded to clear all conflicts in ancestral
+species `node2`, unlike in `node0` and `node1`, but in both cases the
+weight of the discarded adjacencies is quite low.
+
+
+Last we generate from the selected ancestral adjacencies FASTA-like
+format files describing the ancestral gene orders.
+
+```
+AGO-pipeline > python scripts/gene_orders_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/results/DeCoSTAR/genes_reformatted.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/adjacencies_ago_X.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/results/SPPDCJ/ /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/gene_orders_ago_X.txt
 ```
 
 One can look at the gene order files (whose paths are given in
-`/scratch/chauvec/SPP/anopheles_X_GeneRax/data/gene_orders_ago_X.txt`)
-to analyze the resulting gene orders.  The spp_dcj statistics show
-that actually very few adjacencies need to be discarded to clear all
-conflicts in ancestral species`node2`, unlike in `node0` and `node1`,
-but in both cases the weight of the discarded adjacencies is quite
-low.
+`./anopheles_X_GeneRax/data/gene_orders_ago_X.txt`)
+to analyze the resulting gene orders.  
 
 ## ALE-based pipeline
 
-We reuse the alignments obtained with MACSE for the previous experiment.
+In this second experiment, we do not use `GeneRax` to compute
+reconciled gene trees.  We reuse the alignments obtained with `MACSE`
+in the previous experiment, then run `IQ-TREE` in fast bootstrap mode
+to obtain a sample of 1,000 gene trees for each gene family, and
+compute reconciled gene trees from these sampled gene trees using
+`ALE`. We use the evolution model of `ALE` that allows lateral gene
+transfers, to account for an implementation issue in `ALEml_undated`
+when the parameter `tau=0` is set (see [Manual](../doc/manual.md));
+however, we filter out all gene families for which the reconciled gene
+tree includes a lateral gene transfer.
+
+Similarly to the previous experiment, we first edit a parameters file
+header ([ALE pipeline header](anopheles_X_ALE_header.yaml), writing
+the parameters for the tools `IQ-TREE` (available as a module in our
+HPC system), `ALE` (installed locally), `DeCoSTAR` and `spp_dcj`
+(similar to the previous experiment) and writing an explicit path to
+access the `MACSE` MSAs generated in the previous experiment in order
+to not recompute them.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml create example/anopheles_X_ALE_header.yaml parameters IQ-TREE ALE DeCoSTAR SPPDCJ
         example/anopheles_X_ALE.yaml
-AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml init
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/species_tree_4.newick.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/species_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/families_X_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/gene_orders_X_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/sequences_X_4.txt.
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/data/alignments_X.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/alignments_X.txt.
-        /scratch/chauvec/SPP/anopheles_X_ALE/data/gene_trees_X.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/gene_trees_X.txt.
-        /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_X.txt will be computed.
-        /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt will be computed.
 ```
+Next we initialize he pipeline, and we can observe that indeed the MSA files will not be recomputed.
+```
+AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml init
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/species_tree_4.newick.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/species_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/families_X_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_orders_X_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/sequences_X_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/alignments_X.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/alignments_X.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/reconciliations_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/adjacencies_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/adjacencies_ago_X.txt will be computed.
+```
+Next we run `IQ-TREE` through `slurm`.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml slurm IQ-TREE
-        /scratch/chauvec/SPP/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check IQ-TREE
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_ALE/log/IQ-TREE.log
-        OUTPUT: /scratch/chauvec/SPP/anopheles_X_ALE/data/gene_trees_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/IQ-TREE.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml slurm ALE
-        /scratch/chauvec/SPP/anopheles_X_ALE/aux/ALE/ALE.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/ALE/ALE.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/ALE/ALE.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/ALE/ALE.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check ALE
         ERRORS: 66
-        LOG:    /scratch/chauvec/SPP/anopheles_X_ALE/log/ALE.log
-        OUTPUT: /scratch/chauvec/SPP/anopheles_X_ALE/data/reconciliations_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/ALE.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/reconciliations_X.txt
 ```
 
-There are 66 families involving transfers. They will be discarded from further steps.
+There are 66 families involving lateral gene transfers. They will be
+discarded from further steps without the need to do anything, as this
+is handled automatically by the AGO pipeline.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats ALE
-        /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_species.csv
-        /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_families.csv
-AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_ALE/statistics/ALE/ALE_species.csv
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/statistics/ALE/ALE_species.csv
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/statistics/ALE/ALE_families.csv
+AGO-pipeline > cat /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/statistics/ALE/ALE_species.csv
 #species:genes:duplications:losses:transfers
 node2:385:0:0:0
 AnophelesgambiaePEST:391:6:0:0
@@ -270,20 +315,27 @@ node1:385:0:0:0
 AnophelesalbimanusSTECLA:389:4:0:0
 ```
 
-Very few gene duplication/loss events are left in the non-discarded gene families.
+We can observe that very few gene duplication/loss events are left in
+the non-discarded gene families, showing that on this dataset, `ALE`
+explained most of the discrepancy between the gene trees and the
+species tree using at least one lateral gene transfer. The lower
+number of gene families results from discarding the 66 ones whose
+reconciled gene tree included a lateral gene transfer.
+
+Next we run `DeCoSTAR` through `slurm`.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml slurm DeCoSTAR
-        /scratch/chauvec/SPP/anopheles_X_ALE/aux/DeCoSTAR/DeCoSTAR.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/DeCoSTAR/DeCoSTAR.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/DeCoSTAR/DeCoSTAR.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/DeCoSTAR/DeCoSTAR.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check DeCoSTAR
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_ALE/log/DeCoSTAR.log
-        OUTPUT: /scratch/chauvec/SPP/anopheles_X_ALE/data/adjacencies_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/DeCoSTAR.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/adjacencies_X.txt
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats DeCoSTAR
-        /scratch/chauvec/SPP/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv
-AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv; grep -P ':0.5\t' /scratch/chauvec/SPP/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv | sort
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv
+AGO-pipeline > head -1 /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv; grep -P ':0.5\t' /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/statistics/DeCoSTAR/DeCoSTAR.csv | sort
 #species:nb_genes_in_adj:min_weight     nb_genes_in_adj:nb_adjacencies:nb_ext_in_conflict:nb_free_ext
 AnophelesalbimanusSTECLA:389:0.5        389:388:0:2
 AnophelesatroparvusEBRO:387:0.5 387:386:0:2
@@ -294,28 +346,34 @@ node1:385:0.5   337:264:0:242
 node2:385:0.5   233:157:0:456
 ```
 
-Comment on level of conflict.
+As in the previous experiment, we can observe a low level of conflict
+and a high number of free gene extremities, which will result in
+highly fragmented ancestral gene orders.
+
+Last, we clean conflicts in the `DeCoSTAR` ancestral gene adjacencies
+using `spp_dcj` as in the previous experiment, and create FASTA-like
+ancestral gene orders files.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml slurm SPPDCJ_ILP
-        /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check SPPDCJ_ILP
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_ALE/log/SPPDCJ_ILP.log
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/SPPDCJ_ILP.log
         OUTPUT: No output file is created
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml slurm SPPDCJ
-        /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ/SPPDCJ.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ALE/aux/SPPDCJ/SPPDCJ.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/SPPDCJ/SPPDCJ.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/SPPDCJ/SPPDCJ.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml check SPPDCJ
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_ALE/log/SPPDCJ.log
-        OUTPUT: /scratch/chauvec/SPP/anopheles_X_ALE/data/adjacencies_ago_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/SPPDCJ.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/adjacencies_ago_X.txt
 AGO-pipeline > python src/AGO.py example/anopheles_X_ALE.yaml stats SPPDCJ
-        /scratch/chauvec/SPP/anopheles_X_ALE/statistics/SPPDCJ/SPPDCJ_species.csv
-AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_ALE/statistics/SPPDCJ/SPPDCJ_species.csv
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/statistics/SPPDCJ/SPPDCJ_species.csv
+AGO-pipeline > cat /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/statistics/SPPDCJ/SPPDCJ_species.csv
 #species        number of adjacencies:total weight:kept adjacencies:kept weight
 node2   157:156.51:157:156.51
 node1   264:263.51:264:263.51
@@ -324,42 +382,47 @@ node0   335:334.51:335:334.51
 AnophelesatroparvusEBRO 386:386.0:386:386.0
 AnophelesgambiaePEST    390:390.0:390:390.0
 AnophelesfunestusFUMOZ  386:386.0:386:386.0
-AGO-pipeline > python scripts/gene_orders_utils.py /scratch/chauvec/SPP/anopheles_X_ALE/results/DeCoSTAR/genes_reformatted.txt /scratch/chauvec/SPP/anopheles_X_ALE/data/adjacencies_ago_X.txt /scratch/chauvec/SPP/anopheles_X_ALE/results/SPPDCJ/ /scratch/chauvec/SPP/anopheles_X_ALE/data/gene_orders_ago_X.txt
 ```
-
-Comment on final ancestral gene orders.
+```
+AGO-pipeline > python scripts/gene_orders_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/results/DeCoSTAR/genes_reformatted.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/adjacencies_ago_X.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/results/SPPDCJ/ /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_orders_ago_X.txt
+```
 
 ## ecceTERA-based pipeline
 
-We reuse the gene trees obtained with IQ-TREE for the previous experiment.
+In this last experiment, we reuse the gene trees obtained with
+`IQ-TREE` in the previous experiment, but the reconciled gene trees
+are computed using the parsimony tool `ecceTERA`, implemented in
+`DeCoSTAR`. Note that in the header file, we deleted the sections
+about sequences and MSAs data, as they will not be eeded by any tool.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml create example/anopheles_X_ecceTERA_header.yaml parameters DeCoSTAR SPPDCJ
         example/anopheles_X_ecceTERA.yaml
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml init
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/species_tree_4.newick.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/species_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/families_X_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/gene_orders_X_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_4.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/sequences_X_4.txt.
-        /scratch/chauvec/SPP/anopheles_X_GeneRax/data/alignments_X.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/alignments_X.txt.
-        /scratch/chauvec/SPP/anopheles_X_ALE/data/gene_trees_X.txt -> /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/gene_trees_X.txt.
-        /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt will be computed.
+         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/data/species_tree_4.newick.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/data/species_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/data/families_X_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/data/gene_orders_X_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/data/gene_trees_X.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/data/adjacencies_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt will be computed.
 ```
+
+Next, we run `DeCoSTAR` to compute reconciled gene trees and ancestral adjacencies. 
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml slurm DeCoSTAR
-        /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/DeCoSTAR/DeCoSTAR.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/DeCoSTAR/DeCoSTAR.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/aux/DeCoSTAR/DeCoSTAR.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/aux/DeCoSTAR/DeCoSTAR.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check DeCoSTAR
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_ecceTERA/log/DeCoSTAR.log
-        OUTPUT: /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/log/DeCoSTAR.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/data/adjacencies_X.txt
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml stats DeCoSTAR
-        /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv
-        /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
-AGO-pipeline > head -1 /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv; grep -P ':0.5\t' /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv | sort
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR_0.5_conflicts.txt
+AGO-pipeline > head -1 /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv; grep -P ':0.5\t' /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/statistics/DeCoSTAR/DeCoSTAR.csv | sort
 #species:nb_genes_in_adj:min_weight     nb_genes_in_adj:nb_adjacencies:nb_ext_in_conflict:nb_free_ext
 AnophelesalbimanusSTECLA:489:0.5        489:488:0:2
 AnophelesatroparvusEBRO:503:0.5 503:502:0:2
@@ -370,28 +433,30 @@ node1:500:0.5   447:359:6:288
 node2:483:0.5   331:224:0:518
 ```
 
-Comment on level of conflict.
+As in previous experiments, there is a low level of conflict and a high number of free gene extremities.
+
+We clean conflicts using `spp_dcj` and generate gene orders files.
 
 ```
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml slurm SPPDCJ_ILP
-        /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/aux/SPPDCJ_ILP/SPPDCJ_ILP.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check SPPDCJ_ILP
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_ecceTERA/log/SPPDCJ_ILP.log
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/log/SPPDCJ_ILP.log
         OUTPUT: No output file is created
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml slurm SPPDCJ
-        /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ.sh
-AGO-pipeline > sbatch /scratch/chauvec/SPP/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ.sh
+AGO-pipeline > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/aux/SPPDCJ/SPPDCJ.sh
 	  	    ... wait for the slurm processes to complete ...
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml check SPPDCJ
         ERRORS: 0
-        LOG:    /scratch/chauvec/SPP/anopheles_X_ecceTERA/log/SPPDCJ.log
-        OUTPUT: /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/log/SPPDCJ.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt
 AGO-pipeline > python src/AGO.py example/anopheles_X_ecceTERA.yaml stats SPPDCJ
-        /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/SPPDCJ/SPPDCJ_species.csv
-AGO-pipeline > cat /scratch/chauvec/SPP/anopheles_X_ecceTERA/statistics/SPPDCJ/SPPDCJ_species.csv
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/statistics/SPPDCJ/SPPDCJ_species.csv
+AGO-pipeline > cat /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/statistics/SPPDCJ/SPPDCJ_species.csv
 #species        number of adjacencies:total weight:kept adjacencies:kept weight
 node2   227:224.4:224:223.08
 node1   370:357.7:353:348.87
@@ -400,7 +465,8 @@ node0   424:420.38:417:415.68
 AnophelesatroparvusEBRO 502:502.0:502:502.0
 AnophelesgambiaePEST    470:470.0:470:470.0
 AnophelesfunestusFUMOZ  471:471.0:471:471.0
-AGO-pipeline > python scripts/gene_orders_utils.py /scratch/chauvec/SPP/anopheles_X_ecceTERA/results/DeCoSTAR/genes_reformatted.txt /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt /scratch/chauvec/SPP/anopheles_X_ecceTERA/results/SPPDCJ/ /scratch/chauvec/SPP/anopheles_X_ecceTERA/data/gene_orders_ago_X.txt
+```
+```
+AGO-pipeline > python scripts/gene_orders_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/results/DeCoSTAR/genes_reformatted.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/data/adjacencies_ago_X.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/results/SPPDCJ/ /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ecceTERA/data/gene_orders_ago_X.txt
 ```
 
-Comment on final ancestral gene orders.
