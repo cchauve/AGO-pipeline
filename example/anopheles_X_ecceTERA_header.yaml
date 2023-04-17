@@ -7,19 +7,28 @@ run:
       - &run_dir_root    '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
       # VectorBase data
       - &run_vectorbase_data !join [*run_dir_root, 'data', 'VectorBase']
+      # Directory containing the AGO pipeline scripts
       - &run_dir_scripts     !join [*run_dir_root, 'scripts']
+      # Directory containing all files created by the AGO pipeline
       - &run_dir_exp         !join [*run_dir_root, 'example', *run_name]
+      # Directory containing local installations of external tools
       - &run_dir_bin         !join [*run_dir_root, 'bin']
 slurm:
+   # Local account used to run slurm jobs
    account: &slurm_account 'def-chauvec'
 dir:
+   # Directory containing the input used by AGO and the output files created by AGO
    data:    &dir_data    !join [*run_dir_exp, 'data']
+   # Directory containing the input files and running scripts for each external tool
    aux:     &dir_aux     !join [*run_dir_exp, 'aux']
+   # Directory containing the log files of external tools and the AGO log files
    log:     &dir_log     !join [*run_dir_exp, 'log']
+   # Directory containing the statistics files created by AGO
    stats:   &dir_stats   !join [*run_dir_exp, 'statistics']
+   # Directory containing the results of external tools
    results: &dir_results !join [*run_dir_exp, 'results']
 data:
-   # Starting data
+   # Paths to starting (extisting data) input files
    species_tree:
       path: &data_species_tree_path      !join [*run_vectorbase_data, 'species_tree_4.newick']
    species:
@@ -31,7 +40,7 @@ data:
       path: &data_gene_orders_path       !join [*run_vectorbase_data, 'gene_orders_X_4.txt']
    gene_trees:
       path: &data_gene_trees_path        !join [*run_dir_root, 'example', 'anopheles_X_ALE', 'data', 'gene_trees_X.txt']
-   # Computed data
+   # Paths to computed output files (generated data, no reconciliation)
    adjacencies:
       path: &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
       ext:  &data_adjacencies_ext       '_adjacencies.txt'
@@ -40,7 +49,16 @@ data:
       ext:  &data_ago_adjacencies_ext   !ref [*data_adjacencies_ext]
 # External tools options
 tools:
-   # DeCoSTAR
+   # ----------------------------------------------------------------------------------------------------
+   # -- DeCoSTAR (https://github.com/WandrilleD/DeCoSTAR/)
+   # DeCoSTAR assumes reconciliations have not been computed (input gene trees data file: *data_gene_trees_path; already.reconciled=false)
+   # Parsimonious reconciliations are computed in the Duplication-Loss model with duplication cost and loss cost 1 (dupli.cost=1, loss.cost=1)
+   # Ancestral adjacencies computed only for pairs of families with at least on extant adjacency (all.pairs=false)
+   # Adjacency gain cost (Again.cost) is 2, adjacency break cost (Abreak.cost) is 1, in mode loss.aware=false (parameter loss.iteration irrelevant)
+   # nb.sample=1000 adjacency trees are sampled per adjacency class, with Boltzmann temperature (boltzmann.temperature) 0.1 (will sample mostly parsimonious adjacency forests)
+   # Adjacency forests are not written (write.adjacency.trees=false, parameter write.newick irrelevant)
+   # See https://github.com/WandrilleD/DeCoSTAR/blob/master/docs/DeCoSTAR.odt for a description of the other DeCoSTAR options
+   # (C1.advantage, absence.penalty, dated.species.tree, rooted)
    - &decostar_exec                  !join [*run_dir_bin, 'DeCoSTAR']
    - &decostar_input_path            !ref [*data_gene_trees_path]
    - &decostar_already_reconciled    'false'
@@ -60,22 +78,32 @@ tools:
    - &decostar_nb_sample             '1000'
    - &decostar_write_newick          'false'
    - &decostar_write_adjacency_trees 'true'
-   - &decostar_stats_thresholds      "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0"
    - &decostar_modules               ''
    - &decostar_slurm_options         '--mem=4G --time=24:00:00'
-   # SPP-DCJ
+   # DeCoSTAR adjacency conflicts statistics are generated for thresholds from 0.1 to 1.0 by steps of 0.1
+   - &decostar_stats_thresholds      "0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0"
+   # ----------------------------------------------------------------------------------------------------
+   # -- SPP-DCJ (https://github.com/danydoerr/spp_dcj)
+   # Gurobi is available as a module and is run with an optimality parameter gap (MIPGap) of 5%
    - &sppdcj_gurobi_exec             'gurobi_cl'
    - &sppdcj_gurobi_options          'MIPGap=0.05'
    - &sppdcj_bin_dir                 !join [*run_dir_bin, 'spp_dcj', 'scripts']
+   # Do not edit the next two lines if spp_dcj is run from the cloned github repo
    - &sppdcj_writesol_exec           !join [*sppdcj_bin_dir, 'sol2adjacencies.py']
    - &sppdcj_ilp_exec                !join [*sppdcj_bin_dir, 'spp_dcj.py']
+   # The spp_dcj iput adjacencies are the DeCoSTAR adjacencies of weight at least 0.5
    - &sppdcj_ilp_threshold           '0.5'
+   # The spp_dcj objective function combines equally the DCJ distance and the weight of discarded adjacencies
+   # (alpha = 0.5) and a weighting factor for telomeric adjacencies of 0.25 (beta = 0.25, default value defined by alpha/2).
    - &sppdcj_ilp_alpha               '0.5'
    - &sppdcj_ilp_beta                '0.25'
+   # All ancestral species are considered in spp_dcj
    - &sppdcj_input_species           'all'
    - &sppdcj_input_suffix            'all'
    - &sppdcj_ilp_modules             ''
+   # Gurobi is available as a module
    - &sppdcj_modules                 'gurobi'
+   # The MILP creation is allocated 256Go of memory and 12 hours of computation time
    - &sppdcj_ilp_slurm_options       '--mem=256G --time=12:00:00'
+   # Solving the MILP with gurobi is allocated 50Go of memory and 12 hours of computation time
    - &sppdcj_slurm_options           '--mem=50G --time=12:00:00'
-

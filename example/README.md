@@ -27,15 +27,15 @@ The provided parameters files include the parameters needed to run the AGO pipel
 
 ## Data
 
-The data needed to run the experiments are located in [data/VectorBase](../data/VectorBase/README.md).
+The data needed to run the experiments are located in [data/VectorBase](../data/VectorBase/).
 
 This dataset focuses on reconstructing the ancestral gene orders of the X chromosomes for
-three ancestral *Anopheles* mosquito species, dfined as the ancestors of the following extant *Anopheles* species:
+three ancestral *Anopheles* mosquito species, defined as the ancestors of the following extant *Anopheles* species:
 *Anopheles gambiae PEST, Anopheles atroparvus EBRO, Anopheles funestus FUMOZ, Anopheles albimanus STECLA*.
 
 The data were obtained from the data repository <a
 href="https://vectorbase.org/">VectorBase</a>, as described in
-[data/VectorBase](../data/VectorBase/README.md).
+[data/VectorBase/README.md](../data/VectorBase/README.md).
 
 They are composed of
 - a species tree with branch lengths, [species tree](../data/VectorBase/species_tree_4.newick);
