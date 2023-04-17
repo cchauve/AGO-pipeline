@@ -28,7 +28,7 @@ Problem).
 This approach allows to account for the full complement of genes in
 extant genomes, at the expense of necessitating several steps,
 implemented in various tools, that are not trivial to interface
-together in a pipeline. AGO is aimed at easing the creation of such
+together into a pipeline. AGO is aimed at easing the creation of such
 pipelines; AGO in itself dos not introduce any novel algorithm, and
 aims solely at allowing to create pipelines based on published
 existing tools.
