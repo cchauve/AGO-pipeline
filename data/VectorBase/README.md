@@ -38,5 +38,7 @@ modified to remove all non-alphanumeric characters.  The file
 original names.
 
 In the files `sequences_X_4.txt` and `gene_orders_X_4.txt` the base
-directory (`/home/chauvec/projects/ctb-chauvec/`) has been kept and
-should be modified in order to reproduce the experiments.
+directory used for the experiments whose results are provided in the
+directory `example`(`/home/chauvec/projects/ctb-chauvec/`) has been
+kept as it was for the experiments and should be modified in order to
+reproduce the experiments.
