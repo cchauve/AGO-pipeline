@@ -9,7 +9,7 @@ and homologous gene families, in a phylogenetic context.
 AGO is based on the general methodology described in <a
 href="https://doi.org/10.1007/978-1-4471-5298-9_4">Duplication,
 Rearrangement and Reconciliation: A Follow-Up 13 Years Later</a>
-(2013) (see also the review <a
+(see also the review <a
 href="https://doi.org/10.1007/978-1-4939-7463-4_13">Comparative
 Methods for Reconstructing Ancient Genome Organization</a>).  It
 consists in the following steps:
