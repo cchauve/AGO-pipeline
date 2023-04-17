@@ -5,7 +5,7 @@ The file `genes_20230311.txt.gz` was downloaded from VectorBase (https://vectorb
 Genes assigned to no orthology group (NA) or to no chromosme (UNKN) or to the Y chromosome (Y_unplaced) are discarded.  
 Genes included into another gene are discarded.
 
-The species tree `species species_tree_4.newick` was obtained from <a
+The species tree `species_tree_4.newick` was obtained from <a
 href="https://doi.org/10.1126/science.1258522">Highly evolvable
 malaria vectors: The genomes of 16 *Anopheles* mosquitoes</a> (Figure
 1).  The branch lengths on the species tree are in million years.
