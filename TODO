@@ -1,3 +1,0 @@
-Do not create tool-specific directories in the data directory.
-
-Link statistics to objects and not tools.
