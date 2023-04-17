@@ -22,15 +22,40 @@ obtain a (free for academics) license. If you run AGO on a HPC
 cluster, we recommend that you contact your system administrators in
 order to obtain a cluster license for Gurobi.
 
-The provided parameters files cinclude the parameters needed to run the AGO pipeline on the `cedar` HPC cluster of the
+The provided parameters files include the parameters needed to run the AGO pipeline on the `cedar` HPC cluster of the
 <a href="https://alliancecan.ca/en">Digital Research Alliance of Canada</a>.
 
-```
-AGO-pipeline > date
-Fri Apr 14 10:10:25 PDT 2023
-```
-
 ## Data
+
+The data needed to run the experiments are located in [data/VectorBase](../data/VectorBase/README.md).
+
+This dataset focuses on reconstructing the ancestral gene orders of the X chromosomes for
+three ancestral *Anopheles* mosquito species, dfined as the ancestors of the following extant *Anopheles* species:
+*Anopheles gambiae PEST, Anopheles atroparvus EBRO, Anopheles funestus FUMOZ, Anopheles albimanus STECLA*.
+
+The data were obtained from the data repository <a
+href="https://vectorbase.org/">VectorBase</a>, as described in
+[data/VectorBase](../data/VectorBase/README.md).
+
+They are composed of
+- a species tree with branch lengths, [species tree](../data/VectorBase/species_tree_4.newick);
+- 451 gene families containing 1,935 genes [gene families](../data/VectorBase/families_X_4.txt);
+- DNA sequences [sequences](../data/VectorBase/sequences_X_4.txt) for all genes, grouped by families.
+
+
+Note that the sequences file is provided with absolute path with
+prefix (`/home/chauvec/projects/ctb-chauvec/`) corresponding to the
+experiments that were ran on the `cedar` HPC cluster of the <a
+href="https://alliancecan.ca/en">Digital Research Alliance of
+Canada</a>; to be reproduced, this prefix will need to be changed.
+
+Similarly, the path to access to the external tools used in the
+pipelines (`MACSE`, `GeneRax`, `IQ-TREE`, `ALE`, `DeCoSTAR`,
+`spp_dcj`) are provided in the parameters files under the assumption
+that all such tools are either available as a module on the
+corresponding HPC system or have been installed in the directory
+`/home/chauvec/projects/ctb-chauvec/AGO-pipeline/bin`): this would
+need to be updated to be reproduced on another system.
 
 ## GeneRax-based pipeline
 
