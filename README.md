@@ -1,10 +1,10 @@
 # AGO, a Pipeline for Ancestral Gene Orders Reconstruction
 
-## Overview
-
-AGO is a tool aimed at creating a pipeline of existing bioinformatics
+AGO is a tool aimed at creating pipelines of existing bioinformatics
 tools for reconstructing ancestral gene orders from extant gene orders
 and homologous gene families, in a phylogenetic context.
+
+## Overview
 
 AGO is based on the general methodology described in <a
 href="https://doi.org/10.1007/978-1-4471-5298-9_4">Duplication,
