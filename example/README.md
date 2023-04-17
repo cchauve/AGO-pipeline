@@ -1,5 +1,30 @@
 # Reconstructing Anopheles ancestral X chromosome gene orders
 
+## Overview
+
+This directory contains parameters files for the AGO pipeline aimed at
+reconstructing the ancestral gene orders of the X chromosomes for
+three ancestral *Anopheles* mosquito species.
+
+The ancestral gene orders are reconstructed according to three different versions of the pipeline, in order to illustrate the modularity of the pipeline:
+- all three approaches start from the same data, described in the section Data below;
+- all three approaches rely on Multiple Sequences Alignments (MSA) for the gene families obtained with the tool `MACSE`;
+- the first approach computes reconciled gene trees from the MSAs using the tool `GeneRax`;
+- the second approach computes gene trees samples using the tool `IQ-TREE` and reconciled gene tres from these gene trees using the tool `ALE`;
+- the third approach computes reconciled gene trees from the `IQ-TREE` gene trees samples using the tool `ecceTERA` implemented in `DeCoSTAR`;
+- all three approaches computes ancestral gene adjacencies candidates using `DeCoSTAR` and remove conflicts from these adjacencies using the tool `spp_dcj`.
+
+In order to run `spp_dcj`, the optimization solver `gurobi` is used,
+that requires a local license; we refer to <a
+href="https://www.gurobi.com/academia/academic-program-and-licenses/">Get
+the License That’s Right for You</a> for a description of how to
+obtain a (free for academics) license. If you run AGO on a HPC
+cluster, we recommend that you contact your system administrators in
+order to obtain a cluster license for Gurobi.
+
+The provided parameters files cinclude the parameters needed to run the AGO pipeline on the `cedar` HPC cluster of the
+<a href="https://alliancecan.ca/en">Digital Research Alliance of Canada</a>.
+
 ```
 AGO-pipeline > date
 Fri Apr 14 10:10:25 PDT 2023
