@@ -30,4 +30,8 @@ python ../../scripts/VectorBase_utils.py build \
        ./ X_4
 gzip genes_20230311.txt
 python ../../scripts/newick_utils.py species species_tree_4.newick species_4.txt
+```
+
+The names of genes, orthology groups (gene families) and species were modified to remove all non-alphanumeric characters.
+The file `genes_20230311.txt_map.gz` provides a map between renamed objects and original names.
 
