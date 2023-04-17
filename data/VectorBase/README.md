@@ -32,6 +32,11 @@ gzip genes_20230311.txt
 python ../../scripts/newick_utils.py species species_tree_4.newick species_4.txt
 ```
 
-The names of genes, orthology groups (gene families) and species were modified to remove all non-alphanumeric characters.
-The file `genes_20230311.txt_map.gz` provides a map between renamed objects and original names.
+The names of genes, orthology groups (gene families) and species were
+modified to remove all non-alphanumeric characters.  The file
+`genes_20230311.txt_map.gz` provides a map between renamed objects and
+original names.
 
+In the files `sequences_X_4.txt` and `gene_orders_X_4.txt` the base
+directory (`/home/chauvec/projects/ctb-chauvec/`) has been kept and
+should be modified in order to reproduce the experiments.
