@@ -22,8 +22,10 @@ obtain a (free for academics) license. If you run AGO on a HPC
 cluster, we recommend that you contact your system administrators in
 order to obtain a cluster license for Gurobi.
 
-The provided parameters files include the parameters needed to run the AGO pipeline on the `cedar` HPC cluster of the
-<a href="https://alliancecan.ca/en">Digital Research Alliance of Canada</a>.
+The provided parameters files are written to run the AGO pipeline on
+the `cedar` HPC cluster of the <a
+href="https://alliancecan.ca/en">Digital Research Alliance of
+Canada</a> using the `slurm` job scheduling system.
 
 ## Data
 
@@ -59,8 +61,7 @@ need to be updated to be reproduced on another system.
 
 Finally, all computations we ran within a python 3 virtual environment
 `AGO-pipeline` including all the required packages (see
-[README.md](../README.md) and intensive computations were ran using
-the `slurm` scheduling system.
+[README.md](../README.md).
 
 ## GeneRax-based pipeline
 
@@ -73,7 +74,15 @@ set of conflict-free adjacencies defining ancestral gene orders.
 To do so, we first create and edit a copy of [header
 template](../parameters/header_template.yaml) into the parameters
 header file [GeneRax pipeline
-header](anopheles_X_GeneRax_header.yaml).  We refer to the
+header](anopheles_X_GeneRax_header.yaml).
+
+
+The root directory where the AGO-pipeline github repo was cloned is
+`home/chauvec/projects/ctb-chauvec/AGO-pipeline`.  All external tools
+that were not already available on the `cedar` system were installed
+locally in the directory `home/chauvec/projects/ctb-chauvec/AGO-pipeline/bin`.
+
+We refer to the comments in the parameters files and the online
 documentation of each tool for the specifics of the chosen parameters
 chosen for each tool.  Note that in this header file, we edit only the
 sections corresponding to the tools that will be used in the pipeline
