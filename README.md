@@ -25,7 +25,7 @@ for each gene family;
 - computing ancestral gene adjacency candidates
 from the extant gene orders and the reconciled gene trees;  
 - clearing
-conflicts from the set of ancestral gene adjacency (Small Parsimony
+conflicts from the set of candidate ancestral gene adjacency (Small Parsimony
 Problem).  
 
 This approach allows to account for the full complement of genes in
