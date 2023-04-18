@@ -451,7 +451,11 @@ The section `slurm:` contains a single field, required only if the AGO
 pipeline is to use the `slurm` job scheduling system. The required
 field is the account used to run the pipeline processes.
 
-The section `dir:` contains the path to the various directories created by the pipeline. These directories do not have to be all subdirectories of a same directory, although this is the most logical approach, which is used in [anopheles_X_GeneRax_header.yaml](example/anopheles_X_GeneRax_header.yaml)
+The section `dir:` contains the path to the various directories
+created by the pipeline. These directories do not have to be all
+subdirectories of a same directory, although this is the most logical
+approach, which is used in
+[anopheles_X_GeneRax_header.yaml](example/anopheles_X_GeneRax_header.yaml)
 ```
 dir:
    # Directory containing the input used by AGO and the output files created by AGO
@@ -501,7 +505,7 @@ created by the command
 python src/AGO.py <parameters file to be created> create <edited header file> <included tools: subset of MACSE, IQ-TREE, GeneRax, ALE, DeCoSTAR, SPPDCJ>
 ```
 that combines the provided header file with the tool-specific files
-available in [paramaters](../parameters/) into a full pipeline
+available in [parameters](../parameters/) into a full pipeline
 parameters file.
 
 ### Initialization
