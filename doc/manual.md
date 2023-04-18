@@ -143,7 +143,8 @@ Creating an AGO pipeline is done in two steps:
 
 For example, in the directory [example](../example), an implementation of pipeline 1 (`Generax+DeCoSTAR+spp_dcj`) to reconstruct ancestral gene orders of the X chromosomes of three *Anopheles* mosquito species is provided, obtained by
 - creating the file [anopheles_X_GeneRax_header.yaml](../example/anopheles_X_GeneRax_header.yaml),
-- running the command `python src/AGO.py example/anopheles_X_GeneRax.yaml create example/anopheles_X_GeneRax_header.yaml parameters MACSE GeneRax DeCoSTAR SPPDCJ`,
+- running the command
+```python src/AGO.py example/anopheles_X_GeneRax.yaml create example/anopheles_X_GeneRax_header.yaml parameters MACSE GeneRax DeCoSTAR SPPDCJ```
 resulting in a pipeline parameters file [anopheles_X_GeneRax.yaml](../example/anopheles_X_GeneRax.yaml).
 
 ### Running a pipeline.
