@@ -418,7 +418,90 @@ The main step in creating an AGO pipeline consists into editing the
 file [header template](../paramaters/header_template.yaml). This file
 is composed of five sections.
 
-The section `run:` contains a name associated to the pipeline, 
+The section `run:` contains a single required field,
+`run_dir_scripts`, the path to the directory containing the AGO
+scripts (directory `scripts` of this repo).
+
+Other fields can be added in order to create YAML variables that can
+be reused. For example, in
+[anopheles_X_GeneRax_header.yaml](example/anopheles_X_GeneRax_header.yaml),
+this section contains several additional fields that are reused later
+in the file (using the YAML command `!ref [ ... ]`.
+
+```
+run:
+   # Run name
+   - &run_name            'anopheles_X_GeneRax'
+   # Root directory created by cloning the AGO pipline github repo
+   - &run_dir_root        '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
+   # VectorBase data
+   - &run_vectorbase_data !join [*run_dir_root, 'data', 'VectorBase']
+   # Directory containing the AGO pipeline scripts
+   - &run_dir_scripts     !join [*run_dir_root, 'scripts']
+   # Directory containing all files created by the AGO pipeline
+   - &run_dir_exp         !join ['/home/chauvec/projects/ctb-chauvec/AGO-pipeline', 'example', *run_name]
+   # Directory containing local installations of external tools
+   - &run_dir_bin         !join [*run_dir_root, 'bin']
+```
+
+The YAML command `!join [ ... ]` allows to create a path by joining
+all its arguments by the symbol `/`.
+
+The section `slurm:` contains a single field, required only if the AGO
+pipeline is to use the `slurm` job schduling system. The required
+field is the account used to run the pipeline processes.
+
+The section `dir:` contains the path to the various directories created by the pipeline. These directories do not have to be all subdirectories of a same directory, although this is the most logical approach, which is used in [anopheles_X_GeneRax_header.yaml](example/anopheles_X_GeneRax_header.yaml)
+```
+dir:
+   # Directory containing the input used by AGO and the output files created by AGO
+   data:    &dir_data    !join [*run_dir_exp, 'data']
+   # Directory containing the input files and running scripts for each external tool
+   aux:     &dir_aux     !join [*run_dir_exp, 'aux']
+   # Directory containing the log files of external tools and the AGO log files
+   log:     &dir_log     !join [*run_dir_exp, 'log']
+   # Directory containing the statistics files created by AGO
+   stats:   &dir_stats   !join [*run_dir_exp, 'statistics']
+   # Directory containing the results of external tools
+   results: &dir_results !join [*run_dir_exp, 'results']
+```
+where the directory associated to this specific pipeline is
+`/home/chauvec/projects/ctb-chauvec/AGO-pipeline/anopheles_X_GeneRax`
+and contains directories named `data`, `aux`, `log`, `statistics` and
+`results`.
+
+The next section, `data:` contains the path to the files either used
+as input by the pipeline or generated as output by the pipeline, as
+well as some other variables that should not be edited
+(`species_gene_name_separator`, `data_alignments_NT_ext`,
+`data_alignments_AA_ext`, `.data_reconciliations_ext`,
+`data_adjacencies_ext`, `data_ago_adjacencies_ext`).
+
+The header file [anopheles_X_ALE_header.yaml (line
+43)](example/anopheles_X_ALE_header.yaml) illustrates how the results
+of computations obtained with a different pipeline (in this case the
+MSAs computed by the GeneRax-based pipeline) can be reused as input
+data.
+
+Also, depending on the implemented pipeline, some data are not needed
+nor will be computed. For example, the GeneRax-based pipeline does not
+generate gene trees, but directly reconciled gene trees from the MSAs,
+so the fields related to gene trees in the template header have been
+deleted.
+
+
+Finally, the last section, `tools:` contains the parameters of the
+external tools integrated into the pipeline. There is a section per
+tool: it requires to be edited for the tools included in the pipeline,
+and can be deleted for the tools that are not part of the pipeline.
+
+Once a header file has been edited, a full parameters file can be
+created by the command
+```
+python src/AGO.py <parameters file to create> create <edited header file> <included tools: subset of MACSE, IQ-TREE, GeneRax, ALE, DeCoSTAR, SPPDCJ>
+```
+
+### Initialization
 
 
 ### Running tools: slurm/bash, check, stats
