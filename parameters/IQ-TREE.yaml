@@ -30,6 +30,6 @@
          cmd:
             - !concat [*iqtree_exec, ' \']
             - !concat ['   -s ',*iqtree_slurm_array_input_name,' \']
-            - !concat ['   ',*iqtree_options,' \']
-            - !concat ['   -pre ',*iqtree_results_prefix]
+            - !concat ['   -bb ', *iqtree_nb_sample, ' -wbtl ', *iqtree_options,' \']
+            - !concat ['   -pre ', *iqtree_results_prefix]
 

@@ -67,7 +67,7 @@
             - !concat [*ale_uml_exec, ' \']
             - !concat ['   ', *ale_input_species_tree_path,' \']
             - !concat ['   ', *ale_slurm_results_file_ale_object, ' \']
-            - !concat ['   ', *ale_uml_options]
+            - !concat ['   sample=1 separators="', *species_gene_name_separator, '" ', *ale_uml_options]
             - ' '
             - !concat ['python ', !join [*run_dir_scripts, 'ale_splitter.py'],' \']
             - !concat ['   -i ', *ale_slurm_results_file_uml_rec, ' -stfr']

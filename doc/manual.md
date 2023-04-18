@@ -295,7 +295,7 @@ for an example.
 The gene order file for a given species is also a tabulated file where
 each line describes one gene as follows:
 ```
-species name<SEP>gene name<TAB>orientation (1 for forward, 0 for backward)<TAB>start coordinate<TAB>end coordinate<TAB>unused field<TAB>chromosome/scaffold/contig
+species name<SEP>gene name<TAB>orientation (1 for forward, 0 for reverse)<TAB>start coordinate<TAB>end coordinate<TAB>unused field<TAB>chromosome/scaffold/contig
 ```
 
 The genes are assumed to be **sorted first by location
@@ -308,7 +308,7 @@ coordinate.
 See [species gene order file](../data/VectorBase/gene_orders_X_4/AnophelesalbimanusSTECLA.txt)
 for an example.
 
-**Any AGO pipeline requires extant species gene orders input.**
+**Any AGO pipeline requires extant species gene orders.**
 
 ### Gene sequences
 
@@ -328,11 +328,12 @@ MSAs are computed using `MACSE`.
 
 ### MSA
 
-The MSAs associated to gene families, if used in the pipeline, are described in a tabulated file
+The MSAs associated to gene families, if used in the pipeline, are
+described in a tabulated file in the format
 ```
 family name<TAB>path to MSA file for the family
 ```
-Currently, MSAs are computed by MACSE that creates, for each gene
+Currently, MSAs are computed by `MACSE` that creates, for each gene
 family, two MSA files, one for nucleotide sequences (suffixed by
 `_NT.fasta`) and one for amino-acid sequences (suffixed by
 `_AA.fasta`).
@@ -343,36 +344,71 @@ allows to associate to a gene family a sample of MSAs, if some
 subsequent steps would require such a representation of MSAs. This
 will be considered in further developments of AGO.
 
+### Gene trees and reconciled gene trees
 
+Similarly to MSAs, the gene tree, or set of gene trees, associated to
+gene families, are described in a tabulated file in the format
+```
+family name<TAB>path to gene tree(s) file for the family
+```
 
+In the current version of AGO, gene trees are computed by `IQ-TREE`,
+under the form of a sample of bootstrap gene trees per family. This is
+motivated by the fact that gen trees are used either by `ecceTERA` or
+`ALE` to compute reconciled gene trees using the amalgamation method
+that defines reconciled gene trees in terms of clades observed in a
+sample of gene trees.
 
+In the provided examples running `IQ-TREE` (file
+[anopheles_X_GeneRax_header.yaml](../example/anopheles_X_GeneRax_header.yaml)),
+1000 bootstrap gene trees are generated for each family.
 
+Reconciled gene trees are described in the same way:
+```
+family name<TAB>path to reconciled gene tree file for the family
+```
 
-The choice to describe the various data considered in an AGO pipeline
+Reconciled gene trees are computed using either `GeneRax` (from an MSA
+per family), `ALE` or `ecceTERA` (both from a sample of gene trees per
+family). Reconciled gene trees are used by `DeCoSTAR` and are required
+to be provided in the <a
+href="http://phylariane.univ-lyon1.fr/recphyloxml/">recPhyloXML</a>
+format.
 
-Define a data file, in terms of object and definition of the object: family, gene order, species tree, species, alignment, gene tree, reconciliation, adjacencies.
+### Gene adjacencies
 
-Data file format: object ID, definition.
+Gene orders computed by AGO are represented in the form of oriented gene adjacencies, i.e. adjacencies between pairs of gene extremities. 
+A gene adjacency file is associated to a single species. A dataset-wide set of gene adjacencies is described in a tabulated file in the format
+``
+species name<TAB>path to the an adjacencies file for the species
+```
 
-Object IDs: alphanumeric only.
+A gene adjacencies file for a given species is a space-separated file where each line encodes a single adjacency in the format
+```
+family 1 name<SEP>specie name<SEP>gene 1 name<SPACE>family 2 name<SEP>specie name<SEP>gene 2 name<SPACE>+/-<SPACE>+/-<SPACE>input weight<SPACE>output weight
+```
+- The first field `family 1 name<SEP>specie name<SEP>gene 1 name` encodes the first gene of the adjacency and includes the family it belongs to;
+- The second field encodes similarly the second gene of the adjacency;
+- The third field encodes the orientation of the first gene (`+` for forward, `-` for reverse);
+- The fourth field encodes the orientation of the second gene;
+- The fifth field encodes the prior weight associated to this adjacency (in [0,1], 1 for an extant adjacency);
+- The last field encodes the post-DeCoSTAR weight associated to this adjacency (in [0,1], 1 for an extant adjacency).
 
-Species tree: ancestral species.
-
-Object files format: FASTA, newick, recphyloxml, gene order, adjacency.
+The AGO pipelines implemented in [example](../example) compute 2 sets
+of adjacencies per species, one that contains potentially conflicting
+adjacencies computed by `DeCoSTAR` and a conflict-free set of
+adjacencies computed from the `DeCoSTAR` adjacencies by `spp_dcj`.
 
 ## Pipeline tools
 
-### MACSE
-
-### IQ-TREE
-
-### ALE
-
-### GeneRax
-
-### DeCoSTAR
-
-### SPP_DCJ
+In this section, we describe several choices that are currently
+enforced regarding the use of the tools integrated in AGO
+pipelines. We refer to the references of the tools for detailed
+explanations.
+- `IQ-TREE` is used only in ultrafast bootstrap mode; the extension of the file computed by `IQ-TREE` used by AGO is `.ufboot`.
+- `ALE` uses amalgamation for computing (sampling) a single reconciliation per gene family.
+- Reconciliations generated by `ALE` that contain a gene transfer are discarded and the corresponding families are excluded from further steps.
+- `DeCoSTAR` does not consider gene transfer in its model and samples ancestral adjacencies using Boltzmann sampling.
 
 ## Pipeline creation and running
 
@@ -433,4 +469,7 @@ reconciliation</a> (2022).
 
 12. Methodology: <a href="https://inria.hal.science/PGE/hal-02535466">Ancestral Genome
 Organization as a Diagnosis Tool for Phylogenomics</a> (2020).
+
+13. RecPhyloXML: <a href="https://doi.org/10.1093/bioinformatics/bty389">RecPhyloXML: a
+format for reconciled gene trees</a> (2018).
 

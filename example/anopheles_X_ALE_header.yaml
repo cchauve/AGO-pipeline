@@ -66,7 +66,8 @@ tools:
    # IQ-TREE automatically selects the DNA substitution modele (-m MFP)
    # See http://www.iqtree.org/doc/Command-Reference#general-options for the IQ-TREE manual
    - &iqtree_exec                    'iqtree'
-   - &iqtree_options                 '-m MFP -bb 1000 -wbtl'
+   - &iqtree_nb_sample               '1000'
+   - &iqtree_options                 '-m MFP'
    - &iqtree_modules                 'iq-tree/2.0.7'
    - &iqtree_slurm_options           '--mem=1G --time=00:20:00'
    # ----------------------------------------------------------------------------------------------------
@@ -76,7 +77,7 @@ tools:
    - &ale_object_ext                 '.ale'
    # ALE is run using its maximum-likelihood undated model (command ALEml_undated)
    - &ale_uml_exec                   !join [*run_dir_bin,'ALE/bin/ALEml_undated']
-   - &ale_uml_options                !concat ['sample=1 separators="', *species_gene_name_separator, '"']
+   - &ale_uml_options                ''
    - &ale_modules                    ''
    - &ale_slurm_options              '--mem=2G --time=02:00:00'
    # ----------------------------------------------------------------------------------------------------

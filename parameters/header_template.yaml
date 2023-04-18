@@ -56,7 +56,8 @@ tools:
    # ----------------------------------------------------------------------------------------------------
    # -- IQ-TREE (http://www.iqtree.org/)
    - &iqtree_exec                    # REQUIRED: IQ-TREE command-line                              (ex: 'iqtree')
-   - &iqtree_options                 # REQUIRED: IQ-TREE command-line options                      (ex: '-m MFP -bb 1000 -wbtl')
+   - &iqtree_nb_sample               # REQUIRED: IQ-TREE number of bootstrap samples               (ex: '1000')
+   - &iqtree_options                 # REQUIRED: IQ-TREE command-line options                      (ex: '-m MFP')
    - &iqtree_modules                 # REQUIRED: modules needed to run IQ-TREE                     (ex: 'iq-tree/2.0.7', use '' if none is needed)
    - &iqtree_slurm_options           # REQUIRED: IQ-TREE slurm options                             (ex: '--mem=1G --time=00:20:00')
    # ----------------------------------------------------------------------------------------------------
@@ -64,7 +65,7 @@ tools:
    - &ale_object_exec                # REQUIRED: ALEobserve command-line                           (ex: !join [*run_dir_bin,'ALE/bin/ALEobserve'])
    - &ale_object_ext                 # REQUIRED: ALE object file extension                         (ex: '.ale')
    - &ale_uml_exec                   # REQUIRED: ALEml_undated command-line                        (ex: !join [*run_dir_bin,'ALE/bin/ALEml_undated']
-   - &ale_uml_options                # REQUIRED: ALEml_undated command-line options                (ex: !concat ['sample=1 separators="', *species_gene_name_separator, '"'])
+   - &ale_uml_options                # REQUIRED: ALEml_undated command-line options                (ex: !concat ['tau=0'])
    - &ale_modules                    # REQUIRED: modules needed to run ALE                         (ex: '', no module needed)
    - &ale_slurm_options              # REQUIRED: ALE slurm options                                 (ex: '--mem=2G --time=02:00:00')
    # ----------------------------------------------------------------------------------------------------
