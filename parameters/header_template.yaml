@@ -99,7 +99,6 @@ tools:
    # -- SPP-DCJ (https://github.com/danydoerr/spp_dcj)
    - &sppdcj_gurobi_exec             # REQUIRED: gurobi command-line                               (ex: 'gurobi_cl')
    - &sppdcj_gurobi_options          # REQUIRED: gurobi command-line options                       (ex: 'MIPGap=0.05')
-   - &sppdcj_bin_dir                 # OPTIONAL: directory of spp_dcj scripts                      (ex: !join [*run_dir_bin, 'spp_dcj', 'scripts'])
    - &sppdcj_writesol_exec           # REQUIRED: path to file sol2adjacencies.py                   (ex: !join [*sppdcj_bin_dir, 'sol2adjacencies.py'])
    - &sppdcj_ilp_exec                # REQUIRED: path to file spp_dcj.py                           (ex: !join [*sppdcj_bin_dir, 'spp_dcj.py'])
    - &sppdcj_ilp_threshold           # REQUIRED: weight threshold for adjacencies to consider      (ex: '0.5')
