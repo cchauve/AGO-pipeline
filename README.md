@@ -2,7 +2,8 @@
 
 AGO is a tool aimed at creating pipelines of existing bioinformatics
 tools for reconstructing ancestral gene orders from extant gene orders
-and homologous gene families, in a phylogenetic context.
+and homologous gene families, in a phylogenetic context described by a
+rooted species tree.
 
 ## Overview
 
@@ -13,17 +14,11 @@ Rearrangement and Reconciliation: A Follow-Up 13 Years Later</a>
 href="https://doi.org/10.1007/978-1-4939-7463-4_13">Comparative
 Methods for Reconstructing Ancient Genome Organization</a>).  It
 consists in the following steps:
-- computing a multiple sequences
-alignment (MSA) for each homologous gene family;  
-- computing a gene
-tree, or sample of gene trees, from the MSA for each gene family;  
-- computing a reconciled gene tree, from the MSA and/or gene tree(s),
-for each gene family;  
-- computing ancestral gene adjacency candidates
-from the extant gene orders and the reconciled gene trees;  
-- clearing
-conflicts from the set of candidate ancestral gene adjacency (Small Parsimony
-Problem).  
+- computing a multiple sequences alignment (MSA) for each homologous gene family;  
+- computing a gene tree, or sample of gene trees, from the MSA for each gene family;  
+- computing a reconciled gene tree, from the MSA and/or gene tree(s), for each gene family;  
+- computing ancestral gene adjacency candidates from the species tree, the extant gene orders and the reconciled gene trees;  
+- clearing conflicts from the set of candidate ancestral gene adjacency (variant of the Small Parsimony Problem for gene orders).  
 
 This approach allows to account for the full complement of genes in
 extant genomes, at the expense of necessitating several steps,
