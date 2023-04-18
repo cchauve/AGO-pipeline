@@ -379,7 +379,7 @@ format.
 
 Gene orders computed by AGO are represented in the form of oriented gene adjacencies, i.e. adjacencies between pairs of gene extremities. 
 A gene adjacency file is associated to a single species. A dataset-wide set of gene adjacencies is described in a tabulated file in the format
-``
+```
 species name<TAB>path to the an adjacencies file for the species
 ```
 
