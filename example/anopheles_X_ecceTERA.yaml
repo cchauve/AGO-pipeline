@@ -1,18 +1,17 @@
 ## Reconstruting ancestral gene orders of the X chromosome of Anopheles mosquito genomes
-
 run:
-   name: &run_name  anopheles_X_ecceTERA
-   dir:
-      # Root directory for parameters and tool-specific scripts
-      - &run_dir_root    '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
-      # VectorBase data
-      - &run_vectorbase_data !join [*run_dir_root, 'data', 'VectorBase']
-      # Directory containing the AGO pipeline scripts
-      - &run_dir_scripts     !join [*run_dir_root, 'scripts']
-      # Directory containing all files created by the AGO pipeline
-      - &run_dir_exp         !join [*run_dir_root, 'example', *run_name]
-      # Directory containing local installations of external tools
-      - &run_dir_bin         !join [*run_dir_root, 'bin']
+   # Run name
+   - &run_name            'anopheles_X_ecceTERA'
+   # Root directory created by cloning the AGO pipline github repo
+   - &run_dir_root        '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
+   # VectorBase data
+   - &run_vectorbase_data !join [*run_dir_root, 'data', 'VectorBase']
+   # Directory containing the AGO pipeline scripts
+   - &run_dir_scripts     !join [*run_dir_root, 'scripts']
+   # Directory containing all files created by the AGO pipeline
+   - &run_dir_exp         !join ['/home/chauvec/projects/ctb-chauvec/AGO-pipeline', 'example', *run_name]
+   # Directory containing local installations of external tools
+   - &run_dir_bin         !join [*run_dir_root, 'bin']
 slurm:
    # Local account used to run slurm jobs
    account: &slurm_account 'def-chauvec'

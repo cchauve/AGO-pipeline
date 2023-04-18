@@ -1,12 +1,8 @@
 run:
-   name: &run_name       # REQUIRED: run name (ex: 'template')
-   dir:
-      - &run_dir_scripts # REQUIRED: directory containing AGO tool-specific scripts      
-      - &run_dir_exp     # OPTIONAL: directory for experiments scripts, results, log, statistics and auxiliary files
-      - &run_dir_bin     # OPTIONAL: directory for external tools
-
+   - &run_dir_scripts # REQUIRED: directory containing AGO tool-specific scripts
+  
 slurm:
-   account: &slurm_account # REQUIRED: SLURM account name (ex: 'def-chauvec')
+   account: &slurm_account # REQUIRED to use slurm: slurm account name (ex: 'def-chauvec')
 
 dir:
    data:    &dir_data    # REQUIRED: directory of run data         (ex: !join [*run_dir_exp, 'data'])
@@ -23,27 +19,27 @@ data:
       path:   &data_species_path           # REQUIRED: path to species file      
    families:
       path:   &data_families_path          # REQUIRED: path to families file      
-      sep:    &species_gene_name_separator # REQUIRED: character to separate gene ame and species name (ex: '|')
+      sep:    &species_gene_name_separator '|' # DO NOT CHANGE: character to separate gene name and species name
    gene_orders:
       path:   &data_gene_orders_path       # REQUIRED: path to gene orders file
    sequences:
       path:   &data_sequences_path         # REQUIRED for tool.MACSE: path to sequences file
    alignments:
       path:   &data_alignments_path        # REQUIRED for tool.GeneRax and tool.IQ-TREE: path to MSA file
-      NT_ext: &data_alignments_NT_ext      # REQUIRED for tool.MACSE, suffixes for nucleotides alignments files (ex: '_NT.fasta')
-      AA_ext: &data_alignments_AA_ext      # REQUIRED for tool.MACSE, suffixes for amino-acids alignments files (ex: '_AA.fasta')
-      ext:    &data_alignments_ext         # REQUIRED for tool.MACSE, chosen suffix (!ref [*data_alignments_NT_ext] or !ref [*data_alignments_AA_ext]
+      NT_ext: &data_alignments_NT_ext      '_NT.fasta' # DO NOT CHANGE
+      AA_ext: &data_alignments_AA_ext      '_AA.fasta' # DO NOT CHANGE
+      ext:    &data_alignments_ext         # REQUIRED for tool.MACSE, chosen suffix (!ref [*data_alignments_NT_ext] or !ref [*data_alignments_AA_ext])
    gene_trees:
       path:   &data_gene_trees_path        # REQUIRED for tool.IQ-TREE and tool.ALE: path to gene trees file
    reconciliations:
       path:   &data_reconciliations_path   # REQUIRED for tool.GeneRax, tool.ALE and tool.DeCoSTAR: path to reconciled gene trees file
-      ext:    &data_reconciliations_ext    # REQUIRED for tool.GeneRax, tool.ALE and tool.DeCoSTAR: extension to reconciled gene trees files (ex: '.recphyloxml')
+      ext:    &data_reconciliations_ext    '.recphyloxml' # DO NOT CHANGE
    adjacencies:
       path:   &data_adjacencies_path       # REQUIRED for tool.DeCoSTAR, tool.SPPDCJ_ILP and tool.SPPDCJ: path to adjacencies file
-      ext:    &data_adjacencies_ext        # REQUIRED for tool.DeCoSTAR, tool.SPPDCJ_ILP and tool.SPPDCJ: extension to adjacencies files (ex: '_adjacencies.txt')
+      ext:    &data_adjacencies_ext        '_adjacencies.txt' # DO NOT CHANGE
    ago_adjacencies:
       path:   &data_ago_adjacencies_path   # REQUIRED for tool.SPPDCJ_ILP and tool.SPPDCJ: path to reconstructed ancestral adjacencies file
-      ext:    &data_ago_adjacencies_ext    # REQUIRED for tool.SPPDCJ_ILP and tool.SPPDCJ: extension to adjacencies files (ex: !ref [*data_adjacencies_ext])
+      ext:    &data_ago_adjacencies_ext    !ref [*data_adjacencies_ext] 
 
 # DO EDIT SECTIONS FOR USED TOOLS, DELETE UNUSED TOOLS SECTIONS
 # External tools options

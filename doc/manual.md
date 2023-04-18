@@ -412,7 +412,14 @@ explanations.
 
 ## Pipeline creation and running
 
-### Editing the parameters file header, creating and initializing.
+### Editing the parameters file header
+
+The main step in creating an AGO pipeline consists into editing the
+file [header template](../paramaters/header_template.yaml). This file
+is composed of five sections.
+
+The section `run:` contains a name associated to the pipeline, 
+
 
 ### Running tools: slurm/bash, check, stats
 
