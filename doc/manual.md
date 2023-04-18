@@ -208,6 +208,10 @@ python src/AGO.py example/anopheles_X_GeneRax.yaml stats SPPDCJ
 ```
 This will create CSV files that describes statistics of the ancestral adjacencies subsets defining ancestral gene orders.
 
+We refer to [example/README.md](../example/README.md) for a precise
+description of running the three pipelines on the *Anopheles* X
+chromosome dataset.  
+
 As it can be seen above, an AGO pipeline is not a single script that
 runs all steps at once.  This is motivated by the fact that each step
 of a phylogenomics pipeline is prone to errors (due to implemntation
