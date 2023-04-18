@@ -448,7 +448,7 @@ The YAML command `!join [ ... ]` allows to create a path by joining
 all its arguments by the symbol `/`.
 
 The section `slurm:` contains a single field, required only if the AGO
-pipeline is to use the `slurm` job schduling system. The required
+pipeline is to use the `slurm` job scheduling system. The required
 field is the account used to run the pipeline processes.
 
 The section `dir:` contains the path to the various directories created by the pipeline. These directories do not have to be all subdirectories of a same directory, although this is the most logical approach, which is used in [anopheles_X_GeneRax_header.yaml](example/anopheles_X_GeneRax_header.yaml)
@@ -500,11 +500,31 @@ created by the command
 ```
 python src/AGO.py <parameters file to create> create <edited header file> <included tools: subset of MACSE, IQ-TREE, GeneRax, ALE, DeCoSTAR, SPPDCJ>
 ```
+that combines the provided header file with the tool-specific files
+available in [paramaters](../parameters/) into a full pipeline
+parameters file.
 
 ### Initialization
 
+The initialization of a pipeline is done by the command
+```
+python src/AGO.py <parameters file> init
+```
 
-### Running tools: slurm/bash, check, stats
+This creates, if needed, all the required directories, and copies the
+existing data files (the input to the pipeline) into the `data`
+directory of the pipeline.
+
+**Remark.** Initializing a pipeline copies in the `data` directories
+  the pipeline data files that, for most, contain the paths to files
+  containing the actual data (such as the sequence data for the
+  genes). But these actual data files are not copied themselves, so any
+  modification of these files will render the results obtained by the
+  pipeline out-dated, and re-running the pipeline will generate
+  different results.
+
+
+### Running tools: slurm/bash, check, stats, clean
 
 
 
