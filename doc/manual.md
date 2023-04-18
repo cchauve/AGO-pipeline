@@ -222,6 +222,11 @@ on high-level statistics in order to assess the quality of the
 computed results.
 
 
+Currently, the commands `slurm`, `bash` and `check` are available for
+all tools (`MACSE`, `IQ-TREE`, `GeneRax`, `ALE`, `DeCoSTAR`,
+`spp_dcj`), while the command `stats` is not available for te tools
+`MACSE` and `IQ-TREE`.
+
 ## Data Formats
 
 Define a data file, in terms of object and definition of the object: family, gene order, species tree, species, alignment, gene tree, reconciliation, adjacencies.
