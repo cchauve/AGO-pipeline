@@ -147,6 +147,8 @@ For example, in the directory [example](../example), an implementation of pipeli
 ```python src/AGO.py example/anopheles_X_GeneRax.yaml create example/anopheles_X_GeneRax_header.yaml parameters MACSE GeneRax DeCoSTAR SPPDCJ```
 resulting in a pipeline parameters file [anopheles_X_GeneRax.yaml](../example/anopheles_X_GeneRax.yaml).
 
+More details about editing the header file are provided later in this manual.
+
 ### Running a pipeline.
 
 A pipeline can then be ran, from a pipeline parameters file, by a sequence of AGO commands `init`, `slurm`, `bash`, `check` and `stats`.
@@ -219,17 +221,16 @@ of a phylogenomics pipeline is prone to errors (due to implemntation
 bugs of the considered tools for example, or inconsistencies with the
 input data formats), or might require to be tested with different
 options (e.g. in terms of the considered evolutionary model). So AGO
-is designed in such a way tha a user is given the possibility to
-explore the results of a step, possibly to run it several times with
-various options, before providing its output to the next step; the
-creation of statistics files after each step allows the user to rely
-on high-level statistics in order to assess the quality of the
-computed results.
+is designed in such a way that a user can analyze the results of a
+step, possibly run it several times with various options, before
+providing its output to the next step; the creation of statistics
+files after each step allows the user to rely on high-level statistics
+in order to assess the quality of the computed results.
 
 
 Currently, the commands `slurm`, `bash` and `check` are available for
 all tools (`MACSE`, `IQ-TREE`, `GeneRax`, `ALE`, `DeCoSTAR`,
-`spp_dcj`), while the command `stats` is not available for te tools
+`spp_dcj`), while the command `stats` is **not** available for the tools
 `MACSE` and `IQ-TREE`.
 
 ## File Formats
@@ -259,7 +260,7 @@ The species file can be generated from the species tree using the command
 python ./scripts/newick_utils.py species <species tree file> <species file>
 ```
 
-Any AGO pipeline requires a species tree file and a species file.
+**Any AGO pipeline requires a species tree file and a species file.**
 
 ### Gene families
 
@@ -277,7 +278,7 @@ only of **alphanumeric characters**.
 See [families file](../data/VectorBase/families_X_4.txt) for an
 example.
 
-Any AGO pipeline requires a gene family input file.
+**Any AGO pipeline requires a gene family input file.**
 
 ### Gene orders
 
@@ -307,7 +308,7 @@ coordinate.
 See [species gene order file](../data/VectorBase/gene_orders_X_4/AnophelesalbimanusSTECLA.txt)
 for an example.
 
-Any AGO pipeline requires extant species gene orders input.
+**Any AGO pipeline requires extant species gene orders input.**
 
 ### Gene sequences
 
@@ -322,6 +323,8 @@ family name<TAB>path to FASTA file for all genes in the family
 See [sequences file](../data/VectorBase/sequences_X_4.txt)
 for an example.
 
+Sequence data is optional in an AGO pipeline, currently only needed if
+MSAs are computed using `MACSE`.
 
 ### MSA
 
