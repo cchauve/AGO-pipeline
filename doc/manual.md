@@ -232,7 +232,120 @@ all tools (`MACSE`, `IQ-TREE`, `GeneRax`, `ALE`, `DeCoSTAR`,
 `spp_dcj`), while the command `stats` is not available for te tools
 `MACSE` and `IQ-TREE`.
 
-## Data Formats
+## File Formats
+
+The various tools interfaced into an AGO pipeline communicate through
+data files, each associated to a specific kind of data: species tree,
+species, gene orders, gene families, gene sequences, gene trees,
+reconciled gene trees and adjacencies.
+
+### Species and species tree
+
+The *species tree* provided to an AGO pipeline is expected to be a
+rooted tree, in Newick format, with labeled ancestral species and
+branch lengths (see
+[species tree](../data/VectorBase/species_tree_4.newick)).
+
+The species names, for both extant and ancestral species, are expected
+to be composed only of **alphanumeric characters** (a-z, A-Z, 0-9).
+
+The *species file* is a tabulated file, where every line
+indicates for each species the space-separated list of its extant
+descendants, including the species itself if it is an extant species
+(see [species file](../data/VectorBase/species_4.txt)).
+
+The species file can be generated from the species tree using the command
+```
+python ./scripts/newick_utils.py species <species tree file> <species file>
+```
+
+Any AGO pipeline requires a species tree file and a species file.
+
+### Gene families
+
+A *gene family* is composed of a set of extant genes. The file
+describing the set of all gene families is also a tabulated file where
+each line defines a single family. Its format is
+```
+family name<TAB>space-separated list of genes in format <species name><SEP><gene name>
+```
+where `<SEP>` is specified separator character (suggested `|`).
+
+As for species, the actual name of a gene is assumed to be composed
+only of **alphanumeric characters**.
+
+See [families file](../data/VectorBase/families_X_4.txt) for an
+example.
+
+Any AGO pipeline requires a gene family input file.
+
+### Gene orders
+
+A *gene orders* file is a tabulated file where each line contains the
+path to the gene order file for an extant species:
+```
+extant species name<TAB>path to gene order file for the species
+```
+
+See [gene orders file](../data/VectorBase/gene_orders_X_4.txt)
+for an example.
+
+
+The gene order file for a given species is also a tabulated file where
+each line describes one gene as follows:
+```
+species name<SEP>gene name<TAB>orientation (1 for forward, 0 for backward)<TAB>start coordinate<TAB>end coordinate<TAB>unused field<TAB>chromosome/scaffold/contig
+```
+
+The genes are assumed to be **sorted first by location
+(chromosome/scaffold/contig) and then by start coordinate**. Moreover,
+AGO does assume that no gene is fully included (in terms of
+coordinate) within another gene, although overlapping genes are
+allowed, in which case their relative order is defined by their start
+coordinate.
+
+See [species gene order file](../data/VectorBase/gene_orders_X_4/AnophelesalbimanusSTECLA.txt)
+for an example.
+
+Any AGO pipeline requires extant species gene orders input.
+
+### Gene sequences
+
+The sequence data associated to the considered genes is described in a
+*sequences file*. This is a tabulated file, where each line describes
+a unique sequence file (assumed to be in `FASTA` format) for the genes
+of a single family:
+```
+family name<TAB>path to FASTA file for all genes in the family
+```
+
+See [sequences file](../data/VectorBase/sequences_X_4.txt)
+for an example.
+
+
+### MSA
+
+The MSAs associated to gene families, if used in the pipeline, are described in a tabulated file
+```
+family name<TAB>path to MSA file for the family
+```
+Currently, MSAs are computed by MACSE that creates, for each gene
+family, two MSA files, one for nucleotide sequences (suffixed by
+`_NT.fasta`) and one for amino-acid sequences (suffixed by
+`_AA.fasta`).
+
+The tools currently included in AGO and processing MSAs assume that a
+single MSA is provided for each gene family. The AGO design however
+allows to associate to a gene family a sample of MSAs, if some
+subsequent steps would require such a representation of MSAs. This
+will be considered in further developments of AGO.
+
+
+
+
+
+
+The choice to describe the various data considered in an AGO pipeline
 
 Define a data file, in terms of object and definition of the object: family, gene order, species tree, species, alignment, gene tree, reconciliation, adjacencies.
 
