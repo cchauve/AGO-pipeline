@@ -118,12 +118,12 @@ tools:
    - &sppdcj_gurobi_exec             'gurobi_cl'
    - &sppdcj_gurobi_options          'MIPGap=0.05'
    - &sppdcj_bin_dir                 !join [*run_dir_bin, 'spp_dcj', 'scripts']
-   # Do not edit the next two lines if spp_dcj is run from the cloned github repo
    - &sppdcj_writesol_exec           !join [*sppdcj_bin_dir, 'sol2adjacencies.py']
    - &sppdcj_ilp_exec                !join [*sppdcj_bin_dir, 'spp_dcj.py']
+   # The spp_dcj input adjacencies are the DeCoSTAR adjacencies of weight at least 0.5
+   - &sppdcj_ilp_threshold           '0.5'
    # The spp_dcj objective function combines equally the DCJ distance and the weight of discarded adjacencies
    # (alpha = 0.5) and a weighting factor for telomeric adjacencies of 0.25 (beta = 0.25, default value defined by alpha/2).
-   - &sppdcj_ilp_threshold           '0.5'
    - &sppdcj_ilp_alpha               '0.5'
    - &sppdcj_ilp_beta                '0.25'
    # All ancestral species are considered in spp_dcj
