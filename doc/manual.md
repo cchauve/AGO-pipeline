@@ -277,43 +277,43 @@ intermediate steps
 
 ## References
 
-[1] <a href="https://doi.org/10.1007/978-1-4471-5298-9_4">Duplication,
+1. <a href="https://doi.org/10.1007/978-1-4471-5298-9_4">Duplication,
 Rearrangement and Reconciliation: A Follow-Up 13 Years Later</a> (2013).
 
-[2] <a href="https://doi.org/10.1007/978-1-4939-7463-4_13">Comparative
+2. <a href="https://doi.org/10.1007/978-1-4939-7463-4_13">Comparative
 Methods for Reconstructing Ancient Genome Organization</a> (2018).
 
-[3] <a href="https://doi.org/10.1371/journal.pone.0022594">MACSE: Multiple
+3. <a href="https://doi.org/10.1371/journal.pone.0022594">MACSE: Multiple
 Alignment of Coding SEquences Accounting for Frameshifts and Stop
 Codons</a> (2011).
 
-[4] <a href="https://doi.org/10.1093/molbev/msaa015">IQ-TREE 2: New models
+4. <a href="https://doi.org/10.1093/molbev/msaa015">IQ-TREE 2: New models
 and efficient methods for phylogenetic inference in the genomic
 era</a> (2020).
 
-[5] <a href="https://doi.org/10.1093/molbev/msx281">UFBoot2: Improving the
+5. <a href="https://doi.org/10.1093/molbev/msx281">UFBoot2: Improving the
 ultrafast bootstrap approximation</a> (2018).
 
-[6] <a href="https://doi.org/10.1093/molbev/msaa141">GeneRax: A Tool for
+6. <a href="https://doi.org/10.1093/molbev/msaa141">GeneRax: A Tool for
 Species-Tree-Aware Maximum Likelihood-Based Gene Family Tree Inference
 under Gene Duplication, Transfer, and Loss</a> (2020).
 
-[7] <a href="https://doi.org/10.1093/sysbio/syt054">Efficient exploration
+7. <a href="https://doi.org/10.1093/sysbio/syt054">Efficient exploration
 of the space of reconciled gene trees</a> (2013).
 
-[8] <a href="https://doi.org/10.1093/gbe/evx069">DeCoSTAR: Reconstructing
+8. <a href="https://doi.org/10.1093/gbe/evx069">DeCoSTAR: Reconstructing
 the Ancestral Organization of Genes or Genomes Using Reconciled
 Phylogenies</a> (2017).
 
-[9] <a href="https://doi.org/10.1142/S0219720021400096">Small parsimony
+9. <a href="https://doi.org/10.1142/S0219720021400096">Small parsimony
 for natural genomes in the DCJ-indel model</a> (2021).
 
-[10] <a href="https://hal.science/hal-02535529">Reconciling Gene trees with
+10. <a href="https://hal.science/hal-02535529">Reconciling Gene trees with
 Species Trees</a> (2020).
 
-[11] <a href="https://doi.org/10.1371/journal.pcbi.1010621">Phylogenetic
+11. <a href="https://doi.org/10.1371/journal.pcbi.1010621">Phylogenetic
 reconciliation</a> (2022).
 
-[12] <a href="https://inria.hal.science/PGE/hal-02535466">Ancestral Genome
+12. <a href="https://inria.hal.science/PGE/hal-02535466">Ancestral Genome
 Organization as a Diagnosis Tool for Phylogenomics</a> (2020).
 
