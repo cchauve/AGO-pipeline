@@ -104,7 +104,7 @@ In the second pipeline, the following steps are implemented:
 - for each ancestral species, a set of candidate ancestral gene adjacencies is computed (consistent with the reconciled gene trees), that might not be compatible with a linear ancestral gene order;
 - for each ancestral species, a subset of the candidate ancestral adjacencies is computed, using spp_dcj, that is compatible with a linear gene order.
 
-### Pipeline 3, based on DeCoSTAR,ecceTERA
+### Pipeline 3, based on ecceTERA
 
 The third pipeline takes advantage of the fact that the parsimony reconciliation algorithm ecceTERA is implemented within DeCoSTAR:
 - for each gene family, an MSA is computed using MACSE;
@@ -274,3 +274,46 @@ bali-phy
 HGT
 
 intermediate steps
+
+## References
+
+<a href="https://doi.org/10.1007/978-1-4471-5298-9_4">Duplication,
+Rearrangement and Reconciliation: A Follow-Up 13 Years Later</a> (2013).
+
+<a href="https://doi.org/10.1007/978-1-4939-7463-4_13">Comparative
+Methods for Reconstructing Ancient Genome Organization</a> (2018).
+
+<a href="https://doi.org/10.1371/journal.pone.0022594">MACSE: Multiple
+Alignment of Coding SEquences Accounting for Frameshifts and Stop
+Codons</a> (2011).
+
+<a href="https://doi.org/10.1093/molbev/msaa015">IQ-TREE 2: New models
+and efficient methods for phylogenetic inference in the genomic
+era</a> (2020).
+
+<a href="https://doi.org/10.1093/molbev/msx281">UFBoot2: Improving the
+ultrafast bootstrap approximation</a> (2018).
+
+<a href="https://doi.org/10.1093/molbev/msaa141">GeneRax: A Tool for
+Species-Tree-Aware Maximum Likelihood-Based Gene Family Tree Inference
+under Gene Duplication, Transfer, and Loss</a> (2020).
+
+<a href="https://doi.org/10.1093/sysbio/syt054">Efficient exploration
+of the space of reconciled gene trees</a> (2013).
+
+<a href="https://doi.org/10.1093/gbe/evx069">DeCoSTAR: Reconstructing
+the Ancestral Organization of Genes or Genomes Using Reconciled
+Phylogenies</a> (2017).
+
+<a href="https://doi.org/10.1142/S0219720021400096">Small parsimony
+for natural genomes in the DCJ-indel model</a> (2021).
+
+<a href="https://hal.science/hal-02535529">Reconciling Gene trees with
+Species Trees</a> (2020).
+
+<a href="https://doi.org/10.1371/journal.pcbi.1010621">Phylogenetic
+reconciliation</a> (2022).
+
+<a href="https://inria.hal.science/PGE/hal-02535466">Ancestral Genome
+Organization as a Diagnosis Tool for Phylogenomics</a> (2020).
+
