@@ -498,7 +498,7 @@ and can be deleted for the tools that are not part of the pipeline.
 Once a header file has been edited, a full parameters file can be
 created by the command
 ```
-python src/AGO.py <parameters file to create> create <edited header file> <included tools: subset of MACSE, IQ-TREE, GeneRax, ALE, DeCoSTAR, SPPDCJ>
+python src/AGO.py <parameters file to be created> create <edited header file> <included tools: subset of MACSE, IQ-TREE, GeneRax, ALE, DeCoSTAR, SPPDCJ>
 ```
 that combines the provided header file with the tool-specific files
 available in [paramaters](../parameters/) into a full pipeline
