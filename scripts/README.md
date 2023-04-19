@@ -29,7 +29,7 @@
 - Cloned from https://github.com/AADavin/ALEtutorial
 - USAGE: `python ale_splitter.py -i <ALE results file> -stfr`
 
-ALEtoRecXML.py, ReconciledTree.py:
+`ALEtoRecXML.py, ReconciledTree.py`:
 - Create recPhyloXML files from the output of ALE.
 - Cloned from https://github.com/WandrilleD/recPhyloXML
 - USAGE: `python ALEtoRecPhyloXML.py -g <input: ALE NHX reconciliation file> -o <output: ALE recPhyloXML file> -s <input: species name / gene name separator (|)> -st <input: ALE species tree file>`
