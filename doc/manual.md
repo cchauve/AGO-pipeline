@@ -552,8 +552,8 @@ in order to assess the quality of the computed results.
 The python code for creating and running the pipeline is in the directory `src`.
 
 Python scripts that are specific to some tool or some data format,
-used for example to create tool-specific inputs or reformat the
-results of a tool in order it is consistent with the pipeline data,
+used for example to create tool-specific input files or reformat the
+result files of a tool in order that they are consistent with the pipeline data format,
 are in the `scripts` directory.
 
 The YAML code specific to run each tool is in the directory `parameters`. 
