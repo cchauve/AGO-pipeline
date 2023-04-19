@@ -330,7 +330,7 @@ Other fields can be added in order to create YAML variables that can
 be reused. For example, in
 [anopheles_X_GeneRax_header.yaml](example/anopheles_X_GeneRax_header.yaml),
 this section contains several additional fields that are reused later
-in the file (using the YAML command `!ref [ ... ]`.
+in the file.
 
 ```
 run:
