@@ -556,7 +556,7 @@ used for example to create tool-specific input files or reformat the
 result files of a tool in order that they are consistent with the pipeline data format,
 are in the `scripts` directory (see [scripts/README.md](../scripts/README.md)).
 
-The YAML code specific to run each tool is in the directory `parameters`. 
+The YAML code specific to run each tool is in the directory `parameters` (see [parameters/README.md](../parameters/README.md)). 
 
 
 ## Future work
