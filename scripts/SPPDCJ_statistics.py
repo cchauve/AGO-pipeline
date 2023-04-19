@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-""" Reformat SPPDCJ adjacencies to be in DeCoSTAR format per sepcies """
+""" Computes and writes statistics about adjacencies discarded by SPP_DCJ """
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
