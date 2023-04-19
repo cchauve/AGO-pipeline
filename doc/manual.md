@@ -70,7 +70,7 @@ scheduler.
 ## AGO architecture
 
 An AGO pipeline is defined by the following elements:
-- a set of input data files that include, at minima, a species tree, a set of gene families and gene orders for extant species, together with possibly additional data depending on the sp[ecific implemented pipeline;
+- a set of input data files that include, at minima, a species tree, a set of gene families and gene orders for extant species, together with possibly additional data depending on the specific implemented pipeline;
 - a set of external computational tools, each with specific options, aimed to be run in a specific order, aimed at processing the input data to generate a set of gene orders for the ancestral species defined by the input species tree.
 
 An AGO pipeline is described by a YAML parameters file that is composed of two parts:
@@ -88,21 +88,21 @@ DNA sequences for the genes in each family.
 ### Pipeline 1, based on GeneRax
 
 In the first pipeline, the following steps are implemented:
-- for each gene family, an MSA is computed using MACSE;
-- for each gene family, a reconciled gene tree is computed from its MSA using GeneRax;
-- for each ancestral species, a set of candidate ancestral gene adjacencies is computed (consistent with the reconciled gene trees), that might not be compatible with a linear ancestral gene order;
-- for each ancestral species, a subset of the candidate ancestral adjacencies is computed, using spp_dcj, that is compatible with a linear gene order.
+- for each gene family, an MSA is computed using `MACSE`;
+- for each gene family, a reconciled gene tree is computed from its MSA using `GeneRax`;
+- for each ancestral species, a set of candidate ancestral gene adjacencies, that might not be compatible with a linear ancestral gene order, is computed using `DeCoSTAR`;
+- for each ancestral species, a subset of the candidate ancestral adjacencies is computed, using `spp_dcj`, that is compatible with a linear gene order.
 
 This pipeline does not compute explicitly gene trees for the gene families, that are explicitly defined by the reconciled gene trees.
 
 ### Pipeline 2, based on ALE
 
 In the second pipeline, the following steps are implemented:
-- for each gene family, an MSA is computed using MACSE;
-- for each gene family, a sample of gene trees is computed from its MSA using IQ-TREE;
-- for each gene family, a reconciled gene tree is computed from the sampled gene trees using ALE;
-- for each ancestral species, a set of candidate ancestral gene adjacencies is computed (consistent with the reconciled gene trees), that might not be compatible with a linear ancestral gene order;
-- for each ancestral species, a subset of the candidate ancestral adjacencies is computed, using spp_dcj, that is compatible with a linear gene order.
+- for each gene family, an MSA is computed using `MACSE`;
+- for each gene family, a sample of gene trees is computed from its MSA using `IQ-TREE`;
+- for each gene family, a reconciled gene tree is computed from the sampled gene trees using `ALE`;
+- for each ancestral species, a set of candidate ancestral gene adjacencies, that might not be compatible with a linear ancestral gene order, is computed using `DeCoSTAR`;
+- for each ancestral species, a subset of the candidate ancestral adjacencies is computed, using `spp_dcj`, that is compatible with a linear gene order.
 
 ### Pipeline 3, based on ecceTERA
 
@@ -110,10 +110,10 @@ The third pipeline takes advantage of the fact that the parsimony reconciliation
 - for each gene family, an MSA is computed using MACSE;
 - for each gene family, a sample of gene trees is computed from its MSA using IQ-TREE;
 - for each gene family, a reconciled gene tree is computed from the sampled gene trees using ecceTERA;
-- for each ancestral species, a set of candidate ancestral gene adjacencies is computed (consistent with the reconciled gene trees), that might not be compatible with a linear ancestral gene order;
-- for each ancestral species, a subset of the candidate ancestral adjacencies is computed, using spp_dcj, that is compatible with a linear gene order.
+- for each ancestral species, a set of candidate ancestral gene adjacencies, that might not be compatible with a linear ancestral gene order, is computed using `DeCoSTAR`;
+- for each ancestral species, a subset of the candidate ancestral adjacencies is computed, using `spp_dcj`, that is compatible with a linear gene order.
 
-In this pipeline, the reconciled gene trees are not generated explicitly and are only created as input to the DeCoSTAR ancestral adjacencies inference algorithm.
+In this pipeline, the reconciled gene trees are not generated explicitly and are only created as input to the `DeCoSTAR` ancestral adjacencies inference algorithm.
 
 ### Alternative pipelines
 
