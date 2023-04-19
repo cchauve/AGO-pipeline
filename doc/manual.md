@@ -3,7 +3,7 @@
 ## Overview
 
 AGO is a suite of python scripts, aimed at implementing phylogenomics
-pipelines for reconstructing ancestral gene orders in a phylogenetic
+pipelines for reconstructing ancestral syntenies and gene orders in a phylogenetic
 context, from extant gene orders, gene families and gene sequence
 data.
 
