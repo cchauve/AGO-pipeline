@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-""" AGO pipeline parameters """
+""" Reading AGO pipeline parameters """
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
@@ -32,7 +32,7 @@ yaml.add_constructor('!concat', concat)
 yaml.add_constructor('!ref', ref)
 
 ''' 
-Parameters for the AGO pipeline 
+Parameters class and methods
 '''
 class Parameters:
 
