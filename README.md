@@ -77,4 +77,4 @@ described above:
 These experiments are described in [example/README.md](./example/README.md).
 
 ### Contact
-cedric.chauve@sfu.ca
+Authors: <a href="https://github.com/ecribbie">Evan Cribbie</a>, <a href="https://github.com/danydoerr">Daniel Doerr</a>, Cedric Chauve (cedric.chauve@sfu.ca).
