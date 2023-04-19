@@ -135,103 +135,7 @@ Alternative pipeline can also skip the last step, `spp_dcj`, in which
 case only (potentially conflicting) ancestral adjacencies are
 computed.
 
-### Creating a pipeline.
 
-Creating an AGO pipeline is done in two steps:
-- creating a pipeline YAML header file, by editing a copy of the header template file [header_template.yaml](header_template.yaml) to specify input data files, pipeline tools and pipeline tools options;
-- running the command AGO `create`.
-
-For example, in the directory [example](../example), an implementation of pipeline 1 (`Generax+DeCoSTAR+spp_dcj`) to reconstruct ancestral gene orders of the X chromosomes of three *Anopheles* mosquito species is provided, obtained by
-- creating the file [anopheles_X_GeneRax_header.yaml](../example/anopheles_X_GeneRax_header.yaml),
-- running the command
-```python src/AGO.py example/anopheles_X_GeneRax.yaml create example/anopheles_X_GeneRax_header.yaml parameters MACSE GeneRax DeCoSTAR SPPDCJ```
-resulting in a pipeline parameters file [anopheles_X_GeneRax.yaml](../example/anopheles_X_GeneRax.yaml).
-
-More details about editing the header file are provided later in this manual.
-
-### Running a pipeline.
-
-A pipeline can then be ran, from a pipeline parameters file, by a sequence of AGO commands `init`, `slurm`, `bash`, `check` and `stats`.
-
-For example, for the pipeline defined by [anopheles_X_GeneRax.yaml](../example/anopheles_X_GeneRax.yaml):
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml init
-```
-This will initialize the pipeline, creating its directory architecture and local versions of the input data files.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml slurm MACSE
-```
-This will create a `slurm` script to run `MACSE`, that can be launched by the `slurm` command `sbatch`.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml check MACSE
-```
-This will check the results of `MACSE`, creating log files and a data file describing the MSA that were computed.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml slurm GeneRax
-```
-This will create a `slurm` script to run `GeneRax`, that can be launched by the `slurm` command `sbatch`.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml check GeneRax
-```
-This will check the results of `GeneRax`, creating log files and a data file describing the reconciled gene trees that were computed.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml stats GeneRax
-```
-This will create CSV files that describes statistics of the reconciled gene trees.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml bash DeCoSTAR
-```
-This will create a `bash` script to run `DeCoSTAR`.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml check DeCoSTAR
-```
-This will check the results of `DeCoSTAR`, creating log files and a data file describing the ancestral adjacencies that were computed.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml stats DeCoSTAR
-```
-This will create CSV files that describes statistics of the ancestral adjacencies.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ_ILP
-```
-This will create a `slurm` script to create the input (Integer Linear Program, ILP) required by `spp_dcj`.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ_ILP
-```
-This will check that the ILP required by `spp_dcj` has been properly computed.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ
-```
-This will create a `slurm` script to run `spp_dcj` (solving the ILP), computed conflict-free adjacencies for each ancestral species.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ
-```
-This will check the results of `spp-dcj`.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml stats SPPDCJ
-```
-This will create CSV files that describes statistics of the ancestral adjacencies subsets defining ancestral gene orders.
-
-We refer to [example/README.md](../example/README.md) for a precise
-description of running the three pipelines on the *Anopheles* X
-chromosome dataset.  
-
-As it can be seen above, an AGO pipeline is not a single script that
-runs all steps at once.  This is motivated by the fact that each step
-of a phylogenomics pipeline is prone to errors (due to implemntation
-bugs of the considered tools for example, or inconsistencies with the
-input data formats), or might require to be tested with different
-options (e.g. in terms of the considered evolutionary model). So AGO
-is designed in such a way that a user can analyze the results of a
-step, possibly run it several times with various options, before
-providing its output to the next step; the creation of statistics
-files after each step allows the user to rely on high-level statistics
-in order to assess the quality of the computed results.
-
-
-Currently, the commands `slurm`, `bash` and `check` are available for
-all tools (`MACSE`, `IQ-TREE`, `GeneRax`, `ALE`, `DeCoSTAR`,
-`spp_dcj`), while the command `stats` is **not** available for the tools
-`MACSE` and `IQ-TREE`.
 
 ## File Formats
 
@@ -527,9 +431,87 @@ directory of the pipeline.
   pipeline out-dated, and re-running the pipeline will generate
   different results.
 
-
 ### Running tools: slurm/bash, check, stats, clean
 
+
+
+A pipeline can then be ran, from a pipeline parameters file, by a sequence of AGO commands `slurm`, `bash`, `check`, `stats`, `clean`.
+
+For example, for the pipeline defined by [anopheles_X_GeneRax.yaml](../example/anopheles_X_GeneRax.yaml):
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml slurm MACSE
+```
+This will create a `slurm` script to run `MACSE`, that can be launched by the `slurm` command `sbatch`.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml check MACSE
+```
+This will check the results of `MACSE`, creating log files and a data file describing the MSA that were computed.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml slurm GeneRax
+```
+This will create a `slurm` script to run `GeneRax`, that can be launched by the `slurm` command `sbatch`.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml check GeneRax
+```
+This will check the results of `GeneRax`, creating log files and a data file describing the reconciled gene trees that were computed.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml stats GeneRax
+```
+This will create CSV files that describes statistics of the reconciled gene trees.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml bash DeCoSTAR
+```
+This will create a `bash` script to run `DeCoSTAR`.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml check DeCoSTAR
+```
+This will check the results of `DeCoSTAR`, creating log files and a data file describing the ancestral adjacencies that were computed.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml stats DeCoSTAR
+```
+This will create CSV files that describes statistics of the ancestral adjacencies.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ_ILP
+```
+This will create a `slurm` script to create the input (Integer Linear Program, ILP) required by `spp_dcj`.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ_ILP
+```
+This will check that the ILP required by `spp_dcj` has been properly computed.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ
+```
+This will create a `slurm` script to run `spp_dcj` (solving the ILP), computed conflict-free adjacencies for each ancestral species.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ
+```
+This will check the results of `spp-dcj`.
+```
+python src/AGO.py example/anopheles_X_GeneRax.yaml stats SPPDCJ
+```
+This will create CSV files that describes statistics of the ancestral adjacencies subsets defining ancestral gene orders.
+
+We refer to [example/README.md](../example/README.md) for a precise
+description of running the three pipelines on the *Anopheles* X
+chromosome dataset.  
+
+As it can be seen above, an AGO pipeline is not a single script that
+runs all steps at once.  This is motivated by the fact that each step
+of a phylogenomics pipeline is prone to errors (due to implemntation
+bugs of the considered tools for example, or inconsistencies with the
+input data formats), or might require to be tested with different
+options (e.g. in terms of the considered evolutionary model). So AGO
+is designed in such a way that a user can analyze the results of a
+step, possibly run it several times with various options, before
+providing its output to the next step; the creation of statistics
+files after each step allows the user to rely on high-level statistics
+in order to assess the quality of the computed results.
+
+
+Currently, the commands `slurm`, `bash` and `check` are available for
+all tools (`MACSE`, `IQ-TREE`, `GeneRax`, `ALE`, `DeCoSTAR`,
+`spp_dcj`), while the command `stats` is **not** available for the tools
+`MACSE` and `IQ-TREE`.
 
 
 ## Future work
