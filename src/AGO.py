@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-""" AGO pipeline main script"""
+""" AGO pipeline main script """
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
