@@ -431,69 +431,109 @@ directory of the pipeline.
   pipeline out-dated, and re-running the pipeline will generate
   different results.
 
-### Running tools: slurm/bash, check, stats, clean
+When initialized, AGO prints all data files for the pipeline and indicates if they already exist or will be computed.
+For example:
+```
+python src/AGO.py example/anopheles_X_ALE.yaml init
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/species_tree_4.newick.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/species_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/families_X_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_orders_X_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/sequences_X_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/alignments_X.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/alignments_X.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/reconciliations_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/adjacencies_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/adjacencies_ago_X.txt will be computed.
+```
 
 
+### Running tools
 
-A pipeline can then be ran, from a pipeline parameters file, by a sequence of AGO commands `slurm`, `bash`, `check`, `stats`, `clean`.
+Once a pipeline has been initialized, the tools it contain can be run
+using the following commands. Let `TOOL` be any tool of the pipeline
+(e.g. `MACSE`).
 
-For example, for the pipeline defined by [anopheles_X_GeneRax.yaml](../example/anopheles_X_GeneRax.yaml):
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml slurm MACSE
-```
-This will create a `slurm` script to run `MACSE`, that can be launched by the `slurm` command `sbatch`.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml check MACSE
-```
-This will check the results of `MACSE`, creating log files and a data file describing the MSA that were computed.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml slurm GeneRax
-```
-This will create a `slurm` script to run `GeneRax`, that can be launched by the `slurm` command `sbatch`.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml check GeneRax
-```
-This will check the results of `GeneRax`, creating log files and a data file describing the reconciled gene trees that were computed.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml stats GeneRax
-```
-This will create CSV files that describes statistics of the reconciled gene trees.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml bash DeCoSTAR
-```
-This will create a `bash` script to run `DeCoSTAR`.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml check DeCoSTAR
-```
-This will check the results of `DeCoSTAR`, creating log files and a data file describing the ancestral adjacencies that were computed.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml stats DeCoSTAR
-```
-This will create CSV files that describes statistics of the ancestral adjacencies.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ_ILP
-```
-This will create a `slurm` script to create the input (Integer Linear Program, ILP) required by `spp_dcj`.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ_ILP
-```
-This will check that the ILP required by `spp_dcj` has been properly computed.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml slurm SPPDCJ
-```
-This will create a `slurm` script to run `spp_dcj` (solving the ILP), computed conflict-free adjacencies for each ancestral species.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml check SPPDCJ
-```
-This will check the results of `spp-dcj`.
-```
-python src/AGO.py example/anopheles_X_GeneRax.yaml stats SPPDCJ
-```
-This will create CSV files that describes statistics of the ancestral adjacencies subsets defining ancestral gene orders.
+- `python src/AGO.py bash TOOL` creates a `bash` script to run
+  `TOOL`. The path to the created script is printed.
 
-We refer to [example/README.md](../example/README.md) for a precise
-description of running the three pipelines on the *Anopheles* X
-chromosome dataset.  
+- `python src/AGO.py slurm TOOL` creates a `slurm` script to run
+  `TOOL`. As above, the path to the created script is printed.
+
+For example:
+```
+python src/AGO.py example/anopheles_X_ALE.yaml slurm IQ-TREE
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh
+```
+
+The slurm script `/home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh` is can then be run by
+```
+sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh
+```
+
+Scripts to run a tool, as well as specific input files created from
+the pipeline data, are always written in the `aux/TOOL` subdirectory
+of the pipeline directory architecture.
+
+
+The files created by the tool are written in the subdirectory
+`results/<TOOL>` of the pipeline.
+
+Once a tool has finished to run, and has generated result files, these
+results files need to be recorded in the corresponding data files of
+the pipeline. This is done with the `check` command.
+```
+python src/AGO.py example/anopheles_X_ALE.yaml check IQ-TREE
+        ERRORS: 0
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/IQ-TREE.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt
+```
+This shows that the tool `IQ-TREE` generated as expected a gene trees
+file per gene family (`ERRORS: 0`) and they have been recorded in the
+gene trees data file of the pipeline
+`/home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt`.
+
+Logs files are recorded in the log directory of the pipeline. For each
+tool `TOOL`, a files `<TOOL>.log` is created that described which
+expected files were computed or are missing, and a `TOOL` subdirectory
+records all the log and error files generated by `slurm`. For example,
+after running `ALE` next using the gene trees as input:
+```
+python src/AGO.py example/anopheles_X_ALE.yaml check ALE
+        ERRORS: 66
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/ALE.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/reconciliations_X.txt
+```
+
+we can see that 66 expectted reconciliations files are missing (due to
+the fact that AGO currently assumes an evolutionary model without gene
+transfers and discards `ALE` results for families whose reconciled
+gene tree contains a gene transfer). They can be identified by looking at the file
+`/home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/ALE.log`:
+```
+grep ERROR /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/ALE.log
+ERROR   ALE     OG6100220       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/results/ALE/OG6100220.recphyloxml file is missing
+ERROR   ALE     OG6100435       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/results/ALE/OG6100435.recphyloxml file is missing
+ERROR   ALE     OG6100445       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/results/ALE/OG6100445.recphyloxml file is missing
+...
+```
+shows that for gene family `OG6100220` the expected reconciliation
+file `results/ALE/OG6100220.recphyloxml` is not present.
+
+In order to avoid propagating errors, the `check` command of AGO
+discards from the further steps the families for which the computation
+did not generate the expected file.
+
+For tools `ALE, GeneRax, DeCoSTAR, spp_dcj`, an additional command
+`stats` is available: running `python src/AGO.py stats TOOL` creates
+one or several `csv` files recording statistics on the results
+generated by the tool.
+
+Last, the command `python src/AGO.py clean TOOL` deletes the files
+generated by `TOOL`.
+
+We refer to [example/README.md](../example/README.md) for detailed
+illustrations of the three standard AGP pipelines.
 
 As it can be seen above, an AGO pipeline is not a single script that
 runs all steps at once.  This is motivated by the fact that each step
@@ -507,22 +547,29 @@ providing its output to the next step; the creation of statistics
 files after each step allows the user to rely on high-level statistics
 in order to assess the quality of the computed results.
 
+## Implementation notes
 
-Currently, the commands `slurm`, `bash` and `check` are available for
-all tools (`MACSE`, `IQ-TREE`, `GeneRax`, `ALE`, `DeCoSTAR`,
-`spp_dcj`), while the command `stats` is **not** available for the tools
-`MACSE` and `IQ-TREE`.
+The python code for creating and running the pipeline is in the directory `src`.
+
+Python scripts that are specific to some tool or some data format,
+used for example to create tool-specific inputs or reformat the
+results of a tool in order it is consistent with the pipeline data,
+are in the `scripts` directory.
+
+The YAML code specific to run each tool is in the directory `parameters`. 
 
 
 ## Future work
 
-Extant adjacencies and scaffolding
+The current release of AGO serves as a proof of concept for the idea
+of an ancestral gene orders reconstruction pipeline, together with the
+implementation of three different pipelines based on state-of-the-art
+tools.
 
-bali-phy/MrBayes/PhyloBayes/Beast/Muscle/spp
-
-HGT
-
-intermediate steps
+Future work will include an easier and less constrained
+parameterization of the tools, the inclusion of new tools (for example
+to compute MSAs or gene trees), the inclusion of options for the
+reconciliation tools and `DeCoSTAR` to allow lateral gene transfer.
 
 ## References
 
