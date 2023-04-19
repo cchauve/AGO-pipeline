@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-""" Reformat SPPDCJ adjacencies to be in DeCoSTAR format per sepcies """
+""" Reformat SPPDCJ adjacencies to be in DeCoSTAR format per species """
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
