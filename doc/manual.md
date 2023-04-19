@@ -482,7 +482,7 @@ well as some other variables that should not be edited
 `data_adjacencies_ext`, `data_ago_adjacencies_ext`).
 
 The header file [anopheles_X_ALE_header.yaml (line
-43)](example/anopheles_X_ALE_header.yaml) illustrates how the results
+43)](../example/anopheles_X_ALE_header.yaml) illustrates how the results
 of computations obtained with a different pipeline (in this case the
 MSAs computed by the GeneRax-based pipeline) can be reused as input
 data.
