@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-""" Create FASTA format gene orders from DeCoSTAR format adjacencies """
+""" Create FASTA format gene orders from DeCoSTAR format adjacencies and genes """
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
@@ -107,11 +107,9 @@ def traversal2FASTA(C, start_node, species, C_id):
     C_str = f'>{C_id}\n{nodes_str}\n'
     return C_str
     
-    
-
 def graph2FASTA(in_graph, species):
     '''
-    input: graph, specis
+    input: graph, species
     output: FASTA str
     '''
     components = list(nx.connected_components(in_graph))
@@ -123,10 +121,6 @@ def graph2FASTA(in_graph, species):
         FASTA_str += traversal2FASTA(subgraph, start_node, species, component_id)
         component_id += 1
     return FASTA_str
-
-''' Read graphs components '''
-def read_adjacencies_graph(in_graph):
-    print(list(nx.connected_components(in_graph)))
 
 def main():
     in_genes_file = sys.argv[1]
