@@ -28,8 +28,8 @@ pipelines; AGO in itself dos not introduce any novel algorithm, and
 aims solely at allowing to create pipelines based on published
 existing tools.
 
-The documentation below assumes knowledge of the phylogenomics approach described in <a
-href="https://doi.org/10.1007/978-1-4471-5298-9_4">Duplication,
+The documentation below assumes knowledge of the phylogenomics 
+approach described in <a href="https://doi.org/10.1007/978-1-4471-5298-9_4">Duplication,
 Rearrangement and Reconciliation: A Follow-Up 13 Years Later</a>.
 
 ## Installation
@@ -71,9 +71,9 @@ scheduler.
 
 An AGO pipeline is defined by the following elements:
 - a set of input data files that include, at minima, a species tree, a set of gene families and gene orders for extant species, together with possibly additional data depending on the specific implemented pipeline;
-- a set of external computational tools, each with specific options, aimed to be run in a specific order, aimed at processing the input data to generate a set of gene orders for the ancestral species defined by the input species tree.
+- a set of external computational tools, each with specific options, aimed to be run in sequence, to process the input data in order to generate a set of syntenies (gene adjacencies) and gene orders for the ancestral species.
 
-An AGO pipeline is described by a YAML parameters file that is composed of two parts:
+An AGO pipeline is described by a <a href="https://yaml.org/">YAML</a> parameters file that is composed of two parts:
 - the first part, customized by the user, describes the input data, the tools to use in the pipeline and the options to run each tool;
 - the second part, that is fixed and should not be modified by the user, describes how to implement each step of the pipeline.
 
@@ -82,12 +82,12 @@ interfaced to create three different pipelines, each broadly defined
 by the method used to computed reconciled gene trees.
 
 All three pipelines assumes that the input data contains a species
-tree, a set of gene families, gene orders for extant species and the
+tree, a set of homologous gene families, gene orders for extant species and the
 DNA sequences for the genes in each family.
 
 ### Pipeline 1, based on GeneRax
 
-In the first pipeline, the following steps are implemented:
+In the first pipeline (the `GeneRax` pipeline), the following steps are implemented:
 - for each gene family, an MSA is computed using `MACSE`;
 - for each gene family, a reconciled gene tree is computed from its MSA using `GeneRax`;
 - for each ancestral species, a set of candidate ancestral gene adjacencies, that might not be compatible with a linear ancestral gene order, is computed using `DeCoSTAR`;
@@ -97,7 +97,7 @@ This pipeline does not compute explicitly gene trees for the gene families, that
 
 ### Pipeline 2, based on ALE
 
-In the second pipeline, the following steps are implemented:
+In the second pipeline (the `ALE` pipeline), the following steps are implemented:
 - for each gene family, an MSA is computed using `MACSE`;
 - for each gene family, a sample of gene trees is computed from its MSA using `IQ-TREE`;
 - for each gene family, a reconciled gene tree is computed from the sampled gene trees using `ALE`;
@@ -106,7 +106,7 @@ In the second pipeline, the following steps are implemented:
 
 ### Pipeline 3, based on ecceTERA
 
-The third pipeline takes advantage of the fact that the parsimony reconciliation algorithm ecceTERA is implemented within DeCoSTAR:
+The third pipeline (the `ecceTERA` pipeline) takes advantage of the fact that the parsimony reconciliation algorithm ecceTERA is implemented within DeCoSTAR:
 - for each gene family, an MSA is computed using MACSE;
 - for each gene family, a sample of gene trees is computed from its MSA using IQ-TREE;
 - for each gene family, a reconciled gene tree is computed from the sampled gene trees using ecceTERA;
@@ -115,34 +115,42 @@ The third pipeline takes advantage of the fact that the parsimony reconciliation
 
 In this pipeline, the reconciled gene trees are not generated explicitly and are only created as input to the `DeCoSTAR` ancestral adjacencies inference algorithm.
 
+These three pipelines are illustrated in [example](../example)] where they are
+applied to a dataset of four *Anopheles* mosquito genomes, to reconstruct gene
+orders of the X chromosome of the three corresponding ancestral species.
+
 ### Alternative pipelines
 
-AGO allows to define alternative pipeline, where MSAs, gene trees and
-reconciled gene trees can have been generated independently to AGO and
-are provided to further steps.
+AGO allows to define alternative pipeline, where some steps can be skipped if the 
+corresponding results (MSAs, gene trees, reconciled gene trees, ancestral adjacencies) 
+have already been generated (either independently from AGo or by another GAO pipeline) 
+and are provided as input.
 
 For example, AGO allows a user to compute a sample of gene trees for
 each gene family using another method than IQ-TREE, such as <a
 href="https://nbisweden.github.io/MrBayes/">MrBayes</a>, followed by
-pipeline steps that rely on such gene trees (`ALE+DeCoSTAR+spp_dcj` as
-in pipeline 2 or `DeCoSTAR+spp_dcj` as in pipeline 3).
+steps that rely on such gene trees (e.g. `ALE+DeCoSTAR+spp_dcj` as
+in pipeline 2 or `DeCoSTAR+spp_dcj` as in pipeline 2).
+The examples described in [example](../example)] illustrats another use
+of this feature:
+- MSAs that have been computed by the `GeneRax` pipeline are used in the `ALE` pipeline;
+- gene trees that have been computed by the `ALE` pipeline are usd in the `ecceTERA` pipeline.
 
 Creating such a pipeline can be done by creating a pipeline YAML
-paramaters file in which the path to an existing gene trees data file
-is specified.
+paramaters file in which the path to an already existing data file
+is explicitly specified.
 
-Alternative pipeline can also skip the last step, `spp_dcj`, in which
-case only (potentially conflicting) ancestral adjacencies are
-computed.
-
-
+Alternative pipeline can also skip the last step, `spp_dcj`, that
+can be computationally intensive, in which case only (potentially 
+conflicting) ancestral syntenies (gene adjacencies) are computed, 
+without resulting in fully resolved ancestral gene orders
 
 ## File Formats
 
 The various tools interfaced into an AGO pipeline communicate through
 data files, each associated to a specific kind of data: species tree,
 species, gene orders, gene families, gene sequences, gene trees,
-reconciled gene trees and adjacencies.
+reconciled gene trees and adjacencies (both extant and ancestral).
 
 ### Species and species tree
 
@@ -169,12 +177,12 @@ python ./scripts/newick_utils.py species <species tree file> <species file>
 ### Gene families
 
 A *gene family* is composed of a set of extant genes. The file
-describing the set of all gene families is also a tabulated file where
+describing the set of all gene families is a tabulated file where
 each line defines a single family. Its format is
 ```
 family name<TAB>space-separated list of genes in format <species name><SEP><gene name>
 ```
-where `<SEP>` is specified separator character (suggested `|`).
+where `<SEP>` is a separator character (suggested separator: `|`).
 
 As for species, the actual name of a gene is assumed to be composed
 only of **alphanumeric characters**.
@@ -186,7 +194,7 @@ example.
 
 ### Gene orders
 
-A *gene orders* file is a tabulated file where each line contains the
+A *gene order* file is a tabulated file where each line contains the
 path to the gene order file for an extant species:
 ```
 extant species name<TAB>path to gene order file for the species
@@ -195,17 +203,17 @@ extant species name<TAB>path to gene order file for the species
 See [gene orders file](../data/VectorBase/gene_orders_X_4.txt)
 for an example.
 
-
 The gene order file for a given species is also a tabulated file where
 each line describes one gene as follows:
 ```
-species name<SEP>gene name<TAB>orientation (1 for forward, 0 for reverse)<TAB>start coordinate<TAB>end coordinate<TAB>unused field<TAB>chromosome/scaffold/contig
+species name<SEP>gene name<TAB>orientation (1 for forward, 0 for reverse)<TAB>start coordinate<TAB>end coordinate<TAB>unused field<TAB>location (chromosome/scaffold/contig)
 ```
 
 The genes are assumed to be **sorted first by location
-(chromosome/scaffold/contig) and then by start coordinate**. Moreover,
-AGO does assume that no gene is fully included (in terms of
-coordinate) within another gene, although overlapping genes are
+(chromosome/scaffold/contig) and then by start coordinate**. 
+
+Moreover, AGO does assume that **no gene is fully included (in terms of
+coordinates) within another gene**, although overlapping genes are
 allowed, in which case their relative order is defined by their start
 coordinate.
 
@@ -228,44 +236,49 @@ See [sequences file](../data/VectorBase/sequences_X_4.txt)
 for an example.
 
 Sequence data is optional in an AGO pipeline, currently only needed if
-MSAs are computed using `MACSE`.
+MSAs are computed using `MACSE`. In a pipeline that is provided with 
+MSAs, gene tres or reconciled gene trees as part of the input, a sequences
+file is not required.
 
 ### MSA
 
 The MSAs associated to gene families, if used in the pipeline, are
 described in a tabulated file in the format
 ```
-family name<TAB>path to MSA file for the family
+family name<TAB>path to the MSA file for the family
 ```
 Currently, MSAs are computed by `MACSE` that creates, for each gene
-family, two MSA files, one for nucleotide sequences (suffixed by
-`_NT.fasta`) and one for amino-acid sequences (suffixed by
+family, two MSA files, one in terms nucleotide sequences (suffixed by
+`_NT.fasta`) and one in terms of amino-acid sequences (suffixed by
 `_AA.fasta`).
 
 The tools currently included in AGO and processing MSAs assume that a
 single MSA is provided for each gene family. The AGO design however
-allows to associate to a gene family a sample of MSAs, if some
-subsequent steps would require such a representation of MSAs. This
-will be considered in further developments of AGO.
+could allow to associate to a gene family a sample of MSAs (for example
+generated by a tool such as 
+<a href="https://github.com/bredelings/BAli-Phy">BAli-Phy</a>), if some
+subsequent steps would require such a representation of MSAs. 
+This possibility will be considered in further developments of AGO.
 
 ### Gene trees and reconciled gene trees
 
-Similarly to MSAs, the gene tree, or set of gene trees, associated to
-gene families, are described in a tabulated file in the format
+Similarly to MSAs, the gene trees, or sets of sampled gene trees, 
+associated to gene families, are described in a tabulated file in 
+the format
 ```
 family name<TAB>path to gene tree(s) file for the family
 ```
 
 In the current version of AGO, gene trees are computed by `IQ-TREE`,
 under the form of a sample of bootstrap gene trees per family. This is
-motivated by the fact that gen trees are used either by `ecceTERA` or
+motivated by the fact that gene trees are used either by `ecceTERA` or
 `ALE` to compute reconciled gene trees using the amalgamation method
 that defines reconciled gene trees in terms of clades observed in a
 sample of gene trees.
 
 In the provided examples running `IQ-TREE` (file
 [anopheles_X_GeneRax_header.yaml](../example/anopheles_X_GeneRax_header.yaml)),
-1000 bootstrap gene trees are generated for each family.
+1,000 bootstrap gene trees are generated for each family.
 
 Reconciled gene trees are described in the same way:
 ```
@@ -274,18 +287,21 @@ family name<TAB>path to reconciled gene tree file for the family
 
 Reconciled gene trees are computed using either `GeneRax` (from an MSA
 per family), `ALE` or `ecceTERA` (both from a sample of gene trees per
-family). Reconciled gene trees are used by `DeCoSTAR` and are required
-to be provided in the <a
-href="http://phylariane.univ-lyon1.fr/recphyloxml/">recPhyloXML</a>
+family). Reconciled gene trees are used by `DeCoSTAR` to compute ancstral 
+gene adjacencies and are required to be provided in the 
+<a href="http://phylariane.univ-lyon1.fr/recphyloxml/">recPhyloXML</a>
 format.
 
 ### Gene adjacencies
 
-Gene orders computed by AGO are represented in the form of oriented gene adjacencies, i.e. adjacencies between pairs of gene extremities. 
-A gene adjacency file is associated to a single species. A dataset-wide set of gene adjacencies is described in a tabulated file in the format
+Gene orders computed by AGO are represented in the form of oriented gene 
+adjacencies, i.e. adjacencies between pairs of gene extremities. 
+A gene adjacency file is associated to a single species. 
+The set of all gene adjacencies is described in a tabulated file in the format
 ```
 species name<TAB>path to the an adjacencies file for the species
 ```
+where all species (extant and ancestral) have an associated adjacencies file.
 
 A gene adjacencies file for a given species is a space-separated file where each line encodes a single adjacency in the format
 ```
@@ -307,62 +323,62 @@ adjacencies computed from the `DeCoSTAR` adjacencies by `spp_dcj`.
 
 In this section, we describe several choices that are currently
 enforced regarding the use of the tools integrated in AGO
-pipelines. We refer to the references of the tools for detailed
-explanations.
-- `IQ-TREE` is used only in ultrafast bootstrap mode; the extension of the file computed by `IQ-TREE` used by AGO is `.ufboot`.
-- `ALE` uses amalgamation for computing (sampling) a single reconciliation per gene family.
-- Reconciliations generated by `ALE` that contain a gene transfer are discarded and the corresponding families are excluded from further steps.
-- `DeCoSTAR` does not consider gene transfer in its model and samples ancestral adjacencies using Boltzmann sampling.
+pipelines. We refer to the references (github repo, publication) 
+of the tools for detailed explanations.
+- `IQ-TREE` is used only in ultrafast bootstrap mode; the extension of the file computed by `IQ-TREE` used by AGO is thus `.ufboot`.
+- `GeneRax` runs in `undatedDL` model, this not allowing gene transfers.
+- `ALE` runs in undated maximum-likelihood mode (command `ALEml_undated`) and computes a single reconciled gene tree per gene family.
+- `ALE` allows gene transfers; this is motivated by a current implementation issue of `ALE` when used with the option `tau=0`. However, reconciliations generated by `ALE` that contain a gene transfer are discarded and the corresponding families are excluded from further steps.
+- `DeCoSTAR` does not consider gene transfers in its model and samples ancestral adjacencies using Boltzmann sampling.
 
 ## Pipeline creation and running
 
 ### Editing the parameters file header
 
-The main step in creating an AGO pipeline consists into editing the
-file [header template](../paramaters/header_template.yaml). This file
-is composed of five sections.
+The main step in creating an AGO pipeline consists in editing the
+file [header template](../paramaters/header_template.yaml). 
+This file is composed of five sections.
 
 The section `run:` contains a single required field,
 `run_dir_scripts`, the path to the directory containing the AGO
-scripts (directory `scripts` of this repo).
+scripts (directory [scripts](../scripts) of this repo).
 
 Other fields can be added in order to create YAML variables that can
 be reused. For example, in
 [anopheles_X_GeneRax_header.yaml](example/anopheles_X_GeneRax_header.yaml),
 this section contains several additional fields that are reused later
-in the file.
-
+in the file to define paths to access various data files.
 ```
 run:
-   # Run name
+   # [OPTIONAL] Run name
    - &run_name            'anopheles_X_GeneRax'
-   # Root directory created by cloning the AGO pipline github repo
+   # [OPTIONAL] Root directory created by cloning the AGO pipline github repo
    - &run_dir_root        '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
-   # VectorBase data
+   # [OPTIONAL] VectorBase data
    - &run_vectorbase_data !join [*run_dir_root, 'data', 'VectorBase']
-   # Directory containing the AGO pipeline scripts
+   # [REQUIRED] Directory containing the AGO pipeline scripts
    - &run_dir_scripts     !join [*run_dir_root, 'scripts']
-   # Directory containing all files created by the AGO pipeline
+   # [OPTIONAL] Directory containing all files created by the AGO pipeline
    - &run_dir_exp         !join ['/home/chauvec/projects/ctb-chauvec/AGO-pipeline', 'example', *run_name]
-   # Directory containing local installations of external tools
+   # [OPTIONAL] Directory containing local installations of external tools
    - &run_dir_bin         !join [*run_dir_root, 'bin']
 ```
-
 The YAML command `!join [ ... ]` allows to create a path by joining
-all its arguments by the symbol `/`.
+all its arguments by the symbol `/`, similar to the `os.path.join` 
+command of python).
 
 The section `slurm:` contains a single field, required only if the AGO
 pipeline is to use the `slurm` job scheduling system. The required
-field is the account used to run the pipeline processes.
+field is the account used to run the pipeline `slurm` processes.
 
-The section `dir:` contains the path to the various directories
+The section `dir:` contains the paths to the various directories
 created by the pipeline. These directories do not have to be all
 subdirectories of a same directory, although this is the most logical
-approach, which is used in
+approach, which is used for example in
 [anopheles_X_GeneRax_header.yaml](example/anopheles_X_GeneRax_header.yaml)
 ```
 dir:
-   # Directory containing the input used by AGO and the output files created by AGO
+   # Directory containing the input data and the outputdata files created by AGO
    data:    &dir_data    !join [*run_dir_exp, 'data']
    # Directory containing the input files and running scripts for each external tool
    aux:     &dir_aux     !join [*run_dir_exp, 'aux']
@@ -375,12 +391,12 @@ dir:
 ```
 where the directory associated to this specific pipeline is
 `/home/chauvec/projects/ctb-chauvec/AGO-pipeline/anopheles_X_GeneRax`
-and contains directories named `data`, `aux`, `log`, `statistics` and
+and contains subdirectories named `data`, `aux`, `log`, `statistics` and
 `results`.
 
 The next section, `data:` contains the path to the files either used
 as input by the pipeline or generated as output by the pipeline, as
-well as some other variables that should not be edited
+well as some other variables that **should not be edited**
 (`species_gene_name_separator`, `data_alignments_NT_ext`,
 `data_alignments_AA_ext`, `.data_reconciliations_ext`,
 `data_adjacencies_ext`, `data_ago_adjacencies_ext`).
@@ -388,23 +404,22 @@ well as some other variables that should not be edited
 The header file [anopheles_X_ALE_header.yaml (line
 43)](../example/anopheles_X_ALE_header.yaml) illustrates how the results
 of computations obtained with a different pipeline (in this case the
-MSAs computed by the GeneRax-based pipeline) can be reused as input
+MSAs computed by the `GeneRax` pipeline) can be reused as input
 data.
 
 Also, depending on the implemented pipeline, some data are not needed
-nor will be computed. For example, the GeneRax-based pipeline does not
+nor will be computed. For example, the `GeneRax` pipeline does not
 generate gene trees, but directly reconciled gene trees from the MSAs,
 so the fields related to gene trees in the template header have been
 deleted.
-
 
 Finally, the last section, `tools:` contains the parameters of the
 external tools integrated into the pipeline. There is a section per
 tool: it requires to be edited for the tools included in the pipeline,
 and can be deleted for the tools that are not part of the pipeline.
 
-Once a header file has been edited, a full parameters file can be
-created by the command
+Once a header file has been edited, a full parameters YAML file can be
+created by the AGO command
 ```
 python src/AGO.py <parameters file to be created> create <edited header file> <included tools: subset of MACSE, IQ-TREE, GeneRax, ALE, DeCoSTAR, SPPDCJ>
 ```
@@ -418,21 +433,20 @@ The initialization of a pipeline is done by the command
 ```
 python src/AGO.py <parameters file> init
 ```
-
 This creates, if needed, all the required directories, and copies the
 existing data files (the input to the pipeline) into the `data`
 directory of the pipeline.
 
-**Remark.** Initializing a pipeline copies in the `data` directories
+**Remark.** Initializing a pipeline copies in the `data` directory
   the pipeline data files that, for most, contain the paths to files
-  containing the actual data (such as the sequence data for the
+  containing the actual data (e.g. the sequence data for the
   genes). But these actual data files are not copied themselves, so any
   modification of these files will render the results obtained by the
   pipeline out-dated, and re-running the pipeline will generate
   different results.
 
-When initialized, AGO prints all data files for the pipeline and indicates if they already exist or will be computed.
-For example:
+When initialized, AGO prints all data files for the pipeline and indicates 
+if they already exist or will be computed. For example:
 ```
 python src/AGO.py example/anopheles_X_ALE.yaml init
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/species_tree_4.newick.
@@ -447,40 +461,44 @@ python src/AGO.py example/anopheles_X_ALE.yaml init
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/adjacencies_ago_X.txt will be computed.
 ```
 
-
 ### Running tools
 
 Once a pipeline has been initialized, the tools it contain can be run
 using the following commands. Let `TOOL` be any tool of the pipeline
 (e.g. `MACSE`).
 
-- `python src/AGO.py bash TOOL` creates a `bash` script to run
-  `TOOL`. The path to the created script is printed.
+- `python src/AGO.py bash <TOOL>` creates a `bash` script to run
+  the `TOOL` step of the pipeline. The path to the created script is printed.
 
-- `python src/AGO.py slurm TOOL` creates a `slurm` script to run
-  `TOOL`. As above, the path to the created script is printed.
+- `python src/AGO.py slurm <TOOL>` creates a `slurm` script to run
+  `TOOL`. As above, the path to the created script is printed and it can
+  be run using `sbatch`.
 
 For example:
 ```
 python src/AGO.py example/anopheles_X_ALE.yaml slurm IQ-TREE
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh
 ```
-
-The slurm script `/home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh` is can then be run by
+The slurm script `/home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh` 
+can then be run by
 ```
 sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh
 ```
 
 Scripts to run a tool, as well as specific input files created from
-the pipeline data, are always written in the `aux/TOOL` subdirectory
+the pipeline data, are always written in the `aux/<TOOL>` subdirectory
 of the pipeline directory architecture.
 
-
 The files created by the tool are written in the subdirectory
-`results/<TOOL>` of the pipeline.
+`results/<TOOL>` of the pipeline directory architecture.
+
+The tools `MACSE`, `IQ-TREE` and `ALE`, that process gene families independently
+are run through job arrays, that creates one job per gene family and allows to 
+run the tool in parallel. For `GeneRax`, AGO relies on the feature that it can be 
+run in parallel using MPI.
 
 Once a tool has finished to run, and has generated result files, these
-results files need to be recorded in the corresponding data files of
+results files, need to be recorded in the corresponding data files of
 the pipeline. This is done with the `check` command.
 ```
 python src/AGO.py example/anopheles_X_ALE.yaml check IQ-TREE
@@ -495,17 +513,16 @@ gene trees data file of the pipeline
 
 Logs files are recorded in the log directory of the pipeline. For each
 tool `TOOL`, a files `<TOOL>.log` is created that described which
-expected files were computed or are missing, and a `TOOL` subdirectory
+expected files were computed or are missing, and a `log/<TOOL>` subdirectory
 records all the log and error files generated by `slurm`. For example,
-after running `ALE` next using the gene trees as input:
+after running `ALE` using the gene trees as input:
 ```
 python src/AGO.py example/anopheles_X_ALE.yaml check ALE
         ERRORS: 66
         LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/ALE.log
         OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/reconciliations_X.txt
 ```
-
-we can see that 66 expectted reconciliations files are missing (due to
+we can see that 66 expected reconciliations files are missing (due to
 the fact that AGO currently assumes an evolutionary model without gene
 transfers and discards `ALE` results for families whose reconciled
 gene tree contains a gene transfer). They can be identified by looking at the file
@@ -517,23 +534,28 @@ ERROR   ALE     OG6100435       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/
 ERROR   ALE     OG6100445       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/results/ALE/OG6100445.recphyloxml file is missing
 ...
 ```
-shows that for gene family `OG6100220` the expected reconciliation
+shows for example that for gene family `OG6100220` the expected reconciliation
 file `results/ALE/OG6100220.recphyloxml` is not present.
 
 In order to avoid propagating errors, the `check` command of AGO
 discards from the further steps the families for which the computation
-did not generate the expected file.
+did not generate the expected file. So in the example above, when running
+`DeCoSTAR` after `ALE`, the genes belonging to the gene families for which
+reconciled gene trees are not available are not considered to define 
+extant gene adjacencies that will be used as input to `DeCoSTAR`; this is
+done automatically by AGO, without the need for the user to do any manual 
+modification of the input data.
 
 For tools `ALE, GeneRax, DeCoSTAR, spp_dcj`, an additional command
 `stats` is available: running `python src/AGO.py stats TOOL` creates
 one or several `csv` files recording statistics on the results
-generated by the tool.
+generated by the tool. They are written in the subdirectory `statistics/<TOOL>`.
 
 Last, the command `python src/AGO.py clean TOOL` deletes the files
 generated by `TOOL`.
 
 We refer to [example/README.md](../example/README.md) for detailed
-illustrations of the three standard AGP pipelines.
+illustrations of the three standard AGO pipelines.
 
 As it can be seen above, an AGO pipeline is not a single script that
 runs all steps at once.  This is motivated by the fact that each step
@@ -556,7 +578,8 @@ used for example to create tool-specific input files or reformat the
 result files of a tool in order that they are consistent with the pipeline data format,
 are in the `scripts` directory (see [scripts/README.md](../scripts/README.md)).
 
-The YAML code specific to run each tool is in the directory `parameters` (see [parameters/README.md](../parameters/README.md)). 
+The YAML code specific to run each tool is in the directory `parameters` 
+(see [parameters/README.md](../parameters/README.md)). 
 
 
 ## Future work
