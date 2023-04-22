@@ -11,6 +11,9 @@
   - Creates a species file from a species tree: `python newick_utils.py species <input: Newick species tree file> <output: species file>`
   - Removes ancestral species names from a species tree: `python newick_utils.py unlabel <input: Newick species tree file> <output: Newick species tree file with unlabeled ancestral nodes>`
 
+`fasta_utils.py`:
+- Auxiliary functions to manipulate FASTA files.
+
 `gene_orders_utils.py`:
 - Creates a gene order FASTA-like files from gene adjacencies for a given species.
 - USAGE: `python gene_orders_utils.py <input: DeCoSTAR genes file> <input file: gene adjacencies> <output: output directory> <output: gene order file>`

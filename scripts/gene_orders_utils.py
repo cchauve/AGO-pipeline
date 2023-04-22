@@ -107,8 +107,6 @@ def traversal2FASTA(C, start_node, species, C_id):
     C_str = f'>{C_id}\n{nodes_str}\n'
     return C_str
     
-    
-
 def graph2FASTA(in_graph, species):
     '''
     input: graph, specis
