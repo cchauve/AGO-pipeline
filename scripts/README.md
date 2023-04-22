@@ -4,6 +4,10 @@
 
 `data_utils.py`:
 - Auxiliary functions to manipulate AGO data files.
+- USAGE:
+   - Checks that input data is in correct format and consistent
+   - `python scripts/data_utils <input: Newick species tree file> <input: families file> <input: gene orders file> <input: sequences file/NA> <input: alignments file/NA> <input: gene trees fil/NA>
+   - print messages describing data correctness, stops at the first error.
 
 `newick_utils.py`:
 - Auxiliary functions to manipulate Newick and NHX trees.

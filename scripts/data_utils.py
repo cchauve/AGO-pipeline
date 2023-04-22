@@ -9,6 +9,7 @@ __version__   = "1.0"
 __status__    = "Released"
 
 import sys
+import os
 from operator import itemgetter
 from newick_utils import (
     newick_get_species,
@@ -236,9 +237,11 @@ def data_check_gene_name(name, species_list, sep):
     '''
     name_split = name.split(sep)
     check_format = (len(name_split) == 2)
+    if not check_format:
+        return False
     check_name = data_check_object_name(name_split[1])
     check_species = name_split[0] in species_list
-    return (check_format and check_name and check_species)
+    return (check_name and check_species)
 
 ''' Check for gene inclusion '''
 def data_check_gene_inclusion(gene_order):
@@ -307,6 +310,7 @@ def data_check_gene_orders_file(in_gene_orders_file, species_list, genes_list):
     - species errors:  1,[list of species in gene orders file not in species tree,list of species in species tree not in gene orders file]
     - gene inclusions: 2,list of genes inclusions (gene1,gene2)
     - genes errors:    3,[list of genes in gene orders files not in genes list,list of genes in genes list not in gene orders files]
+    - genes errors:    4,missing file
     '''
     species2gene_order_path = data_species2gene_order_path(in_gene_orders_file)
     go_species_list = species2gene_order_path.keys()
@@ -314,6 +318,10 @@ def data_check_gene_orders_file(in_gene_orders_file, species_list, genes_list):
     species_check,species_errors = _data_compare_lists(go_species_list,species_list)
     if not species_check:
         return 1,species_errors
+    # Checking files
+    missing_files = [f for f in species2gene_order_path.values() if not os.path.isfile(f)]
+    if len(missing_files)>0:
+        return 4,missing_files
     # Checking gene inclusions
     species2genes_order,genes_inclusions = {},[]
     for species in species_list:
@@ -324,7 +332,7 @@ def data_check_gene_orders_file(in_gene_orders_file, species_list, genes_list):
     # Checking genes lists
     go_genes_list = [g[0]  for s in species_list for g in species2genes_order[s]]
     genes_check,genes_errors = _data_compare_lists(go_genes_list,genes_list)
-    if not species_check:
+    if not genes_check:
         return 3,genes_errors
     # No error
     return 0,[]
@@ -343,6 +351,10 @@ def _data_check_family_indexed_file(in_file, family2genes_map, genes2family_map,
     families_check,families_errors = _data_compare_lists(family2genes_map.keys(),family2objects_file.keys())
     if not families_check:
         return 1,families_errors
+    # Checking files
+    missing_files = [f for f in family2objects_file.values() if not os.path.isfile(f)]
+    if len(missing_files)>0:
+        return 3,missing_files
     # Checking genes names
     genes_names = [
         g for family in family2objects_file.keys() for g in get_names(family2objects_file[family]) 
@@ -386,61 +398,73 @@ def data_check_gene_trees_file(in_gene_trees_file, family2genes_map, genes2famil
     '''
     return _data_check_family_indexed_file(in_gene_trees_file, family2genes_map, genes2family_map, newick_get_gene_trees_leaves)
 
-''' Main: testing '''
+''' Main: checking input data '''
 def main():
-    species_tree = sys.argv[1]
-    families = sys.argv[2]
-    gene_orders = sys.argv[3]
-    data = sys.argv[4]
-    data_type = sys.argv[5]
-
-    check_st,species_out = data_check_species_tree(species_tree)
+    in_species_tree = sys.argv[1]
+    in_families = sys.argv[2]
+    in_gene_orders = sys.argv[3]
+    in_sequences = sys.argv[4]
+    in_alignments = sys.argv[5]
+    in_gene_trees = sys.argv[6]    
+    # Species tree
+    check_st,st_out = data_check_species_tree(in_species_tree)
     if check_st != 0:
-        print(f'ERROR\tspecies tree\t{check_st}\t{species_output}')
+        print(f'ERROR\tSPECIES TREE\t{check_st}\t{st_out}')
         exit(1)
     else:
-        species_list = species_out
-        print('SUCCESS\tspecies tree')
-
-    check_fam,fam_out = data_check_families(families, species_list, '|')
+        species_list = st_out
+        print('SUCCESS\tSPECIES TREE')
+    # Families
+    check_fam,fam_out = data_check_families(in_families, species_list, '|')
     if check_fam == 1:        
-        print(f'ERROR\tfamilies file\tfamilies names\t{fam_out}')
+        print(f'ERROR\tFAMILIES\tfamilies names\t{fam_out}')
         exit(1)
     elif check_fam == 2:
-        print(f'ERROR\\tfamilies file\tgenes names\t{fam_out}')
+        print(f'ERROR\tFAMILIES\tgenes names\t{fam_out}')
         exit(1)
     else:
         f2g_map,g2f_map = fam_out[0],fam_out[1]
         genes_list = list(g2f_map.keys())
-        print('SUCCESS\tfamilies file')
-        
-    check_go,go_out = data_check_gene_orders_file(gene_orders, species_list, genes_list)
+        print('SUCCESS\tFAMILIES')
+    # Gene orders
+    check_go,go_out = data_check_gene_orders_file(in_gene_orders, species_list, genes_list)
     if check_go == 1:
-        print(f'ERROR\t\gene orders\tspecies\n\t{go_out[0]}\n\t{go_out[1]}')
+        print(f'ERROR\tGENE ORDERS\tspecies\n\t{go_out[0]}\n\t{go_out[1]}')
         exit(1)
     elif check_go == 2:
-        print(f'ERROR\tgene orders\tgene_inclusions\n\t{go_out}')
+        print(f'ERROR\tGENE ORDERS\tgene_inclusions\n\t{go_out}')
         exit(1)
     elif check_go == 3:
-        print(f'ERROR\t\gene orders\tgenes\n\t{go_out[0]}\n\t{go_out[1]}')
+        print(f'ERROR\tGENE ORDERS\tgenes\n\t{go_out[0]}\n\t{go_out[1]}')
         exit(1)
+    elif check_go == 4:
+        print(f'ERROR\tGENE ORDERS\tmissing file\t{go_out}')
+        exit(1)        
     else:
-        print('SUCCESS\tgene orders file')
-
-    if data_type == 'seq':
-        check_data,data_out = data_check_sequences_file(data, f2g_map, g2f_map)
-    elif data_type == 'msa':
-        check_data,data_out = data_check_alignments_file(data, f2g_map, g2f_map)
-    elif data_type == 'gt':
-        check_data,data_out = data_check_gene_trees_file(data, f2g_map, g2f_map)
-    if check_data == 1:
-        print(f'ERROR\t\{data_type}\tfamilies\n\t{data_out[0]}\n\t{data_out[1]}')
-        exit(1)
-    elif check_data == 2:
-        print(f'ERROR\t\{data_type}\tgenes\n\t{data_out[0]}\n\t{data_out[1]}')
-        exit(1)
-    else:
-        print(f'SUCCESS\t{data_type} file')
+        print('SUCCESS\tGENE ORDERS')
+    # Additional data
+    def print_check_data(check_code,check_out,data_type):
+        if check_code == 1:
+            print(f'ERROR\t{data_type}\tfamilies\n\t{check_out[0]}\n\t{check_out[1]}')
+            exit(1)
+        elif check_code == 2:
+            print(f'ERROR\t{data_type}\tgenes\n\t{check_out[0]}\n\t{check_out[1]}')
+            exit(1)
+        elif check_code == 3:
+            print(f'ERROR\t{data_type}\tmissing file\t{check_out}')
+            exit(1)
+        else:
+            print(f'SUCCESS\t{data_type}')
+        
+    if in_sequences != 'NA':
+        seq_check,seq_out = data_check_sequences_file(in_sequences, f2g_map, g2f_map)
+        print_check_data(seq_check,seq_out,'SEQUENCES')        
+    if in_alignments != 'NA':
+        msa_check,msa_out = data_check_alignments_file(in_alignments, f2g_map, g2f_map)        
+        print_check_data(msa_check,msa_out,'ALIGNMENTS')
+    if in_gene_trees != 'NA':
+        gts_check,gts_out = data_check_gene_trees_file(in_gene_trees, f2g_map, g2f_map)        
+        print_check_data(gts_check,gts_out,'GENE TREES')        
 
 if __name__ == "__main__":
     main()
