@@ -12,7 +12,8 @@ import sys
 from data_utils import (
     data_gene2family,
     data_species2gene_order_path,
-    data_family2reconciliation_path
+    data_family2reconciliation_path,
+    data_read_gene_order_file
 )
 
 ''' Read a gene order file and returns an order list of adjacencies strings '''
@@ -29,21 +30,18 @@ def decostar_gene_order2adjacencies_str(
     '''
     orientation = {'1': '+', '0': '-'}
     adjacencies = []
-    with open(in_gene_order_file, 'r') as gene_order:
-        prev_gene = None
-        for gene in gene_order.readlines():
-            gene_data = gene.rstrip().split()
-            gene_name = gene_data[0]
-            if in_gene2family_map[gene_name] in in_reconciled_families:
-                gene_chr,gene_sign = gene_data[5],gene_data[1]
-                gene_orientation = orientation[gene_sign]
-                if prev_gene is not None and prev_gene[1] == gene_chr:
-                    adjacency = [
-                        prev_gene[0],gene_name,
-                        prev_gene[2],gene_orientation,'1'
-                    ]
-                    adjacencies.append(f'{" ".join(adjacency)}')
-                prev_gene = [gene_name,gene_chr,gene_orientation]
+    gene_order = data_read_gene_order_file(in_gene_order_file)
+    prev_gene = None
+    for (gene_name,gene_chr,_,_,gene_sign) in gene_order:
+        if in_gene2family_map[gene_name] in in_reconciled_families:
+            gene_orientation = orientation[gene_sign]
+            if prev_gene is not None and prev_gene[1] == gene_chr:
+                adjacency = [
+                    prev_gene[0],gene_name,
+                    prev_gene[2],gene_orientation,'1'
+                ]
+                adjacencies.append(f'{" ".join(adjacency)}')
+            prev_gene = [gene_name,gene_chr,gene_orientation]
     return adjacencies
 
 ''' 

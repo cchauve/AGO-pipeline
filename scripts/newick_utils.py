@@ -15,6 +15,29 @@ import ete3
 NEWICK_EXTANT='extant'
 NEWICK_ANCESTRAL='ancestral'
 
+''' Check that the tree is rooted '''
+def newick_check_rooted(species_tree_file):
+    '''
+    input: paths to a Newick species tree
+    output: boolean
+    '''
+    tree = ete3.Tree(species_tree_file, format=1)
+    root = tree.get_tree_root()
+    nb_children = len(root.children)
+    return  (nb_children == 2)
+
+''' Check that internal nodes of a tree are named '''
+def newick_check_internal_names(species_tree_file):
+    '''
+    input: paths to a Newick species tree
+    output: boolean
+    '''
+    tree = ete3.Tree(species_tree_file, format=1)
+    for node in tree.traverse():
+        if len(node.name)==0:
+            return False
+    return True
+
 ''' Creates a map from node names to list of descendant extant species '''
 def newick_get_leaves(species_tree_file):
     '''
@@ -29,7 +52,30 @@ def newick_get_leaves(species_tree_file):
         for leaf in node:
             leaves[node.name].append(leaf.name)
         leaves[node.name].sort()
-    return(leaves)
+    return leaves
+
+''' Creates a list of list of leaves names from a file of gene trees '''
+def newick_get_gene_trees_leaves(gene_trees_file):
+    '''
+    input: paths to a file where each line is a Newick gene tree sequence
+    output: list of leave names in first tree
+    '''
+    with open(gene_trees_file, 'r') as in_file:
+        gene_tree = in_file.readline()
+        tree = ete3.Tree(gene_tree.rstrip(), format=1)
+        return [node.name for node in tree.traverse() if node.is_leaf()]
+
+''' List of species names '''
+def newick_get_species(species_tree_file, extant=False):
+    '''
+    input: paths to a Newick species tree file with internal nodes named
+    output: list of species names
+    '''
+    tree = ete3.Tree(species_tree_file, format=1)
+    if extant:
+        return [node.name for node in tree.traverse() if node.is_leaf()]
+    else:
+        return [node.name for node in tree.traverse()]
 
 ''' 
 Creates from a species tree file a species file of format

@@ -88,6 +88,16 @@ chosen for each tool.  Note that in this header file, we edit only the
 sections corresponding to the tools that will be used in the pipeline
 and delete the sections for unused tools (`IQ-TREE`, `ALE`).
 
+Before creating the pipeline parameters file, we check that the
+input data is in correct format and consistent:
+```
+(AGO-pipeline) > python scripts/data_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_4.txt NA NA
+SUCCESS SPECIES TREE
+SUCCESS FAMILIES
+SUCCESS GENE ORDERS
+SUCCESS SEQUENCES
+```
+
 Then we create the pipeline parameters file:
 
 ```
@@ -266,6 +276,15 @@ HPC system), `ALE` (installed locally), `DeCoSTAR` and `spp_dcj`
 access the `MACSE` MSAs generated in the previous experiment in order
 to not recompute them.
 
+We first check that the data is correctly formatted and consistent:
+```
+(AGO-pipeline) > python scripts/data_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/alignments_X.txt NA
+SUCCESS SPECIES TREE
+SUCCESS FAMILIES
+SUCCESS GENE ORDERS
+SUCCESS ALIGNMENTS
+```
+
 ```
 (AGO-pipeline) > python src/AGO.py example/anopheles_X_ALE.yaml create example/anopheles_X_ALE_header.yaml parameters IQ-TREE ALE DeCoSTAR SPPDCJ
         example/anopheles_X_ALE.yaml
@@ -403,6 +422,16 @@ In this last experiment, we reuse the gene trees obtained with
 are computed using the parsimony tool `ecceTERA`, implemented in
 `DeCoSTAR`. Note that in the header file, we deleted the sections
 about sequences and MSAs data, as they will not be eeded by any tool.
+
+
+We first check that the data is correctly formatted and consistent:
+```
+(AGO-pipeline) > python scripts/data_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt NA NA /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt 
+SUCCESS SPECIES TREE
+SUCCESS FAMILIES
+SUCCESS GENE ORDERS
+SUCCESS GENE TREES
+```
 
 ```
 (AGO-pipeline) > python src/AGO.py example/anopheles_X_ecceTERA.yaml create example/anopheles_X_ecceTERA_header.yaml parameters DeCoSTAR SPPDCJ
