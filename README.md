@@ -13,18 +13,18 @@ Rearrangement and Reconciliation: A Follow-Up 13 Years Later</a>
 (see also the review <a
 href="https://doi.org/10.1007/978-1-4939-7463-4_13">Comparative
 Methods for Reconstructing Ancient Genome Organization</a>).  It
-consists in the following steps:
+consists of the following steps:
 - computing a multiple sequences alignment (MSA) for each homologous gene family;  
 - computing a gene tree, or sample of gene trees, from the MSA for each gene family;  
 - computing a reconciled gene tree, from the MSA and/or gene tree(s), for each gene family;  
 - computing ancestral gene adjacency candidates from the species tree, the extant gene orders and the reconciled gene trees;  
-- clearing conflicts from the set of candidate ancestral gene adjacency (variant of the Small Parsimony Problem for gene orders).  
+- clearing conflicts from the set of candidate ancestral gene adjacencies (variant of the Small Parsimony Problem for gene orders).  
 
 This approach allows to account for the full complement of genes in
 extant genomes, at the expense of necessitating several steps,
 implemented in various tools, that are not trivial to interface
 together into a pipeline. AGO is aimed at easing the creation of such
-pipelines; AGO in itself dos not introduce any novel algorithm, and
+pipelines; AGO in itself does not introduce any novel algorithm, and
 aims solely at allowing to create pipelines based on published
 existing tools.
 
