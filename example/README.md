@@ -10,7 +10,7 @@ The ancestral gene orders are reconstructed according to three different version
 - all three approaches start from the same data, described in the section Data below;
 - all three approaches rely on Multiple Sequences Alignments (MSA) for the gene families obtained with the tool `MACSE`;
 - the first approach computes reconciled gene trees from the MSAs using the tool `GeneRax`;
-- the second approach computes gene trees samples using the tool `IQ-TREE` and reconciled gene tres from these gene trees using the tool `ALE`;
+- the second approach computes gene trees samples using the tool `IQ-TREE` and reconciled gene trees from these gene trees using the tool `ALE`;
 - the third approach computes reconciled gene trees from the `IQ-TREE` gene trees samples using the tool `ecceTERA` implemented in `DeCoSTAR`;
 - all three approaches computes ancestral gene adjacencies candidates using `DeCoSTAR` and remove conflicts from these adjacencies using the tool `spp_dcj`.
 
@@ -40,9 +40,9 @@ href="https://vectorbase.org/">VectorBase</a>, as described in
 [data/VectorBase/README.md](../data/VectorBase/README.md).
 
 They are composed of
-- a species tree with branch lengths, [species tree](../data/VectorBase/species_tree_4.newick);
-- 451 gene families containing 1,935 genes [gene families](../data/VectorBase/families_X_4.txt);
-- DNA sequences [sequences](../data/VectorBase/sequences_X_4.txt) for all genes, grouped by families.
+- a [species tree](../data/VectorBase/species_tree_4.newick) with branch lengths;
+- 451 [gene families](../data/VectorBase/families_X_4.txt) containing 1,935 genes;
+- DNA [sequences](../data/VectorBase/sequences_X_4.txt) for all genes, grouped by families.
 
 
 Note that the sequences file is provided with absolute path with
@@ -51,7 +51,7 @@ experiments that were ran on the `cedar` HPC cluster of the <a
 href="https://alliancecan.ca/en">Digital Research Alliance of
 Canada</a>; to be reproduced, this prefix will need to be changed.
 
-Similarly, the path to access to the external tools used in the
+Similarly, the path to access the external tools used in the
 pipelines (`MACSE`, `GeneRax`, `IQ-TREE`, `ALE`, `DeCoSTAR`,
 `spp_dcj`) are provided in the parameters files under the assumption
 that all such tools are either available as a module on the
@@ -61,13 +61,13 @@ need to be updated to be reproduced on another system.
 
 Finally, all computations we ran within a python 3 virtual environment
 `AGO-pipeline` including all the required packages (see
-[README.md](../README.md).
+[README.md](../README.md)).
 
 ## GeneRax-based pipeline
 
 We first create a parameters file for a pipeline that uses, in
 sequence, `MACSE` to compute MSAs based on nucleotide sequences,
-`GeneRax` to compute reconciled gene tres from these alignments,
+`GeneRax` to compute reconciled gene trees from these alignments,
 `DeCoSTAR` to compute ancestral adjacencies, and `spp_dcj` to compute a
 set of conflict-free adjacencies defining ancestral gene orders.
 
@@ -168,7 +168,7 @@ is slightly higher than the number of extant genes and one can suspect
 the well-documented issue of the reconciliation algorithm having a
 tendancy to locate duplications higher in the species tree.
   
-Next to illustrate the feature that the AGO pipeline tools can be ran
+Next, to illustrate the feature that the AGO pipeline tools can be ran
 either through `slurm` or a `bash` script, we run `DeCoSTAR` as a bash script,
 redirecting the standard output and error output into specific files.
 
@@ -199,7 +199,7 @@ We can observe that `DeCoSTAR` runs with no error. But the statistics
 on the resulting ancestral adjacencies show that we can expect highly
 fragmented ancestral gene orders, as there is a significant level of
 free gene extremities in the ancestral gene adjacencies. The level of
-conflict in the ancestral gene adjacencies is howver very low.
+conflict in the ancestral gene adjacencies is however very low.
   
 Finally, we clear the conflict in ancestral adjacencies using
 `spp_dcj`. This requires to first compute the Mixed Integer Linear
@@ -269,7 +269,7 @@ however, we filter out all gene families for which the reconciled gene
 tree includes a lateral gene transfer.
 
 Similarly to the previous experiment, we first edit a parameters file
-header ([ALE pipeline header](anopheles_X_ALE_header.yaml), writing
+header ([ALE pipeline header](anopheles_X_ALE_header.yaml)), writing
 the parameters for the tools `IQ-TREE` (available as a module in our
 HPC system), `ALE` (installed locally), `DeCoSTAR` and `spp_dcj`
 (similar to the previous experiment) and writing an explicit path to
@@ -421,7 +421,7 @@ In this last experiment, we reuse the gene trees obtained with
 `IQ-TREE` in the previous experiment, but the reconciled gene trees
 are computed using the parsimony tool `ecceTERA`, implemented in
 `DeCoSTAR`. Note that in the header file, we deleted the sections
-about sequences and MSAs data, as they will not be eeded by any tool.
+about sequences and MSAs data, as they will not be needed by any tool.
 
 
 We first check that the data is correctly formatted and consistent:
