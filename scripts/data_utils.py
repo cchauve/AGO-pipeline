@@ -412,12 +412,13 @@ def data_check_alignments_file(in_alignments_file, family2genes_map, genes2famil
 ''' Check gene tree(s) file '''
 def data_check_gene_trees_file(in_gene_trees_file, family2genes_map, genes2family_map):
     '''
-    input: path to alignments file, family2genes map, genes2family map
+    input: path to gene trees file, family2genes map, genes2family map
     output:
-    - no error: 0,[missing files]
-    - error:    1,[list of gene trees file with no family]
-    - error:    2,dict(fam_id -> [missing genes,unknown genes])
-    - error:    4,[missing files]
+    - no error: 0,[]
+    - error:    1,[list of families with no gene trees file,list of gene trees file with no family]
+    - error:    2,[list of genes in families not in gene trees,list of genes in gene trees not in families]
+    - error:    3,list of missing gene trees files
+    - error:    4,[list of species not in reconciliations,list of species in reconciliations not in species tree]
     '''
     return _data_check_family_indexed_file(in_gene_trees_file, family2genes_map, genes2family_map, [], None, newick_get_gene_trees_leaves)
 
@@ -440,10 +441,8 @@ def main():
     in_species_tree = sys.argv[1]
     in_families = sys.argv[2]
     in_gene_orders = sys.argv[3]
-    in_sequences = sys.argv[4]
     in_data = sys.argv[4]
     in_data_type = sys.argv[5]
-    
     # Species tree
     check_st,st_out = data_check_species_tree(in_species_tree)
     if check_st != 0:
@@ -504,7 +503,7 @@ def main():
             print(f'WARNING\t{data_type}\tmissing families\n\t{out_str}')
         else:
             print(f'SUCCESS\t{data_type}')
-
+        
     if in_data_type == 'sequences':
         seq_check,seq_out = data_check_sequences_file(in_data, f2g_map, g2f_map)
         print_check_data(seq_check,seq_out,'SEQUENCES')        
@@ -517,7 +516,7 @@ def main():
     elif in_data_type == 'reconciliations':
         rec_check,rec_out = data_check_reconciliations_file(in_data, f2g_map, g2f_map, species_list)        
         print_check_data(rec_check,rec_out,'RECONCILIATIONS')           
-            
+
 
 if __name__ == "__main__":
     main()
