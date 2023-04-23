@@ -91,7 +91,7 @@ and delete the sections for unused tools (`IQ-TREE`, `ALE`).
 Before creating the pipeline parameters file, we check that the
 input data is in correct format and consistent:
 ```
-(AGO-pipeline) > python scripts/data_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_4.txt NA NA
+(AGO-pipeline) > python scripts/data_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_4.txt 'sequences'
 SUCCESS SPECIES TREE
 SUCCESS FAMILIES
 SUCCESS GENE ORDERS
@@ -278,7 +278,7 @@ to not recompute them.
 
 We first check that the data is correctly formatted and consistent:
 ```
-(AGO-pipeline) > python scripts/data_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/alignments_X.txt NA
+(AGO-pipeline) > python scripts/data_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/alignments_X.txt 'alignments'
 SUCCESS SPECIES TREE
 SUCCESS FAMILIES
 SUCCESS GENE ORDERS
@@ -426,7 +426,7 @@ about sequences and MSAs data, as they will not be eeded by any tool.
 
 We first check that the data is correctly formatted and consistent:
 ```
-(AGO-pipeline) > python scripts/data_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt NA NA /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt 
+(AGO-pipeline) > python scripts/data_utils.py /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt 'gene_trees'
 SUCCESS SPECIES TREE
 SUCCESS FAMILIES
 SUCCESS GENE ORDERS
