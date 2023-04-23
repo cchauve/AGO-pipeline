@@ -352,7 +352,7 @@ be used as follows:
 python scripts/data_utils <input: Newick species tree file> <input: families file> <input: gene orders file> <input: data file> <input: data type ('sequences','alignmen
 ts','gene_trees','reconciliations')>
 ```
-and prints a waning for each missing file (corresponding to a gene
+and prints a warning for each missing file (corresponding to a gene
 family for which the corresponding data is not available), or exits as
 soon as a data error is encountered, printing an error message
 describing the error.
