@@ -7,24 +7,24 @@ pipelines for reconstructing ancestral syntenies and gene orders in a phylogenet
 context, from extant gene orders, gene families and gene sequence
 data.
 
-AGO pipelines are is based on the general methodology described in <a
+AGO pipelines are based on the general methodology described in <a
 href="https://doi.org/10.1007/978-1-4471-5298-9_4">Duplication,
 Rearrangement and Reconciliation: A Follow-Up 13 Years Later</a>
 (see also the review <a
 href="https://doi.org/10.1007/978-1-4939-7463-4_13">Comparative
 Methods for Reconstructing Ancient Genome Organization</a>).  It
-consists in the following steps:
+consists of the following steps:
 - computing a multiple sequences alignment (MSA) for each homologous gene family;
 - computing a gene tree, or sample of gene trees, from the MSA for each gene family;
 - computing a reconciled gene tree, from the MSA and/or gene tree(s), for each gene family;
 - computing ancestral gene adjacency candidates from the species tree, the extant gene orders and the reconciled gene trees;
-- clearing conflicts from the set of candidate ancestral gene adjacency (variant of the Small Parsimony Problem for gene orders).
+- clearing conflicts from the set of candidate ancestral gene adjacencies (variant of the Small Parsimony Problem for gene orders).
 
 This approach allows to account for the full complement of genes in
 extant genomes, at the expense of necessitating several steps,
 implemented in various tools, that are not trivial to interface
 together into a pipeline. AGO is aimed at easing the creation of such
-pipelines; AGO in itself dos not introduce any novel algorithm, and
+pipelines; AGO in itself does not introduce any novel algorithm, and
 aims solely at allowing to create pipelines based on published
 existing tools.
 
@@ -79,9 +79,9 @@ An AGO pipeline is described by a <a href="https://yaml.org/">YAML</a> parameter
 
 The external tools that can be integrated into an AGO pipeline can be
 interfaced to create three different pipelines, each broadly defined
-by the method used to computed reconciled gene trees.
+by the method used to compute reconciled gene trees.
 
-All three pipelines assumes that the input data contains a species
+All three pipelines assume that the input data contains a species
 tree, a set of homologous gene families, gene orders for extant species and the
 DNA sequences for the genes in each family.
 
@@ -115,7 +115,7 @@ The third pipeline (the `ecceTERA` pipeline) takes advantage of the fact that th
 
 In this pipeline, the reconciled gene trees are not generated explicitly and are only created as input to the `DeCoSTAR` ancestral adjacencies inference algorithm.
 
-These three pipelines are illustrated in [example](../example)] where they are
+These three pipelines are illustrated in [[example](../example)] where they are
 applied to a dataset of four *Anopheles* mosquito genomes, to reconstruct gene
 orders of the X chromosome of the three corresponding ancestral species.
 
@@ -123,15 +123,15 @@ orders of the X chromosome of the three corresponding ancestral species.
 
 AGO allows to define alternative pipeline, where some steps can be skipped if the 
 corresponding results (MSAs, gene trees, reconciled gene trees, ancestral adjacencies) 
-have already been generated (either independently from AGo or by another GAO pipeline) 
+have already been generated (either independently from AGO or by another AGO pipeline) 
 and are provided as input.
 
 For example, AGO allows a user to compute a sample of gene trees for
 each gene family using another method than IQ-TREE, such as <a
 href="https://nbisweden.github.io/MrBayes/">MrBayes</a>, followed by
 steps that rely on such gene trees (e.g. `ALE+DeCoSTAR+spp_dcj` as
-in pipeline 2 or `DeCoSTAR+spp_dcj` as in pipeline 2).
-The examples described in [example](../example)] illustrats another use
+in pipeline 2 or `DeCoSTAR+spp_dcj` as in pipeline 3).
+The examples described in [[example](../example)] illustrats another use
 of this feature:
 - MSAs that have been computed by the `GeneRax` pipeline are used in the `ALE` pipeline;
 - gene trees that have been computed by the `ALE` pipeline are usd in the `ecceTERA` pipeline.
@@ -140,7 +140,7 @@ Creating such a pipeline can be done by creating a pipeline YAML
 paramaters file in which the path to an already existing data file
 is explicitly specified.
 
-Alternative pipeline can also skip the last step, `spp_dcj`, that
+Alternative pipelines can also skip the last step, `spp_dcj`, that
 can be computationally intensive, in which case only (potentially 
 conflicting) ancestral syntenies (gene adjacencies) are computed, 
 without resulting in fully resolved ancestral gene orders
@@ -287,7 +287,7 @@ family name<TAB>path to reconciled gene tree file for the family
 
 Reconciled gene trees are computed using either `GeneRax` (from an MSA
 per family), `ALE` or `ecceTERA` (both from a sample of gene trees per
-family). Reconciled gene trees are used by `DeCoSTAR` to compute ancstral 
+family). Reconciled gene trees are used by `DeCoSTAR` to compute ancestral 
 gene adjacencies and are required to be provided in the 
 <a href="http://phylariane.univ-lyon1.fr/recphyloxml/">recPhyloXML</a>
 format.
