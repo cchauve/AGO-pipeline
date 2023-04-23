@@ -121,20 +121,21 @@ orders of the X chromosome of the three corresponding ancestral species.
 
 ### Alternative pipelines
 
-AGO allows to define alternative pipeline, where some steps can be skipped if the 
-corresponding results (MSAs, gene trees, reconciled gene trees, ancestral adjacencies) 
-have already been generated (either independently from AGO or by another AGO pipeline) 
-and are provided as input.
+AGO allows to define alternative pipeline, where some steps can be
+skipped if the corresponding results (MSAs, gene trees, reconciled
+gene trees) have already been generated (either independently from AGO
+or by another AGO pipeline) and are provided as input.
 
 For example, AGO allows a user to compute a sample of gene trees for
 each gene family using another method than IQ-TREE, such as <a
 href="https://nbisweden.github.io/MrBayes/">MrBayes</a>, followed by
 steps that rely on such gene trees (e.g. `ALE+DeCoSTAR+spp_dcj` as
 in pipeline 2 or `DeCoSTAR+spp_dcj` as in pipeline 3).
-The examples described in [[example](../example)] illustrats another use
+The examples described in [[example](../example)] illustrates another use
 of this feature:
 - MSAs that have been computed by the `GeneRax` pipeline are used in the `ALE` pipeline;
 - gene trees that have been computed by the `ALE` pipeline are usd in the `ecceTERA` pipeline.
+
 
 Creating such a pipeline can be done by creating a pipeline YAML
 paramaters file in which the path to an already existing data file
@@ -332,6 +333,33 @@ of the tools for detailed explanations.
 - `DeCoSTAR` does not consider gene transfers in its model and samples ancestral adjacencies using Boltzmann sampling.
 
 ## Pipeline creation and running
+
+### Validating input data
+
+The script [data_utils.py](../scripts/data_utils.py) can be used to check
+if a data set satisfies all requirements to serve as input to an AGO
+pipeline.
+
+Given a species tree, a gene families file, a gene orders file and a
+data file (a file indexed by gene families names and indicating for
+each gene family either its sequences, alignments, gene trees or
+reconciled gene trees), this script analyzes the data, checking that
+all gene and species names are as expected, that the data is
+consistent in terms of gene and family names, gene content of each
+family and extant species, absence of gene inclusion. The script can
+be used as follows:
+```
+python scripts/data_utils <input: Newick species tree file> <input: families file> <input: gene orders file> <input: data file> <input: data type ('sequences','alignmen
+ts','gene_trees','reconciliations')>
+```
+and prints a waning for each missing file (corresponding to a gene
+family for which the corresponding data is not available), or exits as
+soon as a data error is encountered, printing an error message
+describing the error.
+
+It is recommended to run this script prior to creating an AGO
+pipeline.
+
 
 ### Editing the parameters file header
 
