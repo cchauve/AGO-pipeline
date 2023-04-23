@@ -45,6 +45,7 @@ the following python packages, that are required:
 - <a href="https://numpy.org/">numpy, version 1.24.2</a>.
 - <a href="https://pandas.pydata.org/pandas-docs/version/1.5.3/">pandas, version 1.5.3</a>.
 - <a href="https://pypi.org/project/PyYAML/6.0/">PyYAML, version 6.0</a>.
+- <a href="https://biopython.org/">Biopython, version 1.81</a>.
 
 AGO allows to include the following external tools in an ancestral
 gene orders reconstruction pipeline:
