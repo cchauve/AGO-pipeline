@@ -285,7 +285,10 @@ def data_check_species_tree(species_tree_file):
 def data_check_families(in_families_file, species_list, sep):
     '''
     input: path to families file, species list, separator character
-    output: boolean,False:family errors/True:map family to genes,False:genes errors/True:map gene to family
+    output: 
+    - 1,[families with incorrect names]
+    - 2,[genes with incorrect names]
+    - 0,[fam to genes map,gene to fam map]
     '''
     g2f_map = data_gene2family(in_families_file)
     f2g_map = data_family2genes(in_families_file)
@@ -299,12 +302,12 @@ def data_check_families(in_families_file, species_list, sep):
         return 0,[f2g_map,g2f_map]
 
 def _data_compare_lists(list1,list2):
+    ''' 
+    Compare 2 lists and returns (list of elements in first but not in second,lis of elements in second but not in first)
+    '''
     errors1 = [x for x in list1 if x not in list2]
     errors2 = [x for x in list2 if x not in list1]
-    if len(errors1)+len(errors2) > 0:
-        return False,[errors1,errors2]
-    else:
-        return True,[]
+    return [errors1,errors2]
 
 ''' Check gene orders files '''
 def data_check_gene_orders_file(in_gene_orders_file, species_list, genes_list):
@@ -313,17 +316,17 @@ def data_check_gene_orders_file(in_gene_orders_file, species_list, genes_list):
     output: 
     - no error:        0,[]
     - species errors:  1,[list of species in gene orders file not in species tree,list of species in species tree not in gene orders file]
-    - gene inclusions: 2,list of genes inclusions (gene1,gene2)
+    - gene inclusions: 2,[genes inclusions (gene1,gene2)]
     - genes errors:    3,[list of genes in gene orders files not in genes list,list of genes in genes list not in gene orders files]
-    - genes errors:    4,missing file
+    - missing files:   4,[missing files]
     '''
     species2gene_order_path = data_species2gene_order_path(in_gene_orders_file)
     go_species_list = species2gene_order_path.keys()
     # Checking species lists
-    species_check,species_errors = _data_compare_lists(go_species_list,species_list)
-    if not species_check:
-        return 1,species_errors
-    # Checking files
+    species_diff = _data_compare_lists(go_species_list,species_list)
+    if len(species_diff[0]+species_diff[1])>0:
+        return 1,species_diff
+    # Checking missing files
     missing_files = [f for f in species2gene_order_path.values() if not os.path.isfile(f)]
     if len(missing_files)>0:
         return 4,missing_files
@@ -332,13 +335,13 @@ def data_check_gene_orders_file(in_gene_orders_file, species_list, genes_list):
     for species in species_list:
         species2genes_order[species] = data_read_gene_order_file(species2gene_order_path[species])
         genes_inclusions += data_check_gene_inclusion(species2genes_order[species])
-    if len(genes_inclusions) > 0:
+    if len(genes_inclusions)>0:
         return 2,genes_inclusions
     # Checking genes lists
     go_genes_list = [g[0]  for s in species_list for g in species2genes_order[s]]
-    genes_check,genes_errors = _data_compare_lists(go_genes_list,genes_list)
-    if not genes_check:
-        return 3,genes_errors
+    genes_diff = _data_compare_lists(go_genes_list,genes_list)
+    if len(genes_diff[0]+genes_diff[1])>0:
+        return 3,genes_diff
     # No error
     return 0,[]
 
@@ -347,48 +350,50 @@ def _data_check_family_indexed_file(in_file, family2genes_map, genes2family_map,
     '''
     input: path to family indexed file, family2genes map, genes2family map, name getting function
     output:
-    - no error: 0,[]
-    - error:    1,[list of families with no object file,list of object files with no family]
-    - error:    2,[list of genes in families not in objects,list of genes in objects not in families]
-    - error:    3,list of missing sequences files
-    - error:    4,[list of species not in objects file,list of species in objects not in species]
+    - no error: 0,[missing families]
+    - error:    1,[unknown families]
+    - error:    2,dict(fam_id -> [missing objects,unknown objects])
+    - error:    3,dict(fam_id -> [missing species,unknown species])
+    - error:    4,[missing files]
     '''
     family2objects_file = _data_create_map(in_file)
-    # Checking families
-    families_check,families_errors = _data_compare_lists(family2genes_map.keys(),family2objects_file.keys())
-    if not families_check:
-        return 1,families_errors
-    # Checking files
+    # Checking for unknown/missing families
+    families_diff = _data_compare_lists(family2genes_map.keys(),family2objects_file.keys())
+    if len(families_diff[1])>0:  return 1,families_diff[1]
+    else:  missing_families = families_diff[0]
+    # Checking missing files
     missing_files = [f for f in family2objects_file.values() if not os.path.isfile(f)]
-    if len(missing_files)>0:
-        return 3,missing_files
+    if len(missing_files)>0: return 4,missing_files
     # Checking species
-    in_species_list = []
+    species_errors = {}
     if get_species_list is not None:
-        for family,object_file in family2objects_file.items():
-            in_species_list += [s for s in get_species_list(object_file) if s not in in_species_list]
-        species_check,species_errors = _data_compare_lists(species_list,in_species_list)
-        if not species_check:
-            return 4,species_errors
-    # Checking genes names
-    genes_names = [
-        g for family in family2objects_file.keys() for g in get_genes_names(family2objects_file[family]) 
-    ]
-    genes_check,genes_errors = _data_compare_lists(genes2family_map.keys(),genes_names)
-    if not genes_check:
-        return 2,genes_errors
+        for fam_id,fam_file in family2objects_file.items():
+            species_list2 = [s for s in get_species_list(fam_file)]
+            species_diff = _data_compare_lists(species_list,species_list2)
+            if len(species_diff[0]+species_diff[1])>0:
+                species_errors[fam_id] = species_diff
+    if len(species_errors.keys())>0: return 3,species_errors    
+    # Checking for missing/unknown genes names
+    genes_errors = {}
+    for fam_id,fam_file in family2objects_file.items():
+        genes_names1 = family2genes_map[fam_id]
+        genes_names2 = get_genes_names(family2objects_file[fam_id])
+        genes_diff = _data_compare_lists(genes_names1,genes_names2)
+        if len(genes_diff[0]+genes_diff[1])>0:
+            genes_errors[fam_id] = genes_diff
+    if len(genes_errors.keys())>0: return 2,genes_errors
     # No error
-    return 0,[]
+    return 0,missing_families
     
 ''' Check sequences files '''
 def data_check_sequences_file(in_sequences_file, family2genes_map, genes2family_map):
     '''
     input: path to sequences file, family2genes map, genes2family map
     output:
-    - no error: 0,[]
-    - error:    1,[list of families with no sequence file,list of sequence file with no family]
-    - error:    2,[list of genes in families not in sequences,list of genes in sequences not in families]
-    - error:    3,list of missing sequences files
+    - no error: 0,[missing files]
+    - error:    1,[list of sequence file with no family]
+    - error:    2,dict(fam_id -> [missing genes,unknown genes])
+    - error:    4,[missing files]
     '''
     return _data_check_family_indexed_file(in_sequences_file, family2genes_map, genes2family_map, [], None, fasta_get_names)
 
@@ -397,10 +402,10 @@ def data_check_alignments_file(in_alignments_file, family2genes_map, genes2famil
     '''
     input: path to alignments file, family2genes map, genes2family map
     output:
-    - no error: 0,[]
-    - error:    1,[list of families with no alignment file,list of alignment file with no family]
-    - error:    2,[list of genes in families not in alignments,list of genes in alignments not in families]
-    - error:    3,list of missing alignment files
+    - no error: 0,[missing files]
+    - error:    1,[list of alignment file with no family]
+    - error:    2,dict(fam_id -> [missing genes,unknown genes])
+    - error:    4,[missing files]
     '''
     return _data_check_family_indexed_file(in_alignments_file, family2genes_map, genes2family_map, [], None, fasta_get_names)
 
@@ -422,10 +427,11 @@ def data_check_reconciliations_file(in_reconciliations_file, family2genes_map, g
     '''
     input: path to reconciliations file, family2genes map, genes2family map, lis of species
     output:
-    - no error: 0,[]
-    - error:    1,[list of families with no gene trees file,list of gene trees file with no family]
-    - error:    2,[list of genes in families not in gene trees,list of genes in gene trees not in families]
-    - error:    3,list of missing reconciliations files
+    - no error: 0,[missing files]
+    - error:    1,[list of gene trees file with no family]
+    - error:    2,dict(fam_id -> [missing objects,unknown objects])
+    - error:    3,dict(fam_id -> [missing species,unknwon species])
+    - error:    4,[missing files]
     '''
     return _data_check_family_indexed_file(in_reconciliations_file, family2genes_map, genes2family_map, species_list, xml_get_species, xml_get_extant_leaves)
 
@@ -446,12 +452,12 @@ def main():
         extant_species_list,species_list = st_out[0],st_out[1]
         print('SUCCESS\tSPECIES TREE')
     # Families
-    check_fam,fam_out = data_check_families(in_families, extant_species_list, '|')
-    if check_fam == 1:        
-        print(f'ERROR\tFAMILIES\tfamilies names\t{fam_out}')
+    check_fam,fam_out = data_check_families(in_families, species_list, '|')
+    if check_fam == 1:
+        print(f'ERROR\tFAMILIES\tfamilies names\t{",".join(fam_out)}')
         exit(1)
     elif check_fam == 2:
-        print(f'ERROR\tFAMILIES\tgenes names\t{fam_out}')
+        print(f'ERROR\tFAMILIES\tgenes names\t{f",".join(fam_out)}')
         exit(1)
     else:
         f2g_map,g2f_map = fam_out[0],fam_out[1]
@@ -460,33 +466,41 @@ def main():
     # Gene orders
     check_go,go_out = data_check_gene_orders_file(in_gene_orders, extant_species_list, genes_list)
     if check_go == 1:
-        print(f'ERROR\tGENE ORDERS\tspecies\n\t{go_out[0]}\n\t{go_out[1]}')
+        print(f'ERROR\tGENE ORDERS\tspecies\n\tmissing: {",".join(go_out[0])}\n\tunknown: {",".join(go_out[1])}')
         exit(1)
     elif check_go == 2:
-        print(f'ERROR\tGENE ORDERS\tgene_inclusions\n\t{go_out}')
+        out_str = ",".join([f'{x[0]}:{x[1]}' for x in go_out])
+        print(f'ERROR\tGENE ORDERS\tgene_inclusions\n\t{out_str}')
         exit(1)
     elif check_go == 3:
-        print(f'ERROR\tGENE ORDERS\tgenes\n\t{go_out[0]}\n\t{go_out[1]}')
+        print(f'ERROR\tGENE ORDERS\tgenes\n\tmissing: {",".join(go_out[0])}\n\tunknown: {",".join(go_out[1])}')
         exit(1)
     elif check_go == 4:
-        print(f'ERROR\tGENE ORDERS\tmissing file\t{go_out}')
+        print(f'ERROR\tGENE ORDERS\tmissing files\t{",".join(go_out)}')
         exit(1)        
     else:
         print('SUCCESS\tGENE ORDERS')
     # Additional data
     def print_check_data(check_code,check_out,data_type):
         if check_code == 1:
-            print(f'ERROR\t{data_type}\tfamilies\n\t{check_out[0]}\n\t{check_out[1]}')
+            print(f'ERROR\t{data_type}\tfamilies\n\tunknown: {",".join(check_out)}')
             exit(1)
-        elif check_code == 2:
-            print(f'ERROR\t{data_type}\tgenes\n\t{check_out[0]}\n\t{check_out[1]}')
-            exit(1)
-        elif check_code == 3:
-            print(f'ERROR\t{data_type}\tmissing file\t{check_out}')
+        elif check_code == 2 or check_code == 3:
+            out_str = ''
+            for fam_id,missing_elt in check_out.items():
+                if len(missing_elt[0])>0:
+                    out_str += f'\n\t{fam_id}.missing:{",".join(missing_elt[0])}'
+                if len(missing_elt[1])>0:
+                    out_str += f'\n\t{fam_id}.unknown:{",".join(missing_elt[1])}'
+            if check_code == 2: elt = 'genes'
+            else: elt = 'species'
+            print(f'ERROR\t{data_type}\t{elt}\n\t{out_str}')
             exit(1)
         elif check_code == 4:
-            print(f'ERROR\t{data_type}\tspecies\n\t{check_out[0]}\n\t{check_out[1]}')
-            exit(1)            
+            print(f'ERROR\t{data_type}\tmissing_files\n\t{",".join(check_out)}')
+        elif check_code == 0 and len(check_out)>0:
+            out_str = "\n\t".join(check_out)
+            print(f'WARNING\t{data_type}\tmissing families\n\t{out_str}')
         else:
             print(f'SUCCESS\t{data_type}')
         
@@ -501,7 +515,8 @@ def main():
         print_check_data(gts_check,gts_out,'GENE TREES')
     elif in_data_type == 'reconciliations':
         rec_check,rec_out = data_check_reconciliations_file(in_data, f2g_map, g2f_map, species_list)        
-        print_check_data(rec_check,rec_out,'RECONCILIATIONS')                
+        print_check_data(rec_check,rec_out,'RECONCILIATIONS')           
+
 
 if __name__ == "__main__":
     main()

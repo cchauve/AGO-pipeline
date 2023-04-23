@@ -80,7 +80,7 @@ def xml_get_extant_leaves(in_file):
         if len(children) == 0 and name != 'loss': # Extant leaf
             genes_list.append(xml_get_name(node, tag_pref=tag_pref))
     return genes_list
-        
+
 ''' Rename all species according to a dictionary in species tree '''
 def _xml_rename_species_st(tree, species_map):
     root,_ = _xml_get_tree_root(tree, ST_TAG)
