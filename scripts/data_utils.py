@@ -18,6 +18,10 @@ from newick_utils import (
     newick_get_gene_trees_leaves
 )
 from fasta_utils import fasta_get_names
+from recPhyloXML_utils import (
+    xml_get_species,
+    xml_get_extant_leaves
+)
 
 # Auxiliary generic functions
 
@@ -269,12 +273,13 @@ def data_check_species_tree(species_tree_file):
         return 1,'Unrooted species tree'
     if not newick_check_internal_names(species_tree_file):
         return 2,'Unlabeled ancestral species'
-    species_list = newick_get_species(species_tree_file, extant=True)
+    extant_species_list = newick_get_species(species_tree_file, extant=True)
+    species_list = newick_get_species(species_tree_file, extant=False)
     species_errors = [s for s in species_list if not data_check_object_name(s)]
     if len(species_errors) > 0:
         return 3,species_errors
     else:
-        return 0,species_list
+        return 0,[extant_species_list,species_list]
 
 ''' Check families file '''
 def data_check_families(in_families_file, species_list, sep):
@@ -338,13 +343,15 @@ def data_check_gene_orders_file(in_gene_orders_file, species_list, genes_list):
     return 0,[]
 
 ''' Generic function to check a file indexed by families is correct '''
-def _data_check_family_indexed_file(in_file, family2genes_map, genes2family_map, get_names):
+def _data_check_family_indexed_file(in_file, family2genes_map, genes2family_map, species_list, get_species_list, get_genes_names):
     '''
     input: path to family indexed file, family2genes map, genes2family map, name getting function
     output:
     - no error: 0,[]
     - error:    1,[list of families with no object file,list of object files with no family]
     - error:    2,[list of genes in families not in objects,list of genes in objects not in families]
+    - error:    3,list of missing sequences files
+    - error:    4,[list of species not in objects file,list of species in objects not in species]
     '''
     family2objects_file = _data_create_map(in_file)
     # Checking families
@@ -355,9 +362,17 @@ def _data_check_family_indexed_file(in_file, family2genes_map, genes2family_map,
     missing_files = [f for f in family2objects_file.values() if not os.path.isfile(f)]
     if len(missing_files)>0:
         return 3,missing_files
+    # Checking species
+    in_species_list = []
+    if get_species_list is not None:
+        for family,object_file in family2objects_file.items():
+            in_species_list += [s for s in get_species_list(object_file) if s not in in_species_list]
+        species_check,species_errors = _data_compare_lists(species_list,in_species_list)
+        if not species_check:
+            return 4,species_errors
     # Checking genes names
     genes_names = [
-        g for family in family2objects_file.keys() for g in get_names(family2objects_file[family]) 
+        g for family in family2objects_file.keys() for g in get_genes_names(family2objects_file[family]) 
     ]
     genes_check,genes_errors = _data_compare_lists(genes2family_map.keys(),genes_names)
     if not genes_check:
@@ -373,8 +388,9 @@ def data_check_sequences_file(in_sequences_file, family2genes_map, genes2family_
     - no error: 0,[]
     - error:    1,[list of families with no sequence file,list of sequence file with no family]
     - error:    2,[list of genes in families not in sequences,list of genes in sequences not in families]
+    - error:    3,list of missing sequences files
     '''
-    return _data_check_family_indexed_file(in_sequences_file, family2genes_map, genes2family_map, fasta_get_names)
+    return _data_check_family_indexed_file(in_sequences_file, family2genes_map, genes2family_map, [], None, fasta_get_names)
 
 ''' Check alignments file '''
 def data_check_alignments_file(in_alignments_file, family2genes_map, genes2family_map):
@@ -384,38 +400,53 @@ def data_check_alignments_file(in_alignments_file, family2genes_map, genes2famil
     - no error: 0,[]
     - error:    1,[list of families with no alignment file,list of alignment file with no family]
     - error:    2,[list of genes in families not in alignments,list of genes in alignments not in families]
+    - error:    3,list of missing alignment files
     '''
-    return _data_check_family_indexed_file(in_alignments_file, family2genes_map, genes2family_map, fasta_get_names)
+    return _data_check_family_indexed_file(in_alignments_file, family2genes_map, genes2family_map, [], None, fasta_get_names)
 
 ''' Check gene tree(s) file '''
 def data_check_gene_trees_file(in_gene_trees_file, family2genes_map, genes2family_map):
     '''
-    input: path to alignments file, family2genes map, genes2family map
+    input: path to gene trees file, family2genes map, genes2family map
     output:
     - no error: 0,[]
     - error:    1,[list of families with no gene trees file,list of gene trees file with no family]
     - error:    2,[list of genes in families not in gene trees,list of genes in gene trees not in families]
+    - error:    3,list of missing gene trees files
+    - error:    4,[list of species not in reconciliations,list of species in reconciliations not in species tree]
     '''
-    return _data_check_family_indexed_file(in_gene_trees_file, family2genes_map, genes2family_map, newick_get_gene_trees_leaves)
+    return _data_check_family_indexed_file(in_gene_trees_file, family2genes_map, genes2family_map, [], None, newick_get_gene_trees_leaves)
+
+''' Check reconciliation file '''
+def data_check_reconciliations_file(in_reconciliations_file, family2genes_map, genes2family_map, species_list):
+    '''
+    input: path to reconciliations file, family2genes map, genes2family map, lis of species
+    output:
+    - no error: 0,[]
+    - error:    1,[list of families with no gene trees file,list of gene trees file with no family]
+    - error:    2,[list of genes in families not in gene trees,list of genes in gene trees not in families]
+    - error:    3,list of missing reconciliations files
+    '''
+    return _data_check_family_indexed_file(in_reconciliations_file, family2genes_map, genes2family_map, species_list, xml_get_species, xml_get_extant_leaves)
+
 
 ''' Main: checking input data '''
 def main():
     in_species_tree = sys.argv[1]
     in_families = sys.argv[2]
     in_gene_orders = sys.argv[3]
-    in_sequences = sys.argv[4]
-    in_alignments = sys.argv[5]
-    in_gene_trees = sys.argv[6]    
+    in_data = sys.argv[4]
+    in_data_type = sys.argv[5]
     # Species tree
     check_st,st_out = data_check_species_tree(in_species_tree)
     if check_st != 0:
         print(f'ERROR\tSPECIES TREE\t{check_st}\t{st_out}')
         exit(1)
     else:
-        species_list = st_out
+        extant_species_list,species_list = st_out[0],st_out[1]
         print('SUCCESS\tSPECIES TREE')
     # Families
-    check_fam,fam_out = data_check_families(in_families, species_list, '|')
+    check_fam,fam_out = data_check_families(in_families, extant_species_list, '|')
     if check_fam == 1:        
         print(f'ERROR\tFAMILIES\tfamilies names\t{fam_out}')
         exit(1)
@@ -427,7 +458,7 @@ def main():
         genes_list = list(g2f_map.keys())
         print('SUCCESS\tFAMILIES')
     # Gene orders
-    check_go,go_out = data_check_gene_orders_file(in_gene_orders, species_list, genes_list)
+    check_go,go_out = data_check_gene_orders_file(in_gene_orders, extant_species_list, genes_list)
     if check_go == 1:
         print(f'ERROR\tGENE ORDERS\tspecies\n\t{go_out[0]}\n\t{go_out[1]}')
         exit(1)
@@ -453,18 +484,24 @@ def main():
         elif check_code == 3:
             print(f'ERROR\t{data_type}\tmissing file\t{check_out}')
             exit(1)
+        elif check_code == 4:
+            print(f'ERROR\t{data_type}\tspecies\n\t{check_out[0]}\n\t{check_out[1]}')
+            exit(1)            
         else:
             print(f'SUCCESS\t{data_type}')
         
-    if in_sequences != 'NA':
-        seq_check,seq_out = data_check_sequences_file(in_sequences, f2g_map, g2f_map)
+    if in_data_type == 'sequences':
+        seq_check,seq_out = data_check_sequences_file(in_data, f2g_map, g2f_map)
         print_check_data(seq_check,seq_out,'SEQUENCES')        
-    if in_alignments != 'NA':
-        msa_check,msa_out = data_check_alignments_file(in_alignments, f2g_map, g2f_map)        
+    elif in_data_type == 'alignments':
+        msa_check,msa_out = data_check_alignments_file(in_data, f2g_map, g2f_map)        
         print_check_data(msa_check,msa_out,'ALIGNMENTS')
-    if in_gene_trees != 'NA':
-        gts_check,gts_out = data_check_gene_trees_file(in_gene_trees, f2g_map, g2f_map)        
-        print_check_data(gts_check,gts_out,'GENE TREES')        
+    elif in_data_type == 'gene_trees':
+        gts_check,gts_out = data_check_gene_trees_file(in_data, f2g_map, g2f_map)        
+        print_check_data(gts_check,gts_out,'GENE TREES')
+    elif in_data_type == 'reconciliations':
+        rec_check,rec_out = data_check_reconciliations_file(in_data, f2g_map, g2f_map, species_list)        
+        print_check_data(rec_check,rec_out,'RECONCILIATIONS')                
 
 if __name__ == "__main__":
     main()

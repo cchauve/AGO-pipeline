@@ -62,6 +62,25 @@ def xml_get_species_tree_root(in_file):
 def xml_get_gene_tree_root(in_file):
     return xml_get_tree_root(in_file, REC_TAG)
 
+def xml_get_species(in_file):
+    ''' Get species list from the species tree '''
+    root,_ = xml_get_species_tree_root(in_file)
+    species_list = []
+    for node in root.iter('name'):
+        species_list.append(node.text)
+    return species_list
+
+def xml_get_extant_leaves(in_file):
+    ''' Get list of extant leaves names '''
+    root,tag_pref = xml_get_gene_tree_root(in_file)
+    genes_list = []
+    for node in root.iter('clade'):
+        name = xml_get_name(node, tag_pref=tag_pref)
+        children = node.findall(f'{tag_pref}clade')
+        if len(children) == 0 and name != 'loss': # Extant leaf
+            genes_list.append(xml_get_name(node, tag_pref=tag_pref))
+    return genes_list
+        
 ''' Rename all species according to a dictionary in species tree '''
 def _xml_rename_species_st(tree, species_map):
     root,_ = _xml_get_tree_root(tree, ST_TAG)
