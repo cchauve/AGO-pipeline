@@ -89,7 +89,7 @@ def delete_included_genes(data_df):
     idx_to_discard = []
     for idx,gene in data_df.iterrows():
         species,scaffold,end = gene['species'],gene['scaffold'],gene['end']
-        if species==prev_species and scaffold==prev_scaffold and end<prev_end: 
+        if species==prev_species and scaffold==prev_scaffold and end<=prev_end: 
             idx_to_discard.append(idx)
         else:
             prev_species,prev_scaffold,prev_end = species,scaffold,end
