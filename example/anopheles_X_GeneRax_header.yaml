@@ -1,7 +1,7 @@
 ## Reconstruting ancestral gene orders of the X chromosome of Anopheles mosquito genomes
 run:
    # Run name
-   - &run_name            'anopheles_X_GeneRax'
+   - &run_name            'anopheles_X_3_GeneRax'
    # Root directory created by cloning the AGO pipline github repo
    - &run_dir_root        '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
    # VectorBase data
@@ -33,26 +33,26 @@ data:
    species:
       path: &data_species_path           !join [*run_vectorbase_data, 'species_4.txt']
    families:
-      path: &data_families_path          !join [*run_vectorbase_data, 'families_X_4.txt']
+      path: &data_families_path          !join [*run_vectorbase_data, 'families_X_3.txt']
       sep:  &species_gene_name_separator '|'
    gene_orders:
-      path: &data_gene_orders_path       !join [*run_vectorbase_data, 'gene_orders_X_4.txt']
+      path: &data_gene_orders_path       !join [*run_vectorbase_data, 'gene_orders_X_3.txt']
    sequences:
-      path: &data_sequences_path         !join [*run_vectorbase_data, 'sequences_X_4.txt']
+      path: &data_sequences_path         !join [*run_vectorbase_data, 'sequences_X_3.txt']
    # Paths to computed output files (generated data, no gene trees)
    alignments:
-      path: &data_alignments_path        !join [*dir_data, 'alignments_X.txt']
+      path: &data_alignments_path        !join [*dir_data, 'alignments_X_3.txt']
       NT_ext: &data_alignments_NT_ext    '_NT.fasta'
       AA_ext: &data_alignments_AA_ext    '_AA.fasta'
       ext:    &data_alignments_ext       !ref [*data_alignments_NT_ext]
    reconciliations:
-      path:  &data_reconciliations_path  !join [*dir_data, 'reconciliations_X.txt']
+      path:  &data_reconciliations_path  !join [*dir_data, 'reconciliations_X_3.txt']
       ext:   &data_reconciliations_ext   '.recphyloxml'
    adjacencies:
-      path: &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
+      path: &data_adjacencies_path      !join [*dir_data, 'adjacencies_X_3.txt']
       ext:  &data_adjacencies_ext       '_adjacencies.txt'
    ago_adjacencies:
-      path: &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
+      path: &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X_3.txt']
       ext:  &data_ago_adjacencies_ext   !ref [*data_adjacencies_ext]
 # External tools options
 tools:

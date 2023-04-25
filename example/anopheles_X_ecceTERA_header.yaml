@@ -1,7 +1,7 @@
 ## Reconstruting ancestral gene orders of the X chromosome of Anopheles mosquito genomes
 run:
    # Run name
-   - &run_name            'anopheles_X_ecceTERA'
+   - &run_name            'anopheles_X_3_ecceTERA'
    # Root directory created by cloning the AGO pipline github repo
    - &run_dir_root        '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
    # VectorBase data
@@ -33,18 +33,18 @@ data:
    species:
       path: &data_species_path           !join [*run_vectorbase_data, 'species_4.txt']
    families:
-      path: &data_families_path          !join [*run_vectorbase_data, 'families_X_4.txt']
+      path: &data_families_path          !join [*run_vectorbase_data, 'families_X_3.txt']
       sep:  &species_gene_name_separator '|'
    gene_orders:
-      path: &data_gene_orders_path       !join [*run_vectorbase_data, 'gene_orders_X_4.txt']
+      path: &data_gene_orders_path       !join [*run_vectorbase_data, 'gene_orders_X_3.txt']
    gene_trees:
-      path: &data_gene_trees_path        !join [*run_dir_root, 'example', 'anopheles_X_ALE', 'data', 'gene_trees_X.txt']
+      path: &data_gene_trees_path        !join [*run_dir_root, 'example', 'anopheles_X_3_ALE', 'data', 'gene_trees_X_3.txt']
    # Paths to computed output files (generated data, no reconciliation)
    adjacencies:
-      path: &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
+      path: &data_adjacencies_path      !join [*dir_data, 'adjacencies_X_3.txt']
       ext:  &data_adjacencies_ext       '_adjacencies.txt'
    ago_adjacencies:
-      path: &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
+      path: &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X_3.txt']
       ext:  &data_ago_adjacencies_ext   !ref [*data_adjacencies_ext]
 # External tools options
 tools:

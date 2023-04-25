@@ -1,7 +1,7 @@
 ## Reconstruting ancestral gene orders of the X chromosome of Anopheles mosquito genomes
 run:
    # Run name
-   - &run_name            'anopheles_X_GeneRax'
+   - &run_name            'anopheles_X_3_GeneRax'
    # Root directory created by cloning the AGO pipline github repo
    - &run_dir_root        '/home/chauvec/projects/ctb-chauvec/AGO-pipeline'
    # VectorBase data
@@ -33,26 +33,26 @@ data:
    species:
       path: &data_species_path           !join [*run_vectorbase_data, 'species_4.txt']
    families:
-      path: &data_families_path          !join [*run_vectorbase_data, 'families_X_4.txt']
+      path: &data_families_path          !join [*run_vectorbase_data, 'families_X_3.txt']
       sep:  &species_gene_name_separator '|'
    gene_orders:
-      path: &data_gene_orders_path       !join [*run_vectorbase_data, 'gene_orders_X_4.txt']
+      path: &data_gene_orders_path       !join [*run_vectorbase_data, 'gene_orders_X_3.txt']
    sequences:
-      path: &data_sequences_path         !join [*run_vectorbase_data, 'sequences_X_4.txt']
+      path: &data_sequences_path         !join [*run_vectorbase_data, 'sequences_X_3.txt']
    # Paths to computed output files (generated data, no gene trees)
    alignments:
-      path: &data_alignments_path        !join [*dir_data, 'alignments_X.txt']
+      path: &data_alignments_path        !join [*dir_data, 'alignments_X_3.txt']
       NT_ext: &data_alignments_NT_ext    '_NT.fasta'
       AA_ext: &data_alignments_AA_ext    '_AA.fasta'
       ext:    &data_alignments_ext       !ref [*data_alignments_NT_ext]
    reconciliations:
-      path:  &data_reconciliations_path  !join [*dir_data, 'reconciliations_X.txt']
+      path:  &data_reconciliations_path  !join [*dir_data, 'reconciliations_X_3.txt']
       ext:   &data_reconciliations_ext   '.recphyloxml'
    adjacencies:
-      path: &data_adjacencies_path      !join [*dir_data, 'adjacencies_X.txt']
+      path: &data_adjacencies_path      !join [*dir_data, 'adjacencies_X_3.txt']
       ext:  &data_adjacencies_ext       '_adjacencies.txt'
    ago_adjacencies:
-      path: &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X.txt']
+      path: &data_ago_adjacencies_path  !join [*dir_data, 'adjacencies_ago_X_3.txt']
       ext:  &data_ago_adjacencies_ext   !ref [*data_adjacencies_ext]
 # External tools options
 tools:
@@ -242,7 +242,7 @@ tools:
          files:
             - &generax_stats_file_species  !join [*dir_stats, *generax_name, *generax_stats_file_species_name]
             - &generax_stats_file_families !join [*dir_stats, *generax_name, *generax_stats_file_families_name]
-         cmd:
+         script:
             - !join [*run_dir_scripts, 'recPhyloXML_statistics.py']
             - !ref [*generax_output_file]
             - !ref [*generax_stats_file_species]
@@ -335,17 +335,25 @@ tools:
             - !concat ['   ', *decostar_results_dir]
       stats:
          names:
-            - &decostar_stats_file_species_name !concat [*decostar_name, *log_ext_stat]
+            - &decostar_stats_file_species_name    !concat [*decostar_name, '_species', *log_ext_stat]
+            - &decostar_stats_file_components_name !concat [*decostar_name, '_components', *log_ext_stat]
          files:
-            - &decostar_stats_file_species !join [*dir_stats, *decostar_name, *decostar_stats_file_species_name]
-         cmd:
+            - &decostar_stats_file_species    !join [*dir_stats, *decostar_name, *decostar_stats_file_species_name]
+            - &decostar_stats_file_components !join [*dir_stats, *decostar_name, *decostar_stats_file_components_name]
+         script:
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
             - !ref [*data_species_path]
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
             - !ref [*decostar_stats_thresholds]
             - !ref [*decostar_stats_file_species]
-
+            - !concat [';']
+            - !join [*run_dir_scripts, 'gene_orders_utils.py']
+            - 'stats'
+            - !ref [*decostar_slurm_results_genes_file_2]
+            - !ref [*data_adjacencies_path]
+            - !ref [*decostar_results_dir]
+            - !ref [*decostar_stats_file_components]
    # DO NOT EDIT
    # SPPDCJ_ILP: Writing the SPPDCJ ILP file
    SPPDCJ_ILP:
@@ -419,7 +427,7 @@ tools:
             - &sppdcj_ilp_stats_file_log_name !concat ['components_', *sppdcj_input_suffix, '.log']
          files:
             - &sppdcj_ilp_stats_file_log !join [*sppdcj_ilp_stats_dir, *sppdcj_ilp_stats_file_log_name]
-         cmd:
+         script:
             - !join [*run_dir_scripts, 'SPPDCJ_adjs_to_components.py']
             - '-p'
             - '-o'
@@ -454,12 +462,14 @@ tools:
                - &sppdcj_results_file_sol_name         !concat [*sppdcj_results_prefix, '.sol']
                - &sppdcj_results_file_log_name         !concat [*sppdcj_results_prefix, '.log']
                - &sppdcj_results_file_adjacencies_name !concat [*sppdcj_results_prefix, *data_ago_adjacencies_ext]
+               - &sppdcj_results_file_cars_name        'CARs.txt'
             files: 
                - &sppdcj_slurm_results_file !join [*sppdcj_results_dir, *sppdcj_slurm_results_file_name]
             other:
                - &sppdcj_results_file_sol         !join [*sppdcj_results_dir, *sppdcj_results_file_sol_name]
                - &sppdcj_results_file_log         !join [*sppdcj_results_dir, *sppdcj_results_file_log_name]
                - &sppdcj_results_file_adjacencies !join [*sppdcj_results_dir, *sppdcj_results_file_adjacencies_name]
+               - &sppdcj_results_file_cars        !join [*dir_data, *sppdcj_results_file_cars_name]
          cmd:
             - !concat [*sppdcj_gurobi_exec, ' \']
             - !concat ['   ', *sppdcj_gurobi_options, ' \']
@@ -478,12 +488,28 @@ tools:
             - !concat ['   ', *sppdcj_results_dir]
       stats:
          names:
-            - &sppdcj_stats_file_name !concat [*sppdcj_name, '_species', *log_ext_stat]
+            - &sppdcj_stats_file_species_name    !concat [*sppdcj_name, '_species', *log_ext_stat]
+            - &sppdcj_stats_file_CARs_name !concat [*sppdcj_name, '_CARs', *log_ext_stat]
          files:
-            - &sppdcj_stats_file !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_name]
-         cmd:
+            - &sppdcj_stats_file_species !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_species_name]
+            - &sppdcj_stats_file_CARs    !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_CARs_name]
+         script:
             - !join [*run_dir_scripts, 'SPPDCJ_statistics.py']
             - !ref [*data_adjacencies_path]
             - !ref [*sppdcj_results_file_adjacencies]
-            - !ref [*sppdcj_stats_file]
+            - !ref [*sppdcj_stats_file_species]
+            - !concat [';']
+            - !join [*run_dir_scripts, 'gene_orders_utils.py']
+            - 'build'
+            - !ref [*decostar_slurm_results_genes_file_2]
+            - !ref [*data_ago_adjacencies_path]
+            - !ref [*sppdcj_results_dir]
+            - !ref [*sppdcj_results_file_cars]
+            - !concat [';']
+            - !join [*run_dir_scripts, 'gene_orders_utils.py']
+            - 'stats'
+            - !ref [*decostar_slurm_results_genes_file_2]
+            - !ref [*data_ago_adjacencies_path]
+            - !ref [*sppdcj_results_dir]
+            - !ref [*sppdcj_stats_file_CARs]
 
