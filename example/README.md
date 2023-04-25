@@ -511,27 +511,28 @@ We clean conflicts using `spp_dcj` and generate CARs files.
 (AGO-pipeline) > sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ecceTERA/aux/SPPDCJ/SPPDCJ.sh
 	  	    ... wait for the slurm processes to complete ...
 (AGO-pipeline) > python src/AGO.py example/anopheles_X_3_ecceTERA.yaml check SPPDCJ
-(        ERRORS: 0
+        ERRORS: 0
         LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_GeneRax/log/SPPDCJ.log
         OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_GeneRax/data/adjacencies_ago_X_3.txt
 (AGO-pipeline) > python src/AGO.py example/anopheles_X_3_ecceTERA.yaml stats SPPDCJ
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ecceTERA/statistics/SPPDCJ/SPPDCJ_species.csv
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ecceTERA/statistics/SPPDCJ/SPPDCJ_CARs.csv
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ecceTERA/data/CARs.txt
 (AGO-pipeline) > cat /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ecceTERA/statistics/SPPDCJ/SPPDCJ_species.csv
 #species        number of adjacencies:total weight:kept adjacencies:kept weight
-node2   247:244.32:244:243.5
-node1   447:428.67:420:415.73
+node2   246:244.32:245:244.01
+node1   446:428.68:422:417.51
 AnophelesalbimanusSTECLA        544:544.0:544:544.0
-node0   529:521.23:519:515.4
+node0   530:521.07:518:514.8
 AnophelesatroparvusEBRO 576:576.0:576:576.0
 AnophelesgambiaePEST    563:563.0:563:563.0
 AnophelesfunestusFUMOZ  578:578.0:578:578.0
 (AGO-pipeline) > cat /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ecceTERA/statistics/SPPDCJ/SPPDCJ_CARs.csv
 #species        nb_comp:nb_lin_comp:nb_circ_comp:list(nb_genes.nb_adj.nb_comp)
-node2   294:294:0:10.9.2,9.8.1,8.7.1,7.6.3,6.5.4,5.4.4,4.3.15,3.2.24,2.1.64,1.0.176
-node1   187:187:0:22.21.1,18.17.1,15.14.1,14.13.1,11.10.1,10.9.1,9.8.6,8.7.10,7.6.6,6.5.7,5.4.10,4.3.13,3.2.18,2.1.32,1.0.79
+node2   293:293:0:10.9.2,9.8.1,8.7.1,7.6.3,6.5.5,5.4.4,4.3.14,3.2.24,2.1.63,1.0.176
+node1   185:185:0:21.20.1,18.17.1,15.14.1,14.13.1,11.10.1,10.9.1,9.8.5,8.7.11,7.6.5,6.5.9,5.4.9,4.3.14,3.2.19,2.1.31,1.0.76
 AnophelesalbimanusSTECLA        1:1:0:545.544.1
-node0   61:61:0:68.67.1,47.46.1,42.41.1,41.40.1,35.34.1,31.30.1,26.25.1,22.21.1,20.19.1,17.16.1,16.15.2,15.14.1,14.13.1,12.11.1,11.10.2,10.9.2,9.8.2,8.7.1,7.6.3,6.5.1,5.4.3,4.3.1,3.2.3,2.1.7,1.0.21
+node0   62:62:0:68.67.1,57.56.1,47.46.1,42.41.1,35.34.1,31.30.1,26.25.1,22.21.1,17.16.1,16.15.1,15.14.1,14.13.1,12.11.1,11.10.3,10.9.2,9.8.3,8.7.1,7.6.2,6.5.2,5.4.2,4.3.2,3.2.3,2.1.8,1.0.21
 AnophelesatroparvusEBRO 1:1:0:577.576.1
 AnophelesgambiaePEST    1:1:0:564.563.1
 AnophelesfunestusFUMOZ  1:1:0:579.578.1

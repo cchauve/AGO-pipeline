@@ -106,14 +106,12 @@
                - &sppdcj_results_file_sol_name         !concat [*sppdcj_results_prefix, '.sol']
                - &sppdcj_results_file_log_name         !concat [*sppdcj_results_prefix, '.log']
                - &sppdcj_results_file_adjacencies_name !concat [*sppdcj_results_prefix, *data_ago_adjacencies_ext]
-               - &sppdcj_results_file_cars_name        'CARs.txt'
             files: 
                - &sppdcj_slurm_results_file !join [*sppdcj_results_dir, *sppdcj_slurm_results_file_name]
             other:
                - &sppdcj_results_file_sol         !join [*sppdcj_results_dir, *sppdcj_results_file_sol_name]
                - &sppdcj_results_file_log         !join [*sppdcj_results_dir, *sppdcj_results_file_log_name]
                - &sppdcj_results_file_adjacencies !join [*sppdcj_results_dir, *sppdcj_results_file_adjacencies_name]
-               - &sppdcj_results_file_cars        !join [*dir_data, *sppdcj_results_file_cars_name]
          cmd:
             - !concat [*sppdcj_gurobi_exec, ' \']
             - !concat ['   ', *sppdcj_gurobi_options, ' \']
@@ -133,10 +131,12 @@
       stats:
          names:
             - &sppdcj_stats_file_species_name    !concat [*sppdcj_name, '_species', *log_ext_stat]
-            - &sppdcj_stats_file_CARs_name !concat [*sppdcj_name, '_CARs', *log_ext_stat]
+            - &sppdcj_stats_file_CARs_name       !concat [*sppdcj_name, '_CARs', *log_ext_stat]
+            - &sppdcj_results_file_cars_name     'CARs.txt'
          files:
-            - &sppdcj_stats_file_species !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_species_name]
-            - &sppdcj_stats_file_CARs    !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_CARs_name]
+            - &sppdcj_stats_file_species       !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_species_name]
+            - &sppdcj_stats_file_CARs          !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_CARs_name]
+            - &sppdcj_results_file_cars        !join [*dir_data, *sppdcj_results_file_cars_name]
          script:
             - !join [*run_dir_scripts, 'SPPDCJ_statistics.py']
             - !ref [*data_adjacencies_path]
