@@ -241,6 +241,7 @@ We solve the MILP.
 (AGO-pipeline) > python src/AGO.py example/anopheles_X_3_GeneRax.yaml stats SPPDCJ
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_GeneRax/statistics/SPPDCJ/SPPDCJ_species.csv
         /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_GeneRax/statistics/SPPDCJ/SPPDCJ_components.csv
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_GeneRax/data/CARs.txt
 (AGO-pipeline) > cat /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_GeneRax/statistics/SPPDCJ/SPPDCJ_species.csv
 #species        number of adjacencies:total weight:kept adjacencies:kept weight
 node2   255:247.3:244:242.87
