@@ -478,16 +478,16 @@ When initialized, AGO prints all data files for the pipeline and indicates
 if they already exist or will be computed. For example:
 ```
 python src/AGO.py example/anopheles_X_ALE.yaml init
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/species_tree_4.newick.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/species_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/families_X_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_orders_X_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/sequences_X_4.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_GeneRax/data/alignments_X.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/alignments_X.txt.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt will be computed.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/reconciliations_X.txt will be computed.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/adjacencies_X.txt will be computed.
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/adjacencies_ago_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_tree_4.newick -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/species_tree_4.newick.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/species_4.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/species_4.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/families_X_3.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/families_X_3.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_3.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/gene_orders_X_3.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_X_3.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/sequences_X_3.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_GeneRax/data/alignments_X.txt -> /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/alignments_X.txt.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/gene_trees_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/reconciliations_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/adjacencies_X.txt will be computed.
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/adjacencies_ago_X.txt will be computed.
 ```
 
 ### Running tools
@@ -506,12 +506,12 @@ using the following commands. Let `TOOL` be any tool of the pipeline
 For example:
 ```
 python src/AGO.py example/anopheles_X_ALE.yaml slurm IQ-TREE
-        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh
+        /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/aux/IQ-TREE/IQ-TREE.sh
 ```
-The slurm script `/home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh` 
+The slurm script `/home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/aux/IQ-TREE/IQ-TREE.sh` 
 can then be run by
 ```
-sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/aux/IQ-TREE/IQ-TREE.sh
+sbatch /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/aux/IQ-TREE/IQ-TREE.sh
 ```
 
 Scripts to run a tool, as well as specific input files created from
@@ -532,13 +532,13 @@ the pipeline. This is done with the `check` command.
 ```
 python src/AGO.py example/anopheles_X_ALE.yaml check IQ-TREE
         ERRORS: 0
-        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/IQ-TREE.log
-        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/log/IQ-TREE.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/gene_trees_X.txt
 ```
 This shows that the tool `IQ-TREE` generated as expected a gene trees
 file per gene family (`ERRORS: 0`) and they have been recorded in the
 gene trees data file of the pipeline
-`/home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/gene_trees_X.txt`.
+`/home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/gene_trees_X.txt`.
 
 Logs files are recorded in the log directory of the pipeline. For each
 tool `TOOL`, a files `<TOOL>.log` is created that described which
@@ -548,19 +548,19 @@ after running `ALE` using the gene trees as input:
 ```
 python src/AGO.py example/anopheles_X_ALE.yaml check ALE
         ERRORS: 66
-        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/ALE.log
-        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/data/reconciliations_X.txt
+        LOG:    /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/log/ALE.log
+        OUTPUT: /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/data/reconciliations_X.txt
 ```
 we can see that 66 expected reconciliations files are missing (due to
 the fact that AGO currently assumes an evolutionary model without gene
 transfers and discards `ALE` results for families whose reconciled
 gene tree contains a gene transfer). They can be identified by looking at the file
-`/home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/ALE.log`:
+`/home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/log/ALE.log`:
 ```
-grep ERROR /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/log/ALE.log
-ERROR   ALE     OG6100220       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/results/ALE/OG6100220.recphyloxml file is missing
-ERROR   ALE     OG6100435       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/results/ALE/OG6100435.recphyloxml file is missing
-ERROR   ALE     OG6100445       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_ALE/results/ALE/OG6100445.recphyloxml file is missing
+grep ERROR /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/log/ALE.log
+ERROR   ALE     OG6100220       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/results/ALE/OG6100220.recphyloxml file is missing
+ERROR   ALE     OG6100435       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/results/ALE/OG6100435.recphyloxml file is missing
+ERROR   ALE     OG6100445       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/example/anopheles_X_3_ALE/results/ALE/OG6100445.recphyloxml file is missing
 ...
 ```
 shows for example that for gene family `OG6100220` the expected reconciliation
