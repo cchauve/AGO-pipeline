@@ -52,7 +52,7 @@
          files:
             - &generax_stats_file_species  !join [*dir_stats, *generax_name, *generax_stats_file_species_name]
             - &generax_stats_file_families !join [*dir_stats, *generax_name, *generax_stats_file_families_name]
-         cmd:
+         script:
             - !join [*run_dir_scripts, 'recPhyloXML_statistics.py']
             - !ref [*generax_output_file]
             - !ref [*generax_stats_file_species]

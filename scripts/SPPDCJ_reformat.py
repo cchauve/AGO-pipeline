@@ -38,9 +38,9 @@ def read_sppdcj_adjacencies(in_adjacencies_file):
             ext2 = adjacency[5]
             weight = adjacency[6]
             if (gene1,ext1)>(gene2,ext2):
-                key = (gene2,ext2,gene1,ext1)
+                key = (gene2,gene1,ext2,ext1)
             else:
-                key = (gene1,ext1,gene2,ext2)                
+                key = (gene1,gene2,ext1,ext2)                
             if species not in species_list:
                 adjacencies_dict[species] = {}
                 species_list.append(species)
@@ -65,18 +65,18 @@ def read_decostar_adjacencies(in_data_adjacencies_file):
             exts = decostar_sign2extremity[(sign1,sign2)]
             ext1,ext2 = exts[0],exts[1]
             if (g1,ext1) > (g2,ext2):
-                key = (g2,ext2,g1,ext1)
+                key = (g2,g1,ext2,ext1)
             else:
-                key = (g1,ext1,g2,ext2)
-            adjacencies_dict[species][key] = [g1,sign1,g2,sign2,w1,w2]
+                key = (g1,g2,ext1,ext2)
+            adjacencies_dict[species][key] = [g1,g2,sign1,sign2,w1,w2]
     return adjacencies_dict
 
 ''' Filter DeCoSTAR adjacencies discarded by SPPDCJ '''
 def filter_adjacencies(in_decostar_adjacencies, in_sppdcj_adjacencies):
     '''
     input: dictionaries
-    dict(species -> dict((gene1,ext1,gene2,ext2)->weight)
-    dict(species -> dict((gene1,ext1,gene2,ext2)->(gene1,sign1,gene2,sign2,weight1,weight2))
+    dict(species -> dict((gene1,gene2,ext1,ext2)->weight)
+    dict(species -> dict((gene1,gene2,ext1,ext2)->(gene1,gene2,sign1,sign2,weight1,weight2))
     output:
     subdictionary of DeCoSTAR adjcencies dictionary
     '''
@@ -94,7 +94,7 @@ def write_adjacencies(adjacencies_dict,out_dir):
     for species,adjacencies_dict in adjacencies_dict.items():
         out_adjacencies_path = os.path.join(out_dir, f'{species}_adjacencies.txt')
         with open(out_adjacencies_path,'w') as out_adjacencies_file:
-            for (g1,ext1,g2,ext2),adj_data in adjacencies_dict.items():
+            for (g1,g2,ext1,ext2),adj_data in adjacencies_dict.items():
                 adj_str = ' '.join(adj_data)
                 out_adjacencies_file.write(f'{adj_str}\n')
 

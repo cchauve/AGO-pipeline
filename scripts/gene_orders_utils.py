@@ -41,10 +41,10 @@ def read_DeCoSTAR_adjacencies_species(in_adjacencies_file):
     with open(in_adjacencies_file,'r') as in_file:
         for adjacency in in_file.readlines():
             adjacency_data = adjacency.rstrip().split()
-            gene1,sign1 = adjacency_data[0],adjacency_data[1]
-            gene2,sign2 = adjacency_data[2],adjacency_data[3]
+            gene1,sign1 = adjacency_data[0],adjacency_data[2]
+            gene2,sign2 = adjacency_data[1],adjacency_data[3]
             weight = adjacency_data[5]
-            adjacencies_list.append((gene1,sign1,gene2,sign2,weight))
+            adjacencies_list.append((gene1,gene2,sign1,sign2,weight))
     return adjacencies_list
 
 ''' Read adjacencies for all species '''
@@ -64,7 +64,7 @@ def create_adjacencies_graph(in_genes_list, in_adjacencies):
     '''
     input:
     - dict(species -> list of genes list(family<decostar_sep>gene))
-    - dict(species -> list of adjacencies list((gene_1,sign_1,gene_2,sign_2,weight)))
+    - dict(species -> list of adjacencies list((gene1,gene2,sign1,sign2,weight)))
     output: networkx graph
     '''
     graphs = {}
@@ -74,7 +74,7 @@ def create_adjacencies_graph(in_genes_list, in_adjacencies):
             graphs[species].add_node((gene,'h'))
             graphs[species].add_node((gene,'t'))
             graphs[species].add_edge((gene,'h'),(gene,'t'),weight=0)
-        for (gene1,sign1,gene2,sign2,weight) in in_adjacencies_list:
+        for (gene1,gene2,sign1,sign2,weight) in in_adjacencies_list:
             exts = decostar_sign2extremity[(sign1,sign2)]
             graphs[species].add_edge((gene1,exts[0]),(gene2,exts[1]), weight=weight)
     return graphs
@@ -122,25 +122,76 @@ def graph2FASTA(in_graph, species):
         component_id += 1
     return FASTA_str
 
+def write_FASTA(in_graphs, out_dir, out_file_path):
+    with open(out_file_path,'w') as out_data_file:
+        for species,graph in in_graphs.items():
+            species_str = graph2FASTA(graph,species)
+            species_out_file = os.path.join(out_dir,f'{species}_CARs.txt')
+            out_data_file.write(f'{species}\t{species_out_file}\n')
+            with open(species_out_file,'w') as out_file:
+                out_file.write(species_str)
+
+''' Statistics about a graph '''
+
+def graph2stats(in_graph):
+    '''
+    input: graph, species
+    output: 
+    - dict(nb_nodes -> dict(nb_edges -> number of components))
+    
+    '''
+    components = list(nx.connected_components(in_graph))
+    components_stats = defaultdict(lambda: defaultdict(int))
+    for component in components:
+        subgraph = nx.induced_subgraph(in_graph, component)
+        nb_nodes = subgraph.number_of_nodes()
+        nb_edges = subgraph.number_of_edges()
+        nb_genes = int(nb_nodes / 2)
+        nb_adjacencies = nb_edges - nb_genes
+        components_stats[nb_genes][nb_adjacencies] += 1
+    return components_stats
+
+def write_stats(in_stats, out_file_path):
+    '''
+    input: dict(species -> dict(nb_nodes -> dict(nb_edges -> number of components)), stats file
+    '''
+    with open(out_file_path,'w') as out_stats_file:
+        out_stats_file.write('#species\tnb_comp:nb_lin_comp:nb_circ_comp:list(nb_genes.nb_adj.nb_comp)')
+        for species,sp_stats in in_stats.items():
+            nb_comp = sum({x: sum(sp_stats[x].values()) for x in sp_stats.keys()}.values())
+            nb_lin,nb_circ,list_stats = 0,0,[]
+            nbg_keys = sorted(list(sp_stats.keys()),reverse=True)
+            for nbg in nbg_keys:
+                nba_keys = sorted(list(sp_stats[nbg].keys()),reverse=True)
+                for nba in nba_keys:
+                    nbc = sp_stats[nbg][nba]
+                    if nba==nbg-1: nb_lin += nbc
+                    elif nba==nbg: nb_circ += nbc
+                    list_stats.append(f'{nbg}.{nba}.{nbc}')
+            stats_str = f'\n{species}\t{nb_comp}:{nb_lin}:{nb_circ}:{",".join(list_stats)}'
+            out_stats_file.write(stats_str)
+
+        
 def main():
-    in_genes_file = sys.argv[1]
-    in_data_adjacencies_file = sys.argv[2]
-    out_dir = sys.argv[3]
-    out_data_gene_orders_file = sys.argv[4]    
+    command = sys.argv[1]
+    in_genes_file = sys.argv[2]
+    in_data_adjacencies_file = sys.argv[3]
+    out_dir = sys.argv[4]
+    out_file = sys.argv[5]
     # Reading genes
     genes = read_DeCoSTAR_genes(in_genes_file)
     # Reading DeCoSTAR adjacencies
     adjacencies = read_DeCoSTAR_adjacencies(in_data_adjacencies_file)
     # Create graphs
     graphs = create_adjacencies_graph(genes, adjacencies)
-    # Read graphs
-    with open(out_data_gene_orders_file,'w') as out_data_file:
+    if command == 'build':
+        # Read graphs and write into FASTA
+        write_FASTA(graphs, out_dir, out_file)
+    elif command == 'stats':
+        species_stats = {}
         for species,graph in graphs.items():
-            species_str = graph2FASTA(graph,species)
-            species_out_file = os.path.join(out_dir,f'{species}_gene_order.txt')
-            out_data_file.write(f'{species}\t{species_out_file}\n')
-            with open(species_out_file,'w') as out_file:
-                out_file.write(species_str)
-
+            species_stats[species] = graph2stats(graphs[species])
+        write_stats(species_stats, out_file)
+            
 if __name__ == "__main__":
     main()

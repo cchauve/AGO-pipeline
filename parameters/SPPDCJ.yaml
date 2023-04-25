@@ -71,7 +71,7 @@
             - &sppdcj_ilp_stats_file_log_name !concat ['components_', *sppdcj_input_suffix, '.log']
          files:
             - &sppdcj_ilp_stats_file_log !join [*sppdcj_ilp_stats_dir, *sppdcj_ilp_stats_file_log_name]
-         cmd:
+         script:
             - !join [*run_dir_scripts, 'SPPDCJ_adjs_to_components.py']
             - '-p'
             - '-o'
@@ -106,12 +106,14 @@
                - &sppdcj_results_file_sol_name         !concat [*sppdcj_results_prefix, '.sol']
                - &sppdcj_results_file_log_name         !concat [*sppdcj_results_prefix, '.log']
                - &sppdcj_results_file_adjacencies_name !concat [*sppdcj_results_prefix, *data_ago_adjacencies_ext]
+               - &sppdcj_results_file_ago_name         'CARs.txt'
             files: 
                - &sppdcj_slurm_results_file !join [*sppdcj_results_dir, *sppdcj_slurm_results_file_name]
             other:
                - &sppdcj_results_file_sol         !join [*sppdcj_results_dir, *sppdcj_results_file_sol_name]
                - &sppdcj_results_file_log         !join [*sppdcj_results_dir, *sppdcj_results_file_log_name]
                - &sppdcj_results_file_adjacencies !join [*sppdcj_results_dir, *sppdcj_results_file_adjacencies_name]
+               - &sppdcj_results_file_ago         !join [*dir_data, *sppdcj_results_file_ago_name]
          cmd:
             - !concat [*sppdcj_gurobi_exec, ' \']
             - !concat ['   ', *sppdcj_gurobi_options, ' \']
@@ -128,14 +130,30 @@
             - !concat ['   ', *data_adjacencies_path, '\']
             - !concat ['   ', *sppdcj_results_file_adjacencies, ' \']
             - !concat ['   ', *sppdcj_results_dir]
+            - ' '
+            - !concat [!join [*run_dir_scripts, 'gene_orders_utils.py'], ' \']
+            - '   build \'
+            - !concat ['   ', *decostar_slurm_results_genes_file_2, '\']
+            - !concat ['   ', *data_ago_adjacencies_path, ' \']
+            - !concat ['   ', *sppdcj_results_dir, ' \']
+            - !concat ['   ', *sppdcj_results_file_ago]
       stats:
          names:
-            - &sppdcj_stats_file_name !concat [*sppdcj_name, '_species', *log_ext_stat]
+            - &sppdcj_stats_file_species_name    !concat [*sppdcj_name, '_species', *log_ext_stat]
+            - &sppdcj_stats_file_CARs_name !concat [*sppdcj_name, '_CARs', *log_ext_stat]
          files:
-            - &sppdcj_stats_file !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_name]
-         cmd:
+            - &sppdcj_stats_file_species !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_species_name]
+            - &sppdcj_stats_file_CARs    !join [*dir_stats, *sppdcj_name, *sppdcj_stats_file_CARs_name]
+         script:
             - !join [*run_dir_scripts, 'SPPDCJ_statistics.py']
             - !ref [*data_adjacencies_path]
             - !ref [*sppdcj_results_file_adjacencies]
-            - !ref [*sppdcj_stats_file]
+            - !ref [*sppdcj_stats_file_species]
+            - !concat [';']
+            - !join [*run_dir_scripts, 'gene_orders_utils.py']
+            - 'stats'
+            - !ref [*decostar_slurm_results_genes_file_2]
+            - !ref [*data_ago_adjacencies_path]
+            - !ref [*sppdcj_results_dir]
+            - !ref [*sppdcj_stats_file_CARs]
 

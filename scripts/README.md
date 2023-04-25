@@ -19,8 +19,10 @@
 - Auxiliary functions to manipulate FASTA files.
 
 `gene_orders_utils.py`:
-- Creates a gene order FASTA-like files from gene adjacencies for a given species.
-- USAGE: `python gene_orders_utils.py <input: DeCoSTAR genes file> <input file: gene adjacencies> <output: output directory> <output: gene order file>`
+- Creates a FASTA-like files describing CARs (Contiguous Ancestral Regions) and extant gene orders from gene adjacencies.
+- USAGE: `python gene_orders_utils.py build <input: DeCoSTAR genes file> <input file: gene adjacencies> <output: output directory> <output: CARs file>`
+- Computes statistics on CARs and extant gene orders:
+- USAGE: `python gene_orders_utils.py stats <input: DeCoSTAR genes file> <input file: gene adjacencies> <output: output directory> <output: statistics CSV file>`
 
 `recPhyloXML_utils.py`:
 - Auxiliary functions to manipulate recPhyloXML files.

@@ -266,4 +266,4 @@ class Parameters:
         if stats is None:
             return []
         else:
-            return self._get_script(stats['cmd'])
+            return self._get_script(stats['script'])
