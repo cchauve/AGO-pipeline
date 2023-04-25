@@ -28,8 +28,19 @@
             files:
                - &iqtree_slurm_results_file_ufboot !concat [*iqtree_results_prefix, *iqtree_slurm_array_results_ext]
          cmd:
-            - !concat [*iqtree_exec, ' \']
-            - !concat ['   -s ',*iqtree_slurm_array_input_name,' \']
-            - !concat ['   -bb ', *iqtree_nb_sample, ' -wbtl ', *iqtree_options,' \']
-            - !concat ['   -pre ', *iqtree_results_prefix]
+            - !concat ['NBSEQS=`grep ">" -c ', *iqtree_slurm_array_input_name, '`']
+            - !concat [' ']
+            - !concat ['if [ ${NBSEQS} -eq 3 ]; then']
+            - !concat ['    ', *iqtree_exec, ' \']
+            - !concat ['       -s ',*iqtree_slurm_array_input_name,' \']
+            - !concat ['       ', *iqtree_options,' \']
+            - !concat ['       -pre ', *iqtree_results_prefix]
+            - !concat ['    cp ', *iqtree_results_prefix, '.treefile \']
+            - !concat ['       ', *iqtree_slurm_results_file_ufboot]
+            - !concat ['else']
+            - !concat ['    ', *iqtree_exec, ' \']
+            - !concat ['       -s ',*iqtree_slurm_array_input_name,' \']
+            - !concat ['       -bb ', *iqtree_nb_sample, ' -wbtl ', *iqtree_options,' \']
+            - !concat ['       -pre ', *iqtree_results_prefix]
+            - !concat ['fi']
 
