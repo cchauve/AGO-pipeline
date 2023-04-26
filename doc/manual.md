@@ -100,16 +100,18 @@ This pipeline does not compute explicitly gene trees for the gene families, that
 
 In the second pipeline (the `ALE` pipeline), the following steps are implemented:
 - for each gene family, an MSA is computed using `MACSE`;
-- for each gene family, a sample of gene trees is computed from its MSA using `IQ-TREE`;
+- for each gene family, a sample of gene trees is computed from its MSA using `IQ-TREE` ultrafast bootstrap;
 - for each gene family, a reconciled gene tree is computed from the sampled gene trees using `ALE`;
 - for each ancestral species, a set of candidate ancestral gene adjacencies, that might not be compatible with a linear ancestral gene order, is computed using `DeCoSTAR`;
 - for each ancestral species, a subset of the candidate ancestral adjacencies is computed, using `spp_dcj`, that is compatible with a linear gene order.
+
+In the case of a gene family of size 3, `IQ-TREE` bootstrap method is not relevant, and a single gene tree is computed.
 
 ### Pipeline 3, based on ecceTERA
 
 The third pipeline (the `ecceTERA` pipeline) takes advantage of the fact that the parsimony reconciliation algorithm ecceTERA is implemented within DeCoSTAR:
 - for each gene family, an MSA is computed using MACSE;
-- for each gene family, a sample of gene trees is computed from its MSA using IQ-TREE;
+- for each gene family, a sample of gene trees is computed from its MSA using IQ-TREE ultrafast bootstrap;
 - for each gene family, a reconciled gene tree is computed from the sampled gene trees using ecceTERA;
 - for each ancestral species, a set of candidate ancestral gene adjacencies, that might not be compatible with a linear ancestral gene order, is computed using `DeCoSTAR`;
 - for each ancestral species, a subset of the candidate ancestral adjacencies is computed, using `spp_dcj`, that is compatible with a linear gene order.
@@ -193,6 +195,8 @@ See [families file](../data/VectorBase/families_X_4.txt) for an
 example.
 
 **Any AGO pipeline requires a gene family input file.**
+
+**AGO requires gene families having each at least three genes.**
 
 ### Gene orders
 
