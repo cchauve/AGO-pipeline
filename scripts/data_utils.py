@@ -282,22 +282,26 @@ def data_check_species_tree(species_tree_file):
         return 0,[extant_species_list,species_list]
 
 ''' Check families file '''
-def data_check_families(in_families_file, species_list, sep):
+def data_check_families(in_families_file, species_list, sep, min_size=3):
     '''
     input: path to families file, species list, separator character
     output: 
     - 1,[families with incorrect names]
     - 2,[genes with incorrect names]
+    - 3,[families of size<3]
     - 0,[fam to genes map,gene to fam map]
     '''
     g2f_map = data_gene2family(in_families_file)
     f2g_map = data_family2genes(in_families_file)
-    families_errors = [f for f in f2g_map.keys() if not data_check_object_name(f)]
-    genes_errors = [g for g in g2f_map.keys() if not data_check_gene_name(g,species_list,sep)]
-    if len(families_errors)>0:
-        return 1,families_errors
-    elif len(genes_errors)>0:
-        return 2,genes_errors
+    families_name_errors = [f for f in f2g_map.keys() if not data_check_object_name(f)]
+    families_size_errors = [f for f,g in f2g_map.items() if len(g)<min_size]
+    genes_name_errors = [g for g in g2f_map.keys() if not data_check_gene_name(g,species_list,sep)]
+    if len(families_name_errors)>0:
+        return 1,families_nam_errors
+    elif len(genes_name_errors)>0:
+        return 2,genes_name_errors
+    elif len(families_size_errors)>0:
+        return 3,families_size_errors
     else:
         return 0,[f2g_map,g2f_map]
 
@@ -459,6 +463,9 @@ def main():
     elif check_fam == 2:
         print(f'ERROR\tFAMILIES\tgenes names\t{f",".join(fam_out)}')
         exit(1)
+    elif check_fam == 3:
+        print(f'ERROR\tFAMILIES\tfamilies sizes\t{f",".join(fam_out)}')
+        exit(1)        
     else:
         f2g_map,g2f_map = fam_out[0],fam_out[1]
         genes_list = list(g2f_map.keys())
