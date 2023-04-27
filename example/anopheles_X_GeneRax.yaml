@@ -45,6 +45,8 @@ data:
       NT_ext: &data_alignments_NT_ext    '_NT.fasta'
       AA_ext: &data_alignments_AA_ext    '_AA.fasta'
       ext:    &data_alignments_ext       !ref [*data_alignments_NT_ext]
+   gene_trees:
+      path: &data_gene_trees_path        !join [*dir_data, 'gene_trees_X_3.txt']
    reconciliations:
       path:  &data_reconciliations_path  !join [*dir_data, 'reconciliations_X_3.txt']
       ext:   &data_reconciliations_ext   '.recphyloxml'
@@ -234,7 +236,8 @@ tools:
             - !concat [!join [*run_dir_scripts, 'GeneRax_reformat.py'], ' \']
             - !concat ['   ', *generax_input_file, ' \']
             - !concat ['   ', *generax_results_dir, ' \']
-            - !concat ['   ', *data_reconciliations_ext]
+            - !concat ['   ', *data_reconciliations_ext, ' \']
+            - !concat ['   ', *data_gene_trees_path]
       stats:
          names:
             - &generax_stats_file_species_name  !concat [*generax_name, '_species', *log_ext_stat]
