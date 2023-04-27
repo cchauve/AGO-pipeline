@@ -13,7 +13,7 @@ import os
 import xml.etree.ElementTree as ET
 
 
-from recPhyloXML_utils import xml_rename_species,
+from recPhyloXML_utils import xml_rename_species
 
 '''
 Reads DeCoSTAR original and reformatted genes 
@@ -108,6 +108,18 @@ def eccetera_read_reconciliations(in_reconciliations_file, in_sp_xml_str, famili
                 reconciliation_str += f'\n{xml_line.rstrip()}'
     return out_reconciliations_files
 
+''' Writing reconcilitions files '''
+def eccetera_write_reconciliations(in_reconciliations_files, species_map, out_dir, out_xml_ext, out_reconciliations_file):
+    with open(out_reconciliations_file, 'w') as out_file:
+        for family_idx,(family_id,tmp_rec_file) in in_reconciliations_files.items():
+         tree = ET.parse(tmp_rec_file)
+         xml_rename_species(tree, species_map)
+         out_reconciliation_file = os.path.join(out_dir, f'{family_id}{out_xml_ext}')
+         tree.write(out_reconciliation_file)
+         out_file.write(f'{family_id}\t{out_reconciliation_file}\n')
+            
+
+
 def main():
     in_genes_file1 = sys.argv[1] # DeCoSTAR genes file
     in_genes_file2 = sys.argv[2] # Reformatted genes file
@@ -116,20 +128,15 @@ def main():
     out_dir = sys.argv[5] # Directory where to write reconciliations files
     out_xml_ext = sys.argv[6] # Extension to recPhyloXML files
     out_reconciliations_file = sys.argv[7] # Data set reconciliations file
-    
+
     species_map,families_map = eccetera_read_results(in_genes_file1, in_genes_file2)
     xml_sp_str = eccetera_read_species_tree(in_sp_xml_file)
     tmp_reconciliations_files = eccetera_read_reconciliations(
         in_reconciliations_file, xml_sp_str, families_map, out_dir
     )
-
-    with open(out_reconciliations_file, 'w') as out_file:
-        for family_idx,(family_id,tmp_rec_file) in tmp_reconciliations_files.items():
-            tree = ET.parse(tmp_rec_file)
-            xml_rename_species(tree, species_map)
-            out_reconciliation_file = os.path.join(out_dir, f'{family_id}{out_xml_ext}')
-            tree.write(out_reconciliation_file)
-            out_file.write(f'{family_id}\t{out_reconciliation_file}\n')
+    eccetera_write_reconciliations(
+        tmp_reconciliations_files, species_map, out_dir, out_xml_ext, out_reconciliations_file
+    )
             
 if __name__ == "__main__":
     main()

@@ -44,7 +44,8 @@
             - !concat [!join [*run_dir_scripts, 'GeneRax_reformat.py'], ' \']
             - !concat ['   ', *generax_input_file, ' \']
             - !concat ['   ', *generax_results_dir, ' \']
-            - !concat ['   ', *data_reconciliations_ext]
+            - !concat ['   ', *data_reconciliations_ext, ' \']
+            - !concat ['   ', *data_gene_trees_path]
       stats:
          names:
             - &generax_stats_file_species_name  !concat [*generax_name, '_species', *log_ext_stat]
