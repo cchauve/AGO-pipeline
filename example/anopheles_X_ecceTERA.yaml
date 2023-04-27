@@ -40,6 +40,9 @@ data:
    gene_trees:
       path: &data_gene_trees_path        !join [*run_dir_root, 'example', 'anopheles_X_3_ALE', 'data', 'gene_trees_X_3.txt']
    # Paths to computed output files (generated data, no reconciliation)
+   reconciliations:
+      path:  &data_reconciliations_path  !join [*dir_data, 'reconciliations_X_3.txt']
+      ext:   &data_reconciliations_ext   '.recphyloxml'
    adjacencies:
       path: &data_adjacencies_path      !join [*dir_data, 'adjacencies_X_3.txt']
       ext:  &data_adjacencies_ext       '_adjacencies.txt'
@@ -121,8 +124,8 @@ log:
 tools:
    # DO NOT EDIT
    # DeCoSTAR: computing ancestral adjacencies
-   DeCoSTAR:
-      name: &decostar_name 'DeCoSTAR'
+   ecceTERA_DeCoSTAR:
+      name: &decostar_name 'ecceTERA_DeCoSTAR'
       input:
          dirs:
            - &decostar_input_dir !join [*dir_aux, *decostar_name]
@@ -156,10 +159,12 @@ tools:
             files:
                - &decostar_slurm_results_species_adjacencies !join [*decostar_results_dir, *decostar_slurm_results_species_adjacencies_name]
             other:
-               - &decostar_slurm_results_adjacencies_file !join [*decostar_results_dir, 'adjacencies.txt']
-               - &decostar_slurm_results_genes_file_1     !join [*decostar_results_dir, 'genes.txt']
-               - &decostar_slurm_results_genes_file_2     !join [*decostar_results_dir, 'genes_reformatted.txt']
-               - &decostar_slurm_results_species_file     !join [*decostar_results_dir, 'species.txt']
+               - &decostar_slurm_results_adjacencies_file         !join [*decostar_results_dir, 'adjacencies.txt']
+               - &decostar_slurm_results_genes_file_1             !join [*decostar_results_dir, 'genes.txt']
+               - &decostar_slurm_results_genes_file_2             !join [*decostar_results_dir, 'genes_reformatted.txt']
+               - &decostar_slurm_results_species_file             !join [*decostar_results_dir, 'species.txt']
+               - &decostar_slurm_results_species_tree_file        !join [*decostar_results_dir, 'speciesTree.phyloxml']
+               - &decostar_slurm_results_reconciliations_file     !join [*decostar_results_dir, 'reconciliations.xml']
          cmd:
             - !concat [*decostar_exec, ' \']
             # Input files
@@ -204,27 +209,45 @@ tools:
             - !concat ['   ', *decostar_slurm_results_adjacencies_file, ' \']
             - !concat ['   ', *decostar_slurm_results_genes_file_2, ' \']
             - !concat ['   ', *decostar_results_dir]
+            - ' '
+            - !concat [!join [*run_dir_scripts, 'DeCoSTAR_ecceTERA_reformat.py'], ' \']
+            - !concat ['   ', *decostar_slurm_results_genes_file_1, ' \']
+            - !concat ['   ', *decostar_slurm_results_genes_file_2, ' \']
+            - !concat ['   ', *decostar_slurm_results_species_tree_file, ' \']
+            - !concat ['   ', *decostar_slurm_results_reconciliations_file, ' \']
+            - !concat ['   ', *decostar_results_dir, ' \']
+            - !concat ['   ', *data_reconciliations_ext, ' \']
+            - !concat ['   ', *data_reconciliations_path]
       stats:
          names:
-            - &decostar_stats_file_species_name    !concat [*decostar_name, '_species', *log_ext_stat]
-            - &decostar_stats_file_components_name !concat [*decostar_name, '_components', *log_ext_stat]
+            - &decostar_stats_file_adj_species_name      !concat [*decostar_name, '_adjacencies_species', *log_ext_stat]
+            - &decostar_stats_file_adj_components_name   !concat [*decostar_name, '_adjacencies_components', *log_ext_stat]
+            - &decostar_stats_file_rec_species_name      !concat [*decostar_name, '_reconciliations_species', *log_ext_stat]
+            - &decostar_stats_file_rec_families_name     !concat [*decostar_name, '_reconciliations_families', *log_ext_stat]
          files:
-            - &decostar_stats_file_species    !join [*dir_stats, *decostar_name, *decostar_stats_file_species_name]
-            - &decostar_stats_file_components !join [*dir_stats, *decostar_name, *decostar_stats_file_components_name]
+            - &decostar_stats_file_adj_species      !join [*dir_stats, *decostar_name, *decostar_stats_file_adj_species_name]
+            - &decostar_stats_file_adj_components   !join [*dir_stats, *decostar_name, *decostar_stats_file_adj_components_name]
+            - &decostar_stats_file_rec_species  !join [*dir_stats, *decostar_name, *decostar_stats_file_rec_species_name]
+            - &decostar_stats_file_rec_families !join [*dir_stats, *decostar_name, *decostar_stats_file_rec_families_name]
          script:
+            - !join [*run_dir_scripts, 'recPhyloXML_statistics.py']
+            - !ref [*data_reconciliations_path]
+            - !ref [*decostar_stats_file_rec_species]
+            - !ref [*decostar_stats_file_rec_families]
+            - !concat [';']
             - !join [*run_dir_scripts, 'DeCoSTAR_statistics.py']
             - !ref [*data_species_path]
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
             - !ref [*decostar_stats_thresholds]
-            - !ref [*decostar_stats_file_species]
+            - !ref [*decostar_stats_file_adj_species]
             - !concat [';']
             - !join [*run_dir_scripts, 'gene_orders_utils.py']
             - 'stats'
             - !ref [*decostar_slurm_results_genes_file_2]
             - !ref [*data_adjacencies_path]
             - !ref [*decostar_results_dir]
-            - !ref [*decostar_stats_file_components]
+            - !ref [*decostar_stats_file_adj_components]
    # DO NOT EDIT
    # SPPDCJ_ILP: Writing the SPPDCJ ILP file
    SPPDCJ_ILP:
