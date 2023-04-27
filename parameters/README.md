@@ -5,6 +5,7 @@ This directory contains the files required to create an AGO pipeline YAML parame
 - `MACSE.yaml`: paramaters file block to run MACSE; **do not edit**.
 - `ALE.yaml`: paramaters file block to run ALE; **do not edit**.
 - `DeCoSTAR.yaml`: paramaters file block to run DeCoSTAR; **do not edit**.
+- `ecceTERA_DeCoSTAR.yaml`: paramaters file block to run ecceTERA+DeCoSTAR; **do not edit**.
 - `GeneRax.yaml`: paramaters file block to run GeneRax; **do not edit**.
 - `IQ-TREE.yaml`: paramaters file block to run IQ-TREE; **do not edit**.
 - `SPPDCJ.yaml`: paramaters file block to run spp_dcj; **do not edit**.
