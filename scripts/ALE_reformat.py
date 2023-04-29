@@ -38,16 +38,25 @@ def main():
     in_rec_xml_file = sys.argv[3]
     out_rec_xml_file = sys.argv[4]
 
+    # Creates a map from ALE species names to original species names
     species_map = newick_create_species_map(in_ale_species_tree, in_data_species_tree)
+    # Read an ALE recPhyloXML file
     tree = ET.parse(in_rec_xml_file)
+    # If the file includes an HGT, we do not create a reformatted file
     if not xml_check_transfer(tree, xml_ALE_identify_transfer):
+        # Rename species
         xml_rename_species(tree, species_map)
+        # Reformat losses
         xml_rename_losses(tree, xml_ALE_identify_loss, 'loss')
-        _ = xml_rename_ancestral_genes(tree, xml_ALE_identify_ancestral_gene, start_id=1)    
-        out_rec_xml_file_tmp = f'{out_rec_xml_file}_tmp'
-        tree.write(out_rec_xml_file_tmp)
-        _ = xml_reformat_file(out_rec_xml_file_tmp, out_rec_xml_file)
-        os.remove(out_rec_xml_file_tmp)
+        # Reformat ancestral gene names with integers ID starting at 1
+        _ = xml_rename_ancestral_genes(tree, xml_ALE_identify_ancestral_gene, start_id=1)
+        # Create a temporary recPhyloXML file
+        tmp_rec_file = f'{out_rec_xml_file}_tmp'
+        tree.write(tmp_rec_file)
+        # Reformat the temporary recPhyloXML file int the final recPhyloXML file
+        _ = xml_reformat_file(tmp_rec_file, out_rec_xml_file)
+        # Delete the temporary recPhyloXML file
+        os.remove(tmp_rec_file)
 
 if __name__ == "__main__":
     main()

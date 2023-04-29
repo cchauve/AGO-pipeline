@@ -326,9 +326,11 @@ def main():
     out_genes_file = sys.argv[9]
     out_adjacencies_dir = sys.argv[10]    
 
+    # Creates a map from DeCoSTAR species names to original species names
     species_map = decostar_species_map(
         in_species_file, in_decostar_species_file
     )
+    # Reformat the genes file created by DeCoSTAR to rename genes, families and species
     genes_map = decostar_reformat_genes(
         species_map,
         in_families_file, in_reconciliations_file,
@@ -336,6 +338,7 @@ def main():
         out_genes_file,
         already_reconciled = in_already_reconciled
     )
+    # Reformat the adjacencies file created by DeCoSTAR to rename genes, families and species
     decostar_reformat_adjacencies_file(
         species_map, genes_map, in_adjacencies_file,
         out_adjacencies_dir

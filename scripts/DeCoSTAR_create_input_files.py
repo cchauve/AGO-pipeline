@@ -46,7 +46,7 @@ def decostar_gene_order2adjacencies_str(
 Creates the DeCoSTAR input (reconciled) gene trees distribution file 
 Compute a list of families for which the (reconciled) gene tree is provided
 '''
-def create_gene_distribution_file(in_trees_file, out_trees_file):
+def decostar_create_gene_distribution_file(in_trees_file, out_trees_file):
     '''
     input: 
     - dataset file family<TAB>(reconciled) gene trees
@@ -63,7 +63,7 @@ def create_gene_distribution_file(in_trees_file, out_trees_file):
     return families
 
 ''' Creates the DeCoSTAR input adjacencies file '''
-def create_adjacencies_file(
+def decostar_create_adjacencies_file(
         in_gene_orders_file, in_families_file, in_trees_families,
         out_adjacencies_file
 ):
@@ -94,8 +94,12 @@ def main():
     out_adjacencies_file = sys.argv[4]
     out_trees_file = sys.argv[5]
 
-    trees_families = create_gene_distribution_file(in_trees_file, out_trees_file)
-    create_adjacencies_file(in_gene_orders_file, in_families_file, trees_families, out_adjacencies_file)
+    # Creates the gene trees distribution file (reconciliations or samples of gene trees)
+    trees_families = decostar_create_gene_distribution_file(in_trees_file, out_trees_file)
+    # Creates the adjacencies file
+    decostar_create_adjacencies_file(
+        in_gene_orders_file, in_families_file, trees_families, out_adjacencies_file
+    )
         
 if __name__ == "__main__":
     main()

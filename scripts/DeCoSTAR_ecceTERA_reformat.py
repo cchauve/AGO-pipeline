@@ -24,11 +24,11 @@ def eccetera_read_results(in_genes_file1, in_genes_file2, sep='|'):
     input:
     - original and reformatted genes file
     output:
-    - dict(ecceTERA species -> data species)
-    - dict(ecceTERA family -> data family)
+    - dict(ecceTERA species -> original species)
+    - dict(ecceTERA family -> original family)
     '''
     species_dict,families_dict = {},{}
-    # Reading original genes
+    # Reading original DeCoSTAR genes
     data,data_idx = {},0
     with open(in_genes_file1, 'r') as in_genes:
         for gene_data in in_genes.readlines():
@@ -116,6 +116,7 @@ def eccetera_write_reconciliations(in_reconciliations_files, species_map, out_di
          out_reconciliation_file = os.path.join(out_dir, f'{family_id}{out_xml_ext}')
          tree.write(out_reconciliation_file)
          out_file.write(f'{family_id}\t{out_reconciliation_file}\n')
+         os.remove(tmp_rec_file)
             
 
 def main():
@@ -127,11 +128,17 @@ def main():
     out_xml_ext = sys.argv[6] # Extension to recPhyloXML files
     out_reconciliations_file = sys.argv[7] # Data set reconciliations file
 
+    # Creates a map from DeCoSTAR species names to original species names
     species_map,families_map = eccetera_read_results(in_genes_file1, in_genes_file2)
+    # Read the species tree in XML format created by DeCoSTAR
     xml_sp_str = eccetera_read_species_tree(in_sp_xml_file)
+    # Creates one temporary recPhyloXML file per family extracted from the
+    # DeCoSTAR reocnciliations file
     tmp_reconciliations_files = eccetera_read_reconciliations(
         in_reconciliations_file, xml_sp_str, families_map, out_dir
     )
+    # Reformat the temporary rcPhyloXML files and writes a reconciliations file
+    # (<family><TAB><path to reconciliation file>)
     eccetera_write_reconciliations(
         tmp_reconciliations_files, species_map, out_dir, out_xml_ext, out_reconciliations_file
     )

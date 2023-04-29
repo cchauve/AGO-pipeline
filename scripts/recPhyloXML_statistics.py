@@ -64,7 +64,7 @@ def xml_parse_tree(root, tag_pref):
     parse_clade_recursive(root, result)
     return result
 
-def recPhyloXML_read_events(in_file):
+def xml_read_events(in_file):
     ''' 
     Read a recPhyloXML file and returns a dictionary indexed by species
     and for each containing a dictionary recording number of genes, 
@@ -118,7 +118,7 @@ def recPhyloXML_read_events(in_file):
 
 
 ''' Collects statistics from a dataset reconciliations file '''
-def collect_statistics(in_reconciliations_file):
+def xml_collect_statistics(in_reconciliations_file):
     '''
     input: dataset path family ID -> path to reconciliation file
     output:
@@ -131,7 +131,7 @@ def collect_statistics(in_reconciliations_file):
     stats_species = {}
     stats_families = {}
     for fam_id,reconciliation_path in family2reconciliation.items():  
-        events = recPhyloXML_read_events(reconciliation_path)
+        events = xml_read_events(reconciliation_path)
         stats_families[fam_id] = events
         for species,stats in stats_families[fam_id].items():
             if species not in stats_species.keys():
@@ -151,7 +151,7 @@ def _stats_str(stats, sp, sep=':'):
         ]
     )
 
-def write_statistics_species(
+def xml_write_statistics_species(
         in_statistics_species,
         out_stats_file_species,
         sep1=':', sep2='\t', sep3=' '
@@ -165,7 +165,7 @@ def write_statistics_species(
             )
         out_stats_file.write('\n')
 
-def write_statistics_families(
+def xml_write_statistics_families(
         in_statistics_families,
         out_stats_file_families,
         sep1=':', sep2='\t', sep3=' '
@@ -199,15 +199,15 @@ def main():
     out_stats_file_families = sys.argv[3]
 
     # Reading reconciliations and collecting statistics
-    (statistics_families,statistics_species) = collect_statistics(
+    (statistics_families,statistics_species) = xml_collect_statistics(
         in_reconciliations_file
     )
     # Writting species statistics
-    write_statistics_species(
+    xml_write_statistics_species(
         statistics_species, out_stats_file_species
     )
     # Writting families statistics
-    write_statistics_families(
+    xml_write_statistics_families(
         statistics_families, out_stats_file_families
     )
 

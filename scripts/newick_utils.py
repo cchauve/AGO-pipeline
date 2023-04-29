@@ -146,10 +146,12 @@ def main():
     command = sys.argv[1]
 
     if command == 'species':
+        # Creates a species -> descendants file from a species tree
         in_species_tree_file = sys.argv[2]
         out_species_file = sys.argv[3]
         newick_create_species_file(in_species_tree_file, out_species_file)
     elif command == 'unlabel':
+        # Creates a new file with internal nodes unlabeled
         in_species_tree_file = sys.argv[2]
         out_species_tree_file = sys.argv[3]
         newick_remove_internal_names(in_species_tree_file, out_species_tree_file)

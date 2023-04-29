@@ -18,7 +18,7 @@ from data_utils import (
 )
 
 ''' Write the GeneRax families file from paths to alignments '''
-def GeneRax_write_families_file(
+def generax_write_families_file(
         in_family2genes, in_gene2species, in_family2alignment,
         in_subst_model,
         out_map_files_dir, out_families_file
@@ -62,7 +62,7 @@ def main():
         in_alignments_file, in_suffix
     )
     # Create GeneRax input files
-    GeneRax_write_families_file(
+    generax_write_families_file(
         family2genes, gene2species, family2alignment, in_subst_model,
         out_map_files_dir, out_families_file
     )
