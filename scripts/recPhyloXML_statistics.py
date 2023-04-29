@@ -5,12 +5,12 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0"
+__version__   = "1.0.3"
 __status__    = "Released"
 
 import sys
 
-from data_utils import data_family2reconciliation_path
+from data_utils import data_index2path
 from recPhyloXML_utils import (
     xml_get_tag,
     xml_get_prefix,
@@ -125,7 +125,7 @@ def collect_statistics(in_reconciliations_file):
     - dict(species -> dict(key: value for key in STATS_keys))
     - dict(family ID -> dict(species -> dict(key: value for key in STATS_keys)))
     '''
-    family2reconciliation = data_family2reconciliation_path(
+    family2reconciliation = data_index2path(
         in_reconciliations_file
     )
     stats_species = {}

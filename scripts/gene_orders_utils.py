@@ -5,7 +5,7 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0"
+__version__   = "1.0.3"
 __status__    = "Released"
 
 import os
@@ -13,7 +13,7 @@ import sys
 from collections import defaultdict
 import networkx as nx
 
-from data_utils import data_species2adjacencies_path
+from data_utils import data_index2path
 from DeCoSTAR_reformat import decostar_sep
 from DeCoSTAR_statistics import decostar_sign2extremity
 
@@ -54,7 +54,7 @@ def read_DeCoSTAR_adjacencies(in_adjacencies_file):
     output: dict(species -> list((gene1,sign1,gene2,sign2,weight)))
     '''
     adjacencies_dict = {}
-    species2adjacencies_file = data_species2adjacencies_path(in_adjacencies_file)
+    species2adjacencies_file = data_index2path(in_adjacencies_file)
     for species,adjacencies_file_path in species2adjacencies_file.items():
         adjacencies_dict[species] = read_DeCoSTAR_adjacencies_species(adjacencies_file_path)
     return adjacencies_dict

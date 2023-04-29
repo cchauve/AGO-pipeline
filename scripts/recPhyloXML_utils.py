@@ -5,7 +5,7 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0"
+__version__   = "1.0.3"
 __status__    = "Released"
 
 import sys
@@ -139,7 +139,7 @@ def xml_reformat_file(in_file, out_file, start_id=0):
         current_id = start_id
         for line in in_xml.readlines()[1:]:
             line1 = line.strip()
-            if line1[0]!='<': continue
+            if line1.0.3]!='<': continue
             if line1 == '<name></name>':
                 out_xml.write(line.replace('><', f'>{current_id}<'))
                 current_id += 1

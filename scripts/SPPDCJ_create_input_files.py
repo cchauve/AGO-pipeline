@@ -5,13 +5,13 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "0.99"
-__status__    = "Development"
+__version__   = "1.0.3"
+__status__    = "Released"
 
 import sys
 import ete3
 
-from data_utils import data_species2adjacencies_path
+from data_utils import data_index2path
 from newick_utils import (
     newick_get_children_map,
     newick_get_lca_species
@@ -63,7 +63,7 @@ def sppdcj_adjacencies(
     
     species2adjacencies_file = [
         (species,adj_path)
-        for (species,adj_path) in data_species2adjacencies_path(
+        for (species,adj_path) in data_index2path(
                 in_adjacencies_file
         ).items()
         if (species_list is None or species in species_list)

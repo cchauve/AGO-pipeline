@@ -5,7 +5,7 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0"
+__version__   = "1.0.3"
 __status__    = "Released"
 
 import sys
@@ -87,68 +87,14 @@ def data_family2genes(in_families_file):
     output: dict(family ID -> list(genes))
     '''
     return _data_create_map(in_families_file, sep2=' ')
-    
-''' Creates a map from species to gene order file '''
-def data_species2gene_order_path(in_gene_orders_file):
-    '''
-    input: path to dataset gene orders file
-    output: dict(species -> gene order file path)
-    '''
-    return _data_create_map(in_gene_orders_file)
 
-''' Creates a map from species to adjacencies file '''
-def data_species2adjacencies_path(in_adjacencies_file):
-    '''
-    input: path to dataset gene orders file
-    output: dict(species -> adjacencies file path)
-    '''
-    return _data_create_map(in_adjacencies_file)
+''' Creates a map from index to files path '''
+def data_index2path(in_file):
+    return _data_create_map(in_file)
 
-''' Creates a map from family to sequences file '''
-def data_family2sequences_path(in_sequences_file):
-    '''
-    input: path to dataset sequences file
-    output: dict(family -> sequences path)
-    '''
-    return _data_create_map(in_reconciliations_file)
-
-''' Creates a map from family to alignment file '''
-def data_family2alignment_path(in_alignments_file, in_suffix):
-    '''
-    input: path to dataset alignments file
-    output: dict(family -> alignment path) if path ends by in_suffix
-    '''
-    family2alignment_path = {}
-    with open(in_alignments_file, 'r') as alignments:
-        for family in alignments.readlines():
-            fam_id,alignment_file = family.rstrip().split('\t')
-            if alignment_file.endswith(in_suffix):
-                family2alignment_path[fam_id] = alignment_file
-    return family2alignment_path
-
-''' Creates a map from family to gene tree(s) file '''
-def data_family2genetree_path(in_gene_trees_file):
-    '''
-    input: path to dataset gene trees file
-    output: dict(family -> gene tree(s) path)
-    '''
-    return _data_create_map(in_gene_trees_file)
-
-''' Creates a map from family to reconciliation file '''
-def data_family2reconciliation_path(in_reconciliations_file):
-    '''
-    input: path to dataset reconciliations file
-    output: dict(family -> reconciliation path)
-    '''
-    return _data_create_map(in_reconciliations_file)
-
-''' Creates a map from reconciliation file to family '''
-def data_reconciliation_path2family(in_reconciliations_file):
-    '''
-    input: path to dataset reconciliations file
-    output: dict(family -> reconciliation path)
-    '''
-    return _data_create_inverse_map(in_reconciliations_file)
+''' Creates a map from files path to index '''
+def data_path2index(in_file):
+    return _data_create_inverse_map(in_file)
 
 ''' Creates a list of species '''
 def data_species_list(in_file):
@@ -324,7 +270,7 @@ def data_check_gene_orders_file(in_gene_orders_file, species_list, genes_list):
     - genes errors:    3,[list of genes in gene orders files not in genes list,list of genes in genes list not in gene orders files]
     - missing files:   4,[missing files]
     '''
-    species2gene_order_path = data_species2gene_order_path(in_gene_orders_file)
+    species2gene_order_path = data_index2path(in_gene_orders_file)
     go_species_list = species2gene_order_path.keys()
     # Checking species lists
     species_diff = _data_compare_lists(go_species_list,species_list)

@@ -5,13 +5,13 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0"
+__version__   = "1.0.3"
 __status__    = "Released"
 
 import sys
 import os
 
-from data_utils import data_species2adjacencies_path
+from data_utils import data_index2path
 
 from DeCoSTAR_reformat import (
     decostar_sep,
@@ -53,7 +53,7 @@ def read_decostar_adjacencies(in_data_adjacencies_file):
     input: data adjacencies file (species<TAB>DeCoSTAR adjacencies file
     output: dict(species -> dict((gene1,ext1,gene2,ext2)->(gene1,sign1,gene2,sign2,weight1,weight2))
     '''
-    species2adjacencies_files = data_species2adjacencies_path(in_data_adjacencies_file)
+    species2adjacencies_files = data_index2path(in_data_adjacencies_file)
     species2adjacencies_aux = {}
     for species,adjacencies_file in species2adjacencies_files.items():
         species2adjacencies_aux[species] = decostar_read_adjacencies(adjacencies_file, species=species)

@@ -5,7 +5,7 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0"
+__version__   = "1.0.3"
 __status__    = "Released"
 
 import sys
@@ -16,7 +16,7 @@ from data_utils import (
     data_create_equivalence_map,
     data_species_map,
     data_gene2family,
-    data_reconciliation_path2family
+    data_path2index
 )
 from recPhyloXML_utils import (
     xml_get_gene_tree_root,
@@ -71,7 +71,7 @@ def decostar_family_map(
     output:
     dict(str->str) from DeCoSTAR family ID to original family ID
     '''
-    reconciliation2family = data_reconciliation_path2family(
+    reconciliation2family = data_path2index(
         in_input_file
     )
     family_map = {}
@@ -94,7 +94,7 @@ An ancestral gene is of the form <integer>|<integer>
 '''
 def decostar_test_ancestral(gene):
     gene1 = gene.split(decostar_sep)
-    return len(gene1)==2 and gene1[0].isdigit() and gene1[1].isdigit()
+    return len(gene1)==2 and gene1.0.3].isdigit() and gene1[1].isdigit()
 
 ''' 
 Read DeCoSTAR genes file to compute a map from gene name 
