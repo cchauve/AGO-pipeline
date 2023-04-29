@@ -5,7 +5,7 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0"
+__version__   = "1.0.3"
 __status__    = "Released"
 
 import sys
@@ -14,11 +14,11 @@ import os
 from data_utils import (
     data_family2genes,
     data_gene2species,
-    data_family2alignment_path
+    data_index2path
 )
 
 ''' Write the GeneRax families file from paths to alignments '''
-def GeneRax_write_families_file(
+def generax_write_families_file(
         in_family2genes, in_gene2species, in_family2alignment,
         in_subst_model,
         out_map_files_dir, out_families_file
@@ -58,11 +58,9 @@ def main():
     # Read all genes
     gene2species = data_gene2species(in_gene_orders_file)
     # Read alignmed families
-    family2alignment = data_family2alignment_path(
-        in_alignments_file, in_suffix
-    )
+    family2alignment = data_index2path(in_alignments_file)
     # Create GeneRax input files
-    GeneRax_write_families_file(
+    generax_write_families_file(
         family2genes, gene2species, family2alignment, in_subst_model,
         out_map_files_dir, out_families_file
     )

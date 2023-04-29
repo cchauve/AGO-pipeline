@@ -5,13 +5,13 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "0.99"
-__status__    = "Development"
+__version__   = "1.0.3"
+__status__    = "Released"
 
 import sys
 import ete3
 
-from data_utils import data_species2adjacencies_path
+from data_utils import data_index2path
 from newick_utils import (
     newick_get_children_map,
     newick_get_lca_species
@@ -63,7 +63,7 @@ def sppdcj_adjacencies(
     
     species2adjacencies_file = [
         (species,adj_path)
-        for (species,adj_path) in data_species2adjacencies_path(
+        for (species,adj_path) in data_index2path(
                 in_adjacencies_file
         ).items()
         if (species_list is None or species in species_list)
@@ -105,18 +105,20 @@ def main():
     out_species_tree = sys.argv[5]
     out_adjacencies_file = sys.argv[6]
 
-    if in_extant_species == 'all':
+    # Define species to consider
+    if in_extant_species == 'all':# Consider all species
         species_list = None
-    else:
+    else:# Consider species covered by the LCA of in_extant_species
         species_list = newick_get_lca_species(
             in_species_tree, in_extant_species.split()
         )
-    
+    # Creates an SPP-DCJ species tree
     sppdcj_species_trees(
         in_species_tree,
         out_species_tree,
         species_list=species_list
     )
+    # Creates an SPP-DCJ adjacencies file
     sppdcj_adjacencies(
         in_adjacencies_file, in_weight_threshold,
         out_adjacencies_file,

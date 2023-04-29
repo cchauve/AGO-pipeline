@@ -5,13 +5,13 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0"
+__version__   = "1.0.3"
 __status__    = "Released"
 
 import sys
 import os
 
-from data_utils import data_species2adjacencies_path
+from data_utils import data_index2path
 
 from DeCoSTAR_reformat import (
     decostar_sep,
@@ -21,7 +21,7 @@ from DeCoSTAR_reformat import (
 from DeCoSTAR_statistics import decostar_sign2extremity
 
 ''' Read the SPPDCJ adajcencies file and create a species-indexed dictionary '''
-def read_sppdcj_adjacencies(in_adjacencies_file):
+def sppdcj_read_sppdcj_adjacencies(in_adjacencies_file):
     '''
     input: SPPDCJ adjacencies file
     output: dict(species -> dict((gene1,ext1,gene2,ext2)->weight)
@@ -48,12 +48,12 @@ def read_sppdcj_adjacencies(in_adjacencies_file):
     return adjacencies_dict
 
 ''' Read the DeCoSTAR adajcencies file and create a species-indexed dictionary '''
-def read_decostar_adjacencies(in_data_adjacencies_file):
+def sppdcj_read_decostar_adjacencies(in_data_adjacencies_file):
     '''
     input: data adjacencies file (species<TAB>DeCoSTAR adjacencies file
     output: dict(species -> dict((gene1,ext1,gene2,ext2)->(gene1,sign1,gene2,sign2,weight1,weight2))
     '''
-    species2adjacencies_files = data_species2adjacencies_path(in_data_adjacencies_file)
+    species2adjacencies_files = data_index2path(in_data_adjacencies_file)
     species2adjacencies_aux = {}
     for species,adjacencies_file in species2adjacencies_files.items():
         species2adjacencies_aux[species] = decostar_read_adjacencies(adjacencies_file, species=species)
@@ -72,7 +72,7 @@ def read_decostar_adjacencies(in_data_adjacencies_file):
     return adjacencies_dict
 
 ''' Filter DeCoSTAR adjacencies discarded by SPPDCJ '''
-def filter_adjacencies(in_decostar_adjacencies, in_sppdcj_adjacencies):
+def sppdcj_filter_adjacencies(in_decostar_adjacencies, in_sppdcj_adjacencies):
     '''
     input: dictionaries
     dict(species -> dict((gene1,gene2,ext1,ext2)->weight)
@@ -90,7 +90,7 @@ def filter_adjacencies(in_decostar_adjacencies, in_sppdcj_adjacencies):
     return out_adjacencies
 
 ''' Write the filtered adjacncies '''
-def write_adjacencies(adjacencies_dict,out_dir):
+def sppdcj_write_adjacencies(adjacencies_dict,out_dir):
     for species,adjacencies_dict in adjacencies_dict.items():
         out_adjacencies_path = os.path.join(out_dir, f'{species}_adjacencies.txt')
         with open(out_adjacencies_path,'w') as out_adjacencies_file:
@@ -102,13 +102,20 @@ def main():
     in_data_adjacencies_file = sys.argv[1]
     in_sppdcj_adjacencies_file = sys.argv[2]
     out_dir = sys.argv[3]
+    
     # Reading SPPDCJ adjacencies
-    sppdcj_adjacencies = read_sppdcj_adjacencies(in_sppdcj_adjacencies_file)    
+    sppdcj_adjacencies = sppdcj_read_sppdcj_adjacencies(
+        in_sppdcj_adjacencies_file
+    )    
     # Reading DeCoSTAR adjacencies
-    decostar_adjacencies = read_decostar_adjacencies(in_data_adjacencies_file)
+    decostar_adjacencies = sppdcj_read_decostar_adjacencies(
+        in_data_adjacencies_file
+    )
     # Filter DeCoSTAR adjacencies
-    filtered_adjacencies = filter_adjacencies(decostar_adjacencies,sppdcj_adjacencies)
-    write_adjacencies(filtered_adjacencies,out_dir)
+    filtered_adjacencies = sppdcj_filter_adjacencies(
+        decostar_adjacencies,sppdcj_adjacencies
+    )
+    sppdcj_write_adjacencies(filtered_adjacencies,out_dir)
 
 if __name__ == "__main__":
     main()

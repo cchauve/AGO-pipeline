@@ -5,7 +5,7 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0"
+__version__   = "1.0.3"
 __status__    = "Released"
 
 import os
@@ -69,7 +69,7 @@ def create_bash_script(parameters, tool):
         script.write('#!/bin/bash\n\n')
         bash_modules = parameters.get_slurm_modules(tool)
         if bash_modules is not None:
-            script.write(f'\n\nmodule load {bash_modules}')        
+            script.write(f'\n\nmodule load {bash_modules}\n\n')        
         if parameters.check_slurm_array_input(tool):
             TASK_ID = '${TASK_ID}'
             array_size = parameters.get_slurm_array_input_len(tool)

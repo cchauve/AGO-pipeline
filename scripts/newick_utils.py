@@ -5,15 +5,12 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0"
+__version__   = "1.0.3"
 __status__    = "Released"
 
 import sys
 from collections import defaultdict
 import ete3
-
-NEWICK_EXTANT='extant'
-NEWICK_ANCESTRAL='ancestral'
 
 ''' Check that the tree is rooted '''
 def newick_check_rooted(species_tree_file):
@@ -95,21 +92,6 @@ def newick_remove_internal_names(in_species_tree_file, out_species_tree_file):
     tree = ete3.Tree(in_species_tree_file, format=1)
     tree.write(format=5, outfile=out_species_tree_file)
 
-''' Creates a map from species names to species status '''
-def newick_get_species_status(tree_file):
-    '''
-    input: paths to a Newick tree file with internal nodes named
-    output: dic(str->str) node (species) name -> 'extant', 'ancestral'
-    '''
-    species = {}
-    tree = ete3.Tree(tree_file, format=1)
-    for node in tree.traverse():
-        if node.is_leaf():
-            species[node.name] = NEWICK_EXTANT
-        else:
-            species[node.name] = NEWICK_ANCESTRAL
-    return(species)
-
 ''' Creates a map from node names to children '''
 def newick_get_children_map(tree_file):
     '''
@@ -164,10 +146,12 @@ def main():
     command = sys.argv[1]
 
     if command == 'species':
+        # Creates a species -> descendants file from a species tree
         in_species_tree_file = sys.argv[2]
         out_species_file = sys.argv[3]
         newick_create_species_file(in_species_tree_file, out_species_file)
     elif command == 'unlabel':
+        # Creates a new file with internal nodes unlabeled
         in_species_tree_file = sys.argv[2]
         out_species_tree_file = sys.argv[3]
         newick_remove_internal_names(in_species_tree_file, out_species_tree_file)

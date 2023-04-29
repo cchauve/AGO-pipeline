@@ -5,14 +5,14 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0"
+__version__   = "1.0.3"
 __status__    = "Released"
 
 import sys
 
 from data_utils import (
     data_species_list,
-    data_species2adjacencies_path
+    data_index2path
 )
 from DeCoSTAR_reformat import decostar_read_adjacencies
 
@@ -60,7 +60,7 @@ def decostar_read_results(in_genes_file, in_adjacencies_file, in_species_list):
     for (species,gene) in species_gene:
         adjacencies_dicts[species][gene] = {'h': [], 't': []}
     ## Populate dictionaries from species to adjacency tabulated file
-    species2adjacencies = data_species2adjacencies_path(in_adjacencies_file)
+    species2adjacencies = data_index2path(in_adjacencies_file)
     for species,in_adjacencies_file in species2adjacencies.items():
         in_adjacencies = decostar_read_adjacencies(
             in_adjacencies_file, species=species
