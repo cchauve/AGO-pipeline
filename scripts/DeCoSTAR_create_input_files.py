@@ -29,9 +29,10 @@ def decostar_gene_order2adjacencies_str(
     orientation = {'1': '+', '0': '-'}
     adjacencies = []
     gene_order = data_read_gene_order_file(in_gene_order_file)
+    in_gene2family_keys = list(in_gene2family_map.keys())
     prev_gene = None
     for (gene_name,gene_chr,_,_,gene_sign) in gene_order:
-        if in_gene2family_map[gene_name] in in_families:
+        if gene_name in in_gene2family_keys and in_gene2family_map[gene_name] in in_families:
             gene_orientation = orientation[gene_sign]
             if prev_gene is not None and prev_gene[1] == gene_chr:
                 adjacency = [

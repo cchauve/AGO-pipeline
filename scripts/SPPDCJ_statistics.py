@@ -12,12 +12,12 @@ import sys
 import os
 
 from SPPDCJ_reformat import (
-    read_sppdcj_adjacencies,
-    read_decostar_adjacencies,
-    filter_adjacencies
+    sppdcj_read_sppdcj_adjacencies,
+    sppdcj_read_decostar_adjacencies,
+    sppdcj_filter_adjacencies
 )
 
-def SPPDCJ_statistics(decostar_adjacencies, filtered_adjacencies):
+def sppdcj_statistics(decostar_adjacencies, filtered_adjacencies):
     statistics = {}
     for species,adjacencies in decostar_adjacencies.items():
         statistics[species] = {}
@@ -32,7 +32,7 @@ def SPPDCJ_statistics(decostar_adjacencies, filtered_adjacencies):
         statistics[species]['weight2'] = sum_weights
     return statistics
 
-def write_statistics(statistics, out_statistics_file):
+def sppdcj_write_statistics(statistics, out_statistics_file):
     with open(out_statistics_file,'w') as out_file:
         out_file.write('#species\tnumber of adjacencies:total weight:kept adjacencies:kept weight')
         for species,stats in statistics.items():
@@ -45,14 +45,14 @@ def main():
     in_sppdcj_adjacencies_file = sys.argv[2]
     out_statistics_file = sys.argv[3]
     # Reading SPPDCJ adjacencies
-    sppdcj_adjacencies = read_sppdcj_adjacencies(in_sppdcj_adjacencies_file)    
+    sppdcj_adjacencies = sppdcj_read_sppdcj_adjacencies(in_sppdcj_adjacencies_file)    
     # Reading DeCoSTAR adjacencies
-    decostar_adjacencies = read_decostar_adjacencies(in_data_adjacencies_file)
+    decostar_adjacencies = sppdcj_read_decostar_adjacencies(in_data_adjacencies_file)
     # Filter DeCoSTAR adjacencies
-    filtered_adjacencies = filter_adjacencies(decostar_adjacencies,sppdcj_adjacencies)
+    filtered_adjacencies = sppdcj_filter_adjacencies(decostar_adjacencies,sppdcj_adjacencies)
     # Statistics
-    statistics = SPPDCJ_statistics(decostar_adjacencies, filtered_adjacencies)
-    write_statistics(statistics, out_statistics_file)
+    statistics = sppdcj_statistics(decostar_adjacencies, filtered_adjacencies)
+    sppdcj_write_statistics(statistics, out_statistics_file)
 
 if __name__ == "__main__":
     main()

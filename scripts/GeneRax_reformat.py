@@ -14,7 +14,7 @@ import os
 from recPhyloXML_utils import xml_reformat_file
 
 # Suffix of reconciliation files created by GeneRax
-GENERAX_XML_SUFFIX = '_reconciliations.xml'
+GENERAX_XML_SUFFIX = '_reconciliated.xml'
 # Nam of a GeneRax gene tree in Newick format
 GENERAX_GT_NEWICK = 'geneTree.newick'
 

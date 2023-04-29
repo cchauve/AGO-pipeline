@@ -153,7 +153,7 @@ def go_graph2str(in_graph, species):
             C, start_node, species, component_id
         )
         component_id += 1
-    return FASTA_str
+    return result
 
 def go_write_CARs(in_graphs, out_dir, out_file_path):
     '''

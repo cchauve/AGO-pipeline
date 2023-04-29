@@ -58,9 +58,7 @@ def main():
     # Read all genes
     gene2species = data_gene2species(in_gene_orders_file)
     # Read alignmed families
-    family2alignment = data_index2path(
-        in_alignments_file, in_suffix
-    )
+    family2alignment = data_index2path(in_alignments_file)
     # Create GeneRax input files
     generax_write_families_file(
         family2genes, gene2species, family2alignment, in_subst_model,
