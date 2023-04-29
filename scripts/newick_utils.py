@@ -12,9 +12,6 @@ import sys
 from collections import defaultdict
 import ete3
 
-NEWICK_EXTANT='extant'
-NEWICK_ANCESTRAL='ancestral'
-
 ''' Check that the tree is rooted '''
 def newick_check_rooted(species_tree_file):
     '''
@@ -94,21 +91,6 @@ Remove internal node names from a species tree
 def newick_remove_internal_names(in_species_tree_file, out_species_tree_file):
     tree = ete3.Tree(in_species_tree_file, format=1)
     tree.write(format=5, outfile=out_species_tree_file)
-
-''' Creates a map from species names to species status '''
-def newick_get_species_status(tree_file):
-    '''
-    input: paths to a Newick tree file with internal nodes named
-    output: dic(str->str) node (species) name -> 'extant', 'ancestral'
-    '''
-    species = {}
-    tree = ete3.Tree(tree_file, format=1)
-    for node in tree.traverse():
-        if node.is_leaf():
-            species[node.name] = NEWICK_EXTANT
-        else:
-            species[node.name] = NEWICK_ANCESTRAL
-    return(species)
 
 ''' Creates a map from node names to children '''
 def newick_get_children_map(tree_file):

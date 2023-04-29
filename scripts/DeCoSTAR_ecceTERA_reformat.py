@@ -12,7 +12,6 @@ import sys
 import os
 import xml.etree.ElementTree as ET
 
-
 from recPhyloXML_utils import xml_rename_species
 
 '''
@@ -118,7 +117,6 @@ def eccetera_write_reconciliations(in_reconciliations_files, species_map, out_di
          tree.write(out_reconciliation_file)
          out_file.write(f'{family_id}\t{out_reconciliation_file}\n')
             
-
 
 def main():
     in_genes_file1 = sys.argv[1] # DeCoSTAR genes file
