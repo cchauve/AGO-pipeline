@@ -1,4 +1,4 @@
-# AGO, a Pipeline for Ancestral Syntenies and Gene Orders Reconstruction
+# AGO, a Framework to Create Pipelines for Reconstructing Ancestral Syntenies and Gene Orders
 
 AGO is a tool aimed at creating pipelines of existing bioinformatics
 tools for reconstructing ancestral syntenies and gene orders from extant gene orders
