@@ -1,0 +1,15 @@
+Cglabrata	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Cglabrata.txt
+Ecymbalariae	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Ecymbalariae.txt
+Egossypii	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Egossypii.txt
+Kafricana	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Kafricana.txt
+Klactis	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Klactis.txt
+Knaganishii	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Knaganishii.txt
+Lkluyveri	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Lkluyveri.txt
+Lthermotolerans	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Lthermotolerans.txt
+Ncastellii	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Ncastellii.txt
+Ndairenensis	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Ndairenensis.txt
+Scerevisiae	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Scerevisiae.txt
+Tblattae	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Tblattae.txt
+Tdelbrueckii	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Tdelbrueckii.txt
+Tphaffii	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Tphaffii.txt
+Zrouxii	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/YGOB/gene_orders/Zrouxii.txt
