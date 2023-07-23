@@ -5,7 +5,7 @@
 
 __author__    = "Cedric Chauve"
 __email__     = "cedric.chauve@sfu.ca"
-__version__   = "1.0.3"
+__version__   = "1.0.5"
 __status__    = "Released"
 
 import sys
