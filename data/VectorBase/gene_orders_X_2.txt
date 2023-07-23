@@ -1,4 +1,4 @@
-AnophelesalbimanusSTECLA	./gene_orders_X_2/AnophelesalbimanusSTECLA.txt
-AnophelesatroparvusEBRO	./gene_orders_X_2/AnophelesatroparvusEBRO.txt
-AnophelesfunestusFUMOZ	./gene_orders_X_2/AnophelesfunestusFUMOZ.txt
-AnophelesgambiaePEST	./gene_orders_X_2/AnophelesgambiaePEST.txt
+AnophelesalbimanusSTECLA	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_2/AnophelesalbimanusSTECLA.txt
+AnophelesatroparvusEBRO	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_2/AnophelesatroparvusEBRO.txt
+AnophelesfunestusFUMOZ	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_2/AnophelesfunestusFUMOZ.txt
+AnophelesgambiaePEST	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/gene_orders_X_2/AnophelesgambiaePEST.txt

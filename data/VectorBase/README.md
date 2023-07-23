@@ -28,7 +28,8 @@ python ./VectorBase_utils.py build \
        X \
        'AnophelesgambiaePEST AnophelesatroparvusEBRO AnophelesfunestusFUMOZ AnophelesalbimanusSTECLA' \
        2 2 \
-       ./ X_2
+       /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/\
+       X_2
 gzip genes_20230311.txt
 python ../../scripts/newick_utils.py species species_tree_4.newick species_4.txt
 ```
