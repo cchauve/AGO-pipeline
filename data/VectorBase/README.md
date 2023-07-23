@@ -43,3 +43,27 @@ directory used for the experiments whose results are provided in the
 directory `example`(`/home/chauvec/projects/ctb-chauvec/`) has been
 kept as it was for the experiments and should be modified in order to
 reproduce the experiments.
+
+The distribution of the sizes of the families obtained with parameters `2 2` is
+```
+2       54
+3       94
+4       396
+5       36
+6       15
+7       5
+8       9
+9       1
+13      2
+```
+and with parameters `3 3`
+```
+3       91
+4       395
+5       36
+6       15
+7       5
+8       9
+9       1
+13      2
+```
