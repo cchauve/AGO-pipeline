@@ -23,3 +23,7 @@ Running count
 ```
 ./YGOB.sh
 ```
+
+## Misc
+
+Read paper https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4677801/
