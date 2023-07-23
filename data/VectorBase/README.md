@@ -22,7 +22,7 @@ The command to generate the data from the data file is:
 
 ```
 gunzip genes_20230311.txt.gz
-python ./scripts/VectorBase_utils.py build \
+python ./VectorBase_utils.py build \
        genes_20230311.txt \
        X \
        'AnophelesgambiaePEST AnophelesatroparvusEBRO AnophelesfunestusFUMOZ AnophelesalbimanusSTECLA' \
