@@ -7,6 +7,7 @@
 import os
 import sys
 import pandas as pd
+import argparse
 
 '''
 Expected data format.
@@ -16,23 +17,15 @@ A single tab-separated files with one line per gene and fields:
 - Genomic Location (Gene): assembly_chromosome:start..end:strand where strand is +/-
 - Chromosome: chromosome or scaffold
 - Ortholog Group: family ID
-- Coding Sequence: gene squence
+- Gene Type:
+- Is Pseudo:
+- Predicted Protein Sequence: protein sequence
+Assumption: only the longest transcript is kept per gene
 '''
-
-_ASSEMBLED_SPECIES = [
-    'Anopheles albimanus STECLA',
-    'Anopheles atroparvus EBRO',
-    'Anopheles funestus FUMOZ',
-    'Anopheles gambiae PEST'
-]
 
 def rename_object(name, sep=''):
     ''' Rename an object by deleting all non alphanumeric characters '''
     return sep.join(filter(str.isalnum, name))
-
-ASSEMBLED_SPECIES = [
-    rename_object(species) for species in _ASSEMBLED_SPECIES
-]
 
 ''' Reading original data into a DataFrame '''
 
@@ -43,13 +36,15 @@ def rename_columns(data_df, read_seq=False):
             'Organism': 'species',
             'Genomic Location (Gene)': 'coordinates',
             'Chromosome': 'chromosome',
-            'Ortholog Group': 'family'
+            'Ortholog Group': 'family',
+            'Gene Type': 'gene_type',
+            'Is Pseudo': 'pseudogene'
         },
         inplace=True
     )
     if read_seq:
         data_df.rename(
-            columns={'Coding Sequence': 'sequence'},
+            columns={'Predicted Protein Sequence': 'sequence'},
             inplace=True
         )
 
@@ -70,16 +65,35 @@ def delete_species(data_df, target_species):
     all_species = data_df['species'].unique()
     discarded_species = [s for s in all_species if s not in target_species]
     data_df.drop(data_df[data_df['species'].isin(discarded_species)].index, inplace = True)
-    for species in discarded_species:
-        if species in ASSEMBLED_SPECIES:
-            ASSEMBLED_SPECIES.remove(species)
     return len(discarded_species)
+
+def delete_chromosomes(data_df, target_chr):
+    all_chr = data_df['chromosome'].unique()
+    discarded_chr = [s for s in all_chr if s not in target_chr]
+    nb_genes_before = len(data_df.index)
+    data_df.drop(data_df[data_df['chromosome'].isin(discarded_chr)].index, inplace = True)
+    nb_genes_after = len(data_df.index)
+    return (nb_genes_before-nb_genes_after)
 
 def delete_ambiguous_data(data_df):
     nb_rows_before = len(data_df.index)
     data_df.drop(data_df[data_df['family'] == 'NA'].index, inplace = True)
     data_df.drop(data_df[data_df['chromosome'] == 'UNKN'].index, inplace = True)
     data_df.drop(data_df[data_df['chromosome'] == 'Yunplaced'].index, inplace = True)
+    nb_rows_after = len(data_df.index)
+    nb_discarded_rows = nb_rows_before - nb_rows_after
+    return nb_discarded_rows
+
+def delete_missing_sequences(data_df):
+    nb_rows_before = len(data_df.index)
+    data_df.drop(data_df[data_df['sequence'].isna()].index, inplace = True)
+    nb_rows_after = len(data_df.index)
+    nb_discarded_rows = nb_rows_before - nb_rows_after
+    return nb_discarded_rows
+
+def delete_noncoding_genes(data_df):
+    nb_rows_before = len(data_df.index)
+    data_df.drop(data_df[~data_df['gene_type'].isin(['protein coding gene'])].index, inplace = True)
     nb_rows_after = len(data_df.index)
     nb_discarded_rows = nb_rows_before - nb_rows_after
     return nb_discarded_rows
@@ -109,28 +123,30 @@ def rename_data(data_df, out_map_file):
     for column in ['gene', 'species', 'chromosome', 'family']:
         data_df[column] = data_df[column].map(lambda x: rename_object(x))
 
-def read_data(tsv_file, target_species, out_dir, read_seq=False):
-    columns = ['Gene ID', 'Organism', 'Genomic Location (Gene)', 'Chromosome', 'Ortholog Group']
+def read_data(tsv_file, target_species, target_chr, create_map=False, read_seq=False):
+    columns = [
+        'Gene ID', 'Organism', 'Genomic Location (Gene)', 'Chromosome',
+        'Ortholog Group', 'Gene Type', 'Is Pseudo'
+    ]
     if read_seq:
-        columns.append('Coding Sequence')
+        columns.append('Predicted Protein Sequence')
     data_df = pd.read_table(tsv_file, delimiter='\t', usecols=columns)
     rename_columns(data_df, read_seq=read_seq)
-    if out_dir is None:
+    if create_map:
+        names_map_file = f'{tsv_file}_map'
+    else:
         names_map_file = None
-    else:
-        names_map_file = os.path.join(out_dir, f'{tsv_file}_map')
     rename_data(data_df, names_map_file)
-    if target_species != ['all']:
-        nb_discarded_species = delete_species(data_df, target_species)
-    else:
-        nb_discarded_species = 0
     split_location(data_df)
-    nb_ambiguous_genes = delete_ambiguous_data(data_df)
     data_df.sort_values(by=['species','scaffold','start'], ascending=True, inplace=True)
-    nb_included_genes = delete_included_genes(data_df)
-    return data_df,nb_discarded_species,nb_ambiguous_genes,nb_included_genes
-
-''' Selecting data '''
+    stats = {}
+    if target_species != ['all']:
+        _ = delete_species(data_df, target_species)
+    if target_chr != ['all']:
+        stats['nb_off_target_genes'] = delete_chromosomes(data_df, target_chr)
+    #stats['nb_included_genes'] = delete_included_genes(data_df)
+    #stats['nb_missing_sequences'] = delete_missing_sequences(data_df)
+    return data_df,stats
 
 def group_by_OG(data_df):
     return data_df.groupby(['family'])
@@ -138,166 +154,108 @@ def group_by_OG(data_df):
 def group_by_species(data_df):
     return data_df.groupby(['species'])
 
-def check_target_chr(family_df, target_chr):
-    stats = {
-        species: {'on_target': 0, 'off_target': 0}
-        for species in ASSEMBLED_SPECIES
-    }
-    for _,gene in family_df.iterrows():
-        chromosome,species = gene['chromosome'],gene['species']
-        if chromosome in target_chr:
-            stats[species]['on_target'] +=1
-        elif species in ASSEMBLED_SPECIES:
-            stats[species]['off_target'] += 1
-    return stats
-
-def select_families(data_df_by_family, min_size, target_chr, min_on_target):
-    selected_families = []
-    nb_families = 0
-    stat_small1,stat_absent,stat_off_target,stat_ambiguous,stat_small2,stat_on_target = 0,0,0,0,0,0
-    for key, item in data_df_by_family:
-        nb_families += 1
-        family_df = data_df_by_family.get_group(key)
-        family_id = family_df['family'].tolist()[0]
-        family_stats = check_target_chr(family_df, target_chr)
-        nb_on_target,nb_ambiguous,nb_off_target,nb_absent = 0,0,0,0        
-        for species in ASSEMBLED_SPECIES:
-            on_target = family_stats[species]['on_target']
-            off_target = family_stats[species]['off_target']
-            if on_target>0 and off_target==0: nb_on_target += 1
-            elif on_target>0 and off_target>0: nb_ambiguous += 1
-            elif off_target>0: nb_off_target += 1
-            elif on_target==0 and off_target==0: nb_absent += 1
-
-        test_size = len(family_df.index) >= min_size
-        test_target = (
-            nb_on_target>=min_on_target
-            and
-            nb_ambiguous+nb_off_target==0
-        )
-
-        if not test_size: stat_small1 += 1
-        elif nb_absent==len(ASSEMBLED_SPECIES): stat_absent += 1
-        elif nb_on_target==0: stat_off_target += 1
-        elif nb_ambiguous+nb_off_target>0: stat_ambiguous += 1
-        elif nb_on_target<min_on_target: stat_small2 += 1
-        else:
-            stat_on_target += 1
-            selected_families.append(family_id)
-    stats = [
-        stat_small1,stat_absent,stat_off_target,stat_ambiguous,stat_small2,stat_on_target
-    ]
-    return selected_families,nb_families,stats
+def group_by_gene_type(data_df):
+    return data_df.groupby(['gene_type'])
 
 def get_gene_id(df_row, sep='|'):
     gene = df_row['gene']
     species = df_row['species']
     return f'{species}{sep}{gene}'
 
-def build_families(data_df_by_family, selected_families, out_dir, suffix):
-    families_file = os.path.join(out_dir,f'families_{suffix}.txt')
-    with open(families_file, 'w') as out_file:
-        for key, item in data_df_by_family:
-            family_df = data_df_by_family.get_group(key)
-            family_id = family_df['family'].tolist()[0]
-            if family_id in selected_families:
-                out_file.write(family_id)
-                first_gene = True
-                for _,gene in family_df.iterrows():
-                    gene_id = get_gene_id(gene)
-                    if first_gene:
-                        out_file.write(f'\t{gene_id}')
-                        first_gene = False
-                    else:
-                        out_file.write(f' {gene_id}')
-                out_file.write('\n')
-
-def build_sequences(data_df_by_family, selected_families, out_dir, suffix):
+def build_sequences(data_df_by_key, key, out_dir, suffix):
     sequences_dir = os.path.join(out_dir,f'sequences_{suffix}')
     os.makedirs(sequences_dir, exist_ok=True)
     sequences_file = os.path.join(out_dir,f'sequences_{suffix}.txt')
     with open(sequences_file, 'w') as out_file:
-        for key, item in data_df_by_family:
-            family_df = data_df_by_family.get_group(key)
-            family_id = family_df['family'].tolist()[0]
-            if family_id in selected_families:
-                fasta_file = os.path.join(sequences_dir,f'{family_id}.fasta')
-                with open(fasta_file, 'w') as out_fasta:
-                    for _,gene in family_df.iterrows():
-                        gene_id = get_gene_id(gene)
-                        sequence = gene['sequence']
-                        out_fasta.write(f'>{gene_id}\n{sequence}\n')
-                out_file.write(f'{family_id}\t{fasta_file}\n')
+        for key_id,_ in data_df_by_key:
+            key_df = data_df_by_key.get_group(key_id)
+            fasta_file = os.path.join(sequences_dir,f'{key_id}.fasta')
+            with open(fasta_file, 'w') as out_fasta:
+                for _,gene in key_df.iterrows():
+                    gene_id = get_gene_id(gene)
+                    sequence = gene['sequence']
+                    out_fasta.write(f'>{gene_id}\n{sequence}\n')
+                out_file.write(f'{key_id}\t{fasta_file}\n')
 
-def build_gene_orders(data_df_by_species, selected_families, out_dir, suffix):
-    strand_2_sign = {'+': 1, '-': 0}
-    gene_orders_dir = os.path.join(out_dir,f'gene_orders_{suffix}')
-    os.makedirs(gene_orders_dir, exist_ok=True)
-    gene_orders_file = os.path.join(out_dir,f'gene_orders_{suffix}.txt')
-    with open(gene_orders_file, 'w') as out_file:
-        for key, item in data_df_by_species:
-            species_df = data_df_by_species.get_group(key)
-            species = species_df['species'].tolist()[0]
-            genes = []
-            for _,gene in species_df.iterrows():                
-                if gene['family'] in selected_families:
-                    gene_data = [
-                        get_gene_id(gene),
-                        strand_2_sign[gene['strand']],
-                        gene['start'], gene['end'],
-                        '_', gene['scaffold']
-                    ]
-                    genes.append(gene_data)
-            genes.sort(key=lambda x: (x[5],x[2]))
-            gene_order_file = os.path.join(gene_orders_dir,f'{species}.txt')
-            with open(gene_order_file, 'w') as out_gene_order:
-                for gene in genes:
-                    out_gene_order.write('\t'.join([str(x) for x in gene]))
-                    out_gene_order.write('\n')
-            out_file.write(f'{species}\t{gene_order_file}\n')
-                        
-# Main                  
-                    
-command = sys.argv[1]
-read_seq = {'stats': False, 'build': True, 'test': False}
-genes_file = sys.argv[2]
-target_chr = [rename_object(x) for x in sys.argv[3].split()]
-# if 'all', all species are considered
-target_species = [rename_object(x) for x in sys.argv[4].split()]
-min_on_target = int(sys.argv[5])
-min_size = int(sys.argv[6])
-if len(sys.argv) >= 8:
-    out_dir = sys.argv[7]
-else:
-    out_dir = None
+def build_sequences_families(data_df_by_family, out_dir, suffix):
+    build_sequences(data_df_by_family, 'family', out_dir, suffix)
 
-data_df,nb_ambiguous_genes,nb_included_genes,nb_discarded_species = read_data(
-    genes_file, target_species, out_dir, read_seq=read_seq[command]
-)
-data_df_by_family = group_by_OG(data_df)
-selected_families,nb_families,stats = select_families(
-    data_df_by_family, min_size, target_chr, min_on_target
-)
+def build_sequences_species(data_df_by_species, out_dir, suffix):
+    build_sequences(data_df_by_species, 'species', out_dir, suffix)
 
-if command == 'stats':
-    print(f'#Target {target_chr} Min size {min_size} Min size on target {min_on_target}')
-    print(f'Filter    \tambiguous:{nb_ambiguous_genes}\tincluded:{nb_included_genes}')
-    print(f'All       \t{nb_families}')
-    print(f'Small1    \t{stats[0]}')
-    print(f'Absent    \t{stats[1]}')
-    print(f'Off target\t{stats[2]}')
-    print(f'Ambiguous \t{stats[3]}')
-    print(f'Small2    \t{stats[4]}')
-    print(f'On target \t{stats[5]}\t{len(selected_families)}')
-elif command == 'build':
-    if len(sys.argv) == 8:
-        out_suffix = f'{"_".join(target_chr)}.{"__".join(target_species)}.{min_size}.{min_on_target}.txt'
-    else:
-        out_suffix = sys.argv[8]
-    build_families(data_df_by_family, selected_families, out_dir, out_suffix)
-    build_sequences(data_df_by_family, selected_families, out_dir, out_suffix)
+
+''' Computing statistics about data '''
+def cmd_stats(in_file_name, out_file_name, species_list, chr_list):
+    data_df,_ = read_data(in_file_name, species_list, ['all'], create_map=True, read_seq=True)
     data_df_by_species = group_by_species(data_df)
-    build_gene_orders(data_df_by_species, selected_families, out_dir, out_suffix)
+    data_stats_by_species = {}
+    with open(out_file_name, 'w') as out_file:
+        for species,species_data in data_df_by_species:
+            data_stats_by_species[species] = {}
+            species_data_df = data_df_by_species.get_group(species)
+            species_data_df.sort_values(by=['species','scaffold','start'], ascending=True, inplace=True)
+            data_stats_by_species[species]['nb_genes'] = len(species_data_df.index)
+            data_stats_by_species[species]['nb_included_genes'] = delete_included_genes(species_data_df)
+            species_data_df_by_gene_type = group_by_gene_type(species_data_df)
+            gene_types = []
+            for gene_type,species_data_gene_type in species_data_df_by_gene_type:
+                renamed_gene_type = gene_type.replace(' ', '_')
+                gene_types.append(f'nb_{renamed_gene_type}')
+                data_stats_by_species[species][f'nb_{renamed_gene_type}'] = len(species_data_df_by_gene_type.get_group(gene_type).index)
+            data_stats_by_species[species]['nb_noncoding_genes'] = delete_noncoding_genes(species_data_df)
+            data_stats_by_species[species]['nb_missing_coding_seq'] = delete_missing_sequences(species_data_df)
+            data_stats_by_species[species]['nb_off_target_genes'] = delete_chromosomes(species_data_df, chr_list)
+            data_stats_by_species[species]['nb_kept_genes'] = len(species_data_df.index)
+            for stats_key in ['nb_genes','nb_included_genes'] + gene_types + ['nb_noncoding_genes', 'nb_missing_coding_seq', 'nb_off_target_genes', 'nb_kept_genes']:
+                stats_value = data_stats_by_species[species][stats_key]
+                out_file.write(f'{species}.{stats_key}\t{stats_value}\n')
 
+''' Creating a genomes dataset '''
+def cmd_genomes(in_file_name, species_list, chr_list, suffix, out_dir):
+    data_df,_ = read_data(in_file_name, species_list, ['all'], create_map=True, read_seq=True)
+    stats = {}
+    data_df.sort_values(by=['species','scaffold','start'], ascending=True, inplace=True)
+    stats['nb_genes'] = len(data_df.index)
+    stats['nb_included_genes'] = delete_included_genes(data_df)
+    stats['nb_noncoding_genes'] = delete_noncoding_genes(data_df)
+    stats['nb_missing_coding_seq'] = delete_missing_sequences(data_df)
+    if chr_list != ['all']:
+        stats['nb_off_target_genes'] = delete_chromosomes(data_df, chr_list)
+    stats['nb_kept_genes'] = len(data_df.index)
+    data_df_by_species = group_by_species(data_df)
+    build_sequences(data_df_by_species, 'species', out_dir, suffix)
+    return stats
+            
+''' Main '''
+
+def main():
+    parser = argparse.ArgumentParser(description='VectorBase data.')
+    subparsers = parser.add_subparsers(help='sub-command help')
+    # stats command arguments
+    stats_parser = subparsers.add_parser('stats')
+    stats_parser.set_defaults(cmd='stats')
+    stats_parser.add_argument('input', type=str, help='Input TSV file')
+    stats_parser.add_argument('output', type=str, help='Output TSV file')
+    stats_parser.add_argument('species', type=str, help='Species list')
+    stats_parser.add_argument('chr', type=str, help='Target chromosomes')
+    # genomes command arguments
+    genomes_parser = subparsers.add_parser('genomes')
+    genomes_parser.set_defaults(cmd='genomes')
+    genomes_parser.add_argument('input', type=str, help='Input TSV file')
+    genomes_parser.add_argument('species', type=str, help='Species list')
+    genomes_parser.add_argument('chr', type=str, help='Target chromosomes')
+    genomes_parser.add_argument('suffix', type=str, help='Dataset suffix')
+    genomes_parser.add_argument('out_dir', type=str, help='Output directory')
     
-    
+    args = parser.parse_args()
+
+    if args.cmd == 'stats':
+        cmd_stats(args.input, args.output, args.species.split(), args.chr.split())
+    elif args.cmd == 'genomes':
+        stats = cmd_genomes(args.input, args.species.split(), args.chr.split(), args.suffix, args.out_dir)
+        for stats_key,stats_value in stats.items():
+            print(f'{stats_key}\t{stats_value}')
+
+if __name__ == "__main__":
+    main()
+
