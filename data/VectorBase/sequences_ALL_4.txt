@@ -1,0 +1,4 @@
+AnophelesalbimanusSTECLA	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_ALL_4/AnophelesalbimanusSTECLA.fasta
+AnophelesatroparvusEBRO	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_ALL_4/AnophelesatroparvusEBRO.fasta
+AnophelesfunestusFUMOZ	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_ALL_4/AnophelesfunestusFUMOZ.fasta
+AnophelesgambiaePEST	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_ALL_4/AnophelesgambiaePEST.fasta

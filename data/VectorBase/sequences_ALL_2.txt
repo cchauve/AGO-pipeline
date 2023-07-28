@@ -1,0 +1,7 @@
+AnophelesalbimanusSTECLA	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_ALL_2/AnophelesalbimanusSTECLA.fasta
+AnophelesaquasalisidAnoAquaMGQ19	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_ALL_2/AnophelesaquasalisidAnoAquaMGQ19.fasta
+AnophelesatroparvusEBRO	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_ALL_2/AnophelesatroparvusEBRO.fasta
+AnophelescruziiidAnoCruzASRS3206	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_ALL_2/AnophelescruziiidAnoCruzASRS3206.fasta
+AnophelesfunestusFUMOZ	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_ALL_2/AnophelesfunestusFUMOZ.fasta
+AnophelesgambiaePEST	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_ALL_2/AnophelesgambiaePEST.fasta
+AnophelesmouchetiidAnoMoucSNF2007	/home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase/sequences_ALL_2/AnophelesmouchetiidAnoMoucSNF2007.fasta
