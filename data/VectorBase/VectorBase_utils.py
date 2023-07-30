@@ -183,6 +183,20 @@ def build_sequences_families(data_df_by_family, out_dir, suffix):
 def build_sequences_species(data_df_by_species, out_dir, suffix):
     build_sequences(data_df_by_species, 'species', out_dir, suffix)
 
+def build_families(data_df_by_OG, out_dir, suffix, create_fasta):
+    families_file = os.path.join(out_dir,f'families_{suffix}.txt')
+    with open(families_file, 'w') as out_fam_file:
+        for fam_id,_ in data_df_by_OG:
+            fam_df = data_df_by_OG.get_group(fam_id)
+            gene_id_list = []
+            for _,gene in fam_df.iterrows():
+                gene_id = get_gene_id(gene)
+                gene_id_list.append(gene_id)
+            gene_id_str = ' '.join(gene_id_list)
+            out_fam_file.write(f'{fam_id}\t{gene_id_str}\n')
+    if create_fasta:
+        build_sequences_families(data_df_by_OG, out_dir, suffix)
+
 
 ''' Computing statistics about data '''
 def cmd_stats(in_file_name, out_file_name, species_list, chr_list):
@@ -225,6 +239,23 @@ def cmd_genomes(in_file_name, species_list, chr_list, suffix, out_dir):
     data_df_by_species = group_by_species(data_df)
     build_sequences(data_df_by_species, 'species', out_dir, suffix)
     return stats
+
+''' Creating a families/rthogroups dataset '''
+def cmd_families(in_file_name, species_list, chr_list, suffix, out_dir, create_fasta):
+    data_df,_ = read_data(in_file_name, species_list, ['all'], create_map=True, read_seq=True)
+    stats = {}
+    data_df.sort_values(by=['species','scaffold','start'], ascending=True, inplace=True)
+    stats['nb_genes'] = len(data_df.index)
+    stats['nb_included_genes'] = delete_included_genes(data_df)
+    stats['nb_noncoding_genes'] = delete_noncoding_genes(data_df)
+    stats['nb_missing_coding_seq'] = delete_missing_sequences(data_df)
+    if chr_list != ['all']:
+        stats['nb_off_target_genes'] = delete_chromosomes(data_df, chr_list)
+    stats['nb_kept_genes'] = len(data_df.index)
+    data_df_by_OG = group_by_OG(data_df)
+    stats['nb_families'] = len(data_df_by_OG)
+    build_families(data_df_by_OG, out_dir, suffix, create_fasta)
+    return stats
             
 ''' Main '''
 
@@ -246,13 +277,36 @@ def main():
     genomes_parser.add_argument('chr', type=str, help='Target chromosomes')
     genomes_parser.add_argument('suffix', type=str, help='Dataset suffix')
     genomes_parser.add_argument('out_dir', type=str, help='Output directory')
-    
+    # families command arguments, no sequence
+    OG_noseq_parser = subparsers.add_parser('OG_noseq')
+    OG_noseq_parser.set_defaults(cmd='OG_noseq')
+    OG_noseq_parser.add_argument('input', type=str, help='Input TSV file')
+    OG_noseq_parser.add_argument('species', type=str, help='Species list')
+    OG_noseq_parser.add_argument('chr', type=str, help='Target chromosomes')
+    OG_noseq_parser.add_argument('suffix', type=str, help='Dataset suffix')
+    OG_noseq_parser.add_argument('out_dir', type=str, help='Output directory')
+    # families command arguments, with sequence
+    OG_seq_parser = subparsers.add_parser('OG_seq')
+    OG_seq_parser.set_defaults(cmd='OG_seq')
+    OG_seq_parser.add_argument('input', type=str, help='Input TSV file')
+    OG_seq_parser.add_argument('species', type=str, help='Species list')
+    OG_seq_parser.add_argument('chr', type=str, help='Target chromosomes')
+    OG_seq_parser.add_argument('suffix', type=str, help='Dataset suffix')
+    OG_seq_parser.add_argument('out_dir', type=str, help='Output directory')
     args = parser.parse_args()
 
     if args.cmd == 'stats':
         cmd_stats(args.input, args.output, args.species.split(), args.chr.split())
     elif args.cmd == 'genomes':
         stats = cmd_genomes(args.input, args.species.split(), args.chr.split(), args.suffix, args.out_dir)
+        for stats_key,stats_value in stats.items():
+            print(f'{stats_key}\t{stats_value}')
+    elif args.cmd == 'OG_noseq':
+        stats = cmd_families(args.input, args.species.split(), args.chr.split(), args.suffix, args.out_dir, create_fasta=False)
+        for stats_key,stats_value in stats.items():
+            print(f'{stats_key}\t{stats_value}')
+    elif args.cmd == 'OG_seq':
+        stats = cmd_families(args.input, args.species.split(), args.chr.split(), args.suffix, args.out_dir, create_fasta=True)
         for stats_key,stats_value in stats.items():
             print(f'{stats_key}\t{stats_value}')
 

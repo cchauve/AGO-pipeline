@@ -128,3 +128,48 @@ nb_kept_genes   	4185
    2074 sequences_ALL_4/AnophelesfunestusFUMOZ.fasta
    2040 sequences_ALL_4/AnophelesgambiaePEST.fasta
 ```
+
+Computing families from VectorBase orthogroups.
+
+```
+python VectorBase_utils.py OG_noseq proteins_20230728.txt all all OG_1 /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase
+nb_genes        308094
+nb_included_genes       21590
+nb_noncoding_genes      11230
+nb_missing_coding_seq   129
+nb_kept_genes   275145
+nb_families     24667
+```
+
+```
+python VectorBase_utils.py OG_noseq proteins_20230728.txt 'AnophelesaquasalisidAnoAquaMGQ19 AnophelescruziiidAnoCruzASRS3206 AnophelesmouchetiidAnoMoucSNF2007 AnophelesalbimanusSTECLA AnophelesgambiaePEST AnophelesfunestusFUMOZ AnophelesatroparvusEBRO' '2R 2L 3R 3L X 2 3 2RL 3RL' OG_2 /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase
+nb_genes        94300
+nb_included_genes       6464
+nb_noncoding_genes      5902
+nb_missing_coding_seq   124
+nb_off_target_genes     2965
+nb_kept_genes   78845
+nb_families     13790
+```
+
+```
+python VectorBase_utils.py OG_noseq proteins_20230728.txt 'AnophelesalbimanusSTECLA AnophelesgambiaePEST AnophelesfunestusFUMOZ AnophelesatroparvusEBRO' '2R 2L 3R 3L X 2 3 2RL 3RL' OG_3 /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase
+nb_genes        54678
+nb_included_genes       3697
+nb_noncoding_genes      2021
+nb_missing_coding_seq   1
+nb_off_target_genes     1296
+nb_kept_genes   47663
+nb_families     13418
+```
+
+```
+python VectorBase_utils.py OG_noseq proteins_20230728.txt 'AnophelesalbimanusSTECLA AnophelesgambiaePEST AnophelesfunestusFUMOZ AnophelesatroparvusEBRO' 'X' OG_4 /home/chauvec/projects/ctb-chauvec/AGO-pipeline/data/VectorBase
+nb_genes        54678
+nb_included_genes       3697
+nb_noncoding_genes      2021
+nb_missing_coding_seq   1
+nb_off_target_genes     44774
+nb_kept_genes   4185
+nb_families     1533
+```
