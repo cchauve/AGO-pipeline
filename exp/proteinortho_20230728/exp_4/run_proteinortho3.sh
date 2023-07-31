@@ -22,3 +22,4 @@ ${PO_PATH}/proteinortho6.pl \
 cp results.proteinortho-graph ${OUT_EXP_DIR}/results/
 cp results.proteinortho.tsv ${OUT_EXP_DIR}/results/
 cp results.proteinortho.html ${OUT_EXP_DIR}/results/
+python ${SCRIPTS_DIR}/proteinortho_reformat.py ${OUT_EXP_DIR}/results/results.proteinortho.tsv ${OUT_EXP_DIR}/families.txt
