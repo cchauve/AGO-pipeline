@@ -42,7 +42,7 @@ For each dataset, three different sets of gene families were obtained:
 
 The OMA/PO/VectorBase.OG results for the three considered datasets are available at:
 - `[OMA_20230728,proteinortho_20230728]/exp_[2,3,4]/families.txt` (reformatted families);
-- `[OMA_20230728,proteinortho_20230728]/exp_[2,3,4]/results` (original results, in original format);
+- `[OMA_20230728,proteinortho_20230728]/exp_[2,3,4]/results/` (original results, in original format);
 - `../data/VectorBase/families_OG_[2,3,4].txt`.
 
 
