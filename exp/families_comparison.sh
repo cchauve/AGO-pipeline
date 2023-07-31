@@ -25,6 +25,7 @@ echo '```'
 echo "## proteinortho versus VectoBase.OG"
 echo '```'
 python ../scripts/family_utils.py compare ./proteinortho_20230728/exp_3/families.txt ../data/VectorBase/families_OG_3.txt 0
+echo '```'
 echo
 
 echo "# 4 species, X chromosome"
