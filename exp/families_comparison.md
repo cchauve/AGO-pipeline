@@ -12,9 +12,9 @@ The 7 species are shown below with the three associated numbers being respective
 (2) number of genes assigned to `2R,2L,3R,3L,X`,
 (4) number of genes associated to `X`.
 ```
-Anopheles aquasalisid AnoAqua MGQ19	10043	464	464
-Anopheles cruziiidAno Cruz ASRS3206	10230	811	811
-Anopheles mouchetiid AnoMouc SNF2007	10909	861	961
+Anopheles aquasalis idAnoAquaMG-Q 19	10043	464	464
+Anopheles cruzii idAnoCruzAS RS32 06	10230	811	811
+Anopheles moucheti idAnoMoucSN F20 07	10909	861	961
 Anopheles albimanus STECLA   		11587	1037	1006
 Anopheles gambiae PEST			11853	11587	1020
 Anopheles funestus FUMOZ		11993	11853	1037
@@ -23,6 +23,14 @@ Anopheles atroparvus EBRO		12230	12230	1122
 The three species `PEST,FUMOZ,EBRO` are fully assembled, the four other species are nearly assembled;
 the four species `PEST,FUMOZ,EBRO,STECLA` seem to have a fully assembled `X` chromosome and these are
 the species already considered in the AGO paper.
+More details on these species are available at:
+- https://vectorbase.org/vectorbase/app/record/dataset/TMPTX_aaquidAnoAquaMGQ_19
+- https://vectorbase.org/vectorbase/app/record/dataset/TMPTX_acruidAnoCruzAS_RS32_06
+- https://vectorbase.org/vectorbase/app/record/dataset/TMPTX_amouidAnoMoucSN_F20_07
+- https://vectorbase.org/vectorbase/app/record/dataset/TMPTX_aalbSTECLA
+- https://vectorbase.org/vectorbase/app/record/dataset/NCBITAXON_180454
+- https://vectorbase.org/vectorbase/app/record/dataset/TMPTX_afunFUMOZ
+- https://vectorbase.org/vectorbase/app/record/dataset/TMPTX_aatrEBRO
 
 **Remark.** There was no preliminary analysis of the retrieved protein sequences in terms of structure (stop codons).
 
