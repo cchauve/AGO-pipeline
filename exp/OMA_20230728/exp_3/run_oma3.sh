@@ -17,3 +17,4 @@ OUT_EXP_DIR=${OMA_OUT_DIR}/${EXP_NAME}
 rm -rf ${OUT_EXP_DIR}/results
 mkdir -p ${OUT_EXP_DIR}/results
 cp -pr ${TMP_EXP_DIR}/results/* ${OUT_EXP_DIR}/results/
+python ${SCRIPTS_DIR}/OMA_reformat.py ${OUT_EXP_DIR}/results/OrthologousGroups.txt ${OUT_EXP_DIR}/families.txt
