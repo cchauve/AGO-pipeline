@@ -40,9 +40,10 @@ For each dataset, three different sets of gene families were obtained:
 - **OMA**: orthogroups computed using OMA standalone (https://omabrowser.org/standalone/) with default parameters. The OMA orthogroups are expected to contain at most one gene per species, so are not duplication-aware. The hierarchical groups (HOG) contain paralogous genes, although I do not know if this includes ancient duplications; moreover their computation does require a species tree, that was not known for Dataset 2, so the **HOG are not considered for now (they should be used instead of ortholog groups)**.
 - **PO**: orthogroups computed using proteinortho (https://gitlab.com/paulklemm_PHD/proteinortho) with default parameters (so no synteny).
 
-The OMA/PO results are available, for Dataset X, at
-- `[OMA_20230728,proteinortho_20230728]/exp_X/families.txt` (reformatted families);
-- `[OMA_20230728,proteinortho_20230728]/exp_X/results` (original results, in original format).
+The OMA/PO/VectorBase.OG results for the three considered datasets are available at:
+- `[OMA_20230728,proteinortho_20230728]/exp_[2,3,4]/families.txt` (reformatted families);
+- `[OMA_20230728,proteinortho_20230728]/exp_[2,3,4]/results` (original results, in original format);
+- `../data/VectorBase/families_OG_[2,3,4].txt`.
 
 
 The purpose of the analysis is to assess how consistent the obtained gene families are both between methods, and for a given method, between datasets.
