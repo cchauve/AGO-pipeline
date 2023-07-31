@@ -37,7 +37,7 @@ Dataset 1 is composed of the 23 species and all genes, but was not analyzed.
 
 For each dataset, three different sets of gene families were obtained:
 - **VectorBase.OG**: gene families defined by the OrthoMCL orthogroups pre-computed on VectorBase. These orthogroups were computed using the dataset of all vector genomes on VectorBase, thus encompassing the full taxonomic spectrum of *Arthroproda*, which is much larger than the *Anopheles* taxonomic range.
-- **OMA**: orthogroups computed using OMA standalone (https://omabrowser.org/standalone/) with default parameters. The OMA orthogroups are expected to contain at most one gene per species, so are not duplication-aware. The hierarchical groups (HOG) contain paralogous genes, although I do not know if this includes ancient duplications; moreover their computation does require a species tree, that was not known for Dataset 2, so the HOG are not considered for now (they should be used instead of ortholog groups).
+- **OMA**: orthogroups computed using OMA standalone (https://omabrowser.org/standalone/) with default parameters. The OMA orthogroups are expected to contain at most one gene per species, so are not duplication-aware. The hierarchical groups (HOG) contain paralogous genes, although I do not know if this includes ancient duplications; moreover their computation does require a species tree, that was not known for Dataset 2, so the **HOG are not considered for now (they should be used instead of ortholog groups)**.
 - **PO**: orthogroups computed using proteinortho (https://gitlab.com/paulklemm_PHD/proteinortho) with default parameters (so no synteny).
 
 The purpose of the analysis is to assess how consistent the obtained gene families are both between methods, and for a given method, between datasets.
@@ -59,17 +59,17 @@ The second one is defined as follows:
 - a bipartite graph was built with nodes being respectively the gene families of each families set and edge was created between two nodes if they share a common gene;
 - the connected components of this graph were classified as:
   - `o2o` (one-to-one): component with one node of each part;
-  - 'z2o` (zero-to-one): isolated node from the second gene families set;
-  - 'o2z` (one-to-zero): isolated node from the first gene families set;  
-  - 'm2o` (many-to-one): several nodes from the first gene families set and one node from the second gene families set;
-  - 'o2m` (one-to-many): one node from the first gene families set and several nodes from the second gene families set;
-  - 'm2m` (many-to-many): several nodes from the first gene families set and several nodes from the second gene families set;  
+  - `z2o` (zero-to-one): isolated node from the second gene families set;
+  - `o2z` (one-to-zero): isolated node from the first gene families set;  
+  - `m2o` (many-to-one): several nodes from the first gene families set and one node from the second gene families set;
+  - `o2m` (one-to-many): one node from the first gene families set and several nodes from the second gene families set;
+  - `m2m` (many-to-many): several nodes from the first gene families set and several nodes from the second gene families set;  
 
-The larger the class of `o2o` components is, the more the two gene families sets do agree.
-Components of types `z2o` and `o2z` correspond to genes that are present in only one gene families set.
-Components of type `o2m` correspond to families of the first set that are **split** into several families in the second.
-Conversely, components of type `m2o` correspond to families of the first set that are **fusions** of several families in the second.
-Last components of type `m2m` correspond to **scrambled** families, i.e. sets of more than one family in both sets that share (transitively) common genes.
+The larger the class of `o2o` components is, the more the two gene families sets do agree.  
+Components of types `z2o` and `o2z` correspond to genes that are present in only one gene families set.  
+Components of type `o2m` correspond to families of the first set that are **split** into several families in the second.  
+Conversely, components of type `m2o` correspond to families of the first set that are **fusions** of several families in the second.  
+Last components of type `m2m` correspond to **scrambled** families, i.e. sets of more than one family in both sets that share (transitively) common genes.  
 
 For each type of component, the results shown below are formatted as
 `<type>:<nb families in first set>:<nb families in econd set>:<nb genes in first set>:<nb genes in second set>`.
