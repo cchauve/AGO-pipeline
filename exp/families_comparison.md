@@ -37,7 +37,7 @@ Dataset 1 is composed of the 23 species and all genes, but was not analyzed.
 
 For each dataset, three different sets of gene families were obtained:
 - **VectorBase.OG**: gene families defined by the OrthoMCL orthogroups pre-computed on VectorBase. These orthogroups were computed using the dataset of all vector genomes on VectorBase, thus encompassing the full taxonomic spectrum of *Arthroproda*, which is much larger than the *Anopheles* taxonomic range.
-- **OMA**: orthogroups computed using OMA standalone (https://omabrowser.org/standalone/) with default parameters. The OMA orthogroups are expected to contain at most one gene per species, so are not duplication-aware. The hierarchical groups (HOG) contain paralogous genes, although I do not know if this includes ancient duplications; moreover their computation does require a species tree, that was not known for Dataset 2, so the HOG are not considered for now (they should be).
+- **OMA**: orthogroups computed using OMA standalone (https://omabrowser.org/standalone/) with default parameters. The OMA orthogroups are expected to contain at most one gene per species, so are not duplication-aware. The hierarchical groups (HOG) contain paralogous genes, although I do not know if this includes ancient duplications; moreover their computation does require a species tree, that was not known for Dataset 2, so the HOG are not considered for now (they should be used instead of ortholog groups).
 - **PO**: orthogroups computed using proteinortho (https://gitlab.com/paulklemm_PHD/proteinortho) with default parameters (so no synteny).
 
 The purpose of the analysis is to assess how consistent the obtained gene families are both between methods, and for a given method, between datasets.
