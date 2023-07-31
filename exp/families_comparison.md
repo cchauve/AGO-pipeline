@@ -72,7 +72,7 @@ Conversely, components of type `m2o` correspond to families of the first set tha
 Last components of type `m2m` correspond to **scrambled** families, i.e. sets of more than one family in both sets that share (transitively) common genes.  
 
 For each type of component, the results shown below are formatted as
-`<type>:<nb families in first set>:<nb families in econd set>:<nb genes in first set>:<nb genes in second set>`.
+`<type>:<nb of components>:<nb genes in first set>:<nb genes in second set>`.
 
 # Results
 
