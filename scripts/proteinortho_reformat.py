@@ -23,7 +23,8 @@ def main():
                 fam_nb += 1
                 fam_genes_list = []
                 for species_gene in fam_split[3:]:
-                    fam_genes_list += species_gene.split(',')
+                    if species_gene != '*':
+                        fam_genes_list += species_gene.split(',')
                 fam_genes_str = ' '.join(fam_genes_list)
                 out_file.write(f'{fam_id}\t{fam_genes_str}\n')
 
