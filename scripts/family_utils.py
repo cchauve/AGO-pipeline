@@ -88,7 +88,7 @@ def cmd_compare(fam2genes1, fam2genes2, gene2fam1, gene2fam2):
     dist_size1 = family_size_distribution(fam2genes1)
     dist_size2 = family_size_distribution(fam2genes2)
     print(f'Size distribution 1:\t{family_size_distribution2str(dist_size1)}')
-    print(f'Size distribution 1:\t{family_size_distribution2str(dist_size2)}')
+    print(f'Size distribution 2:\t{family_size_distribution2str(dist_size2)}')
     
     G = family_combine_graph(gene2fam1,gene2fam2,fam2genes1,fam2genes2)
     GCC = nx.connected_components(G)
