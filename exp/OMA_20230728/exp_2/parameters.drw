@@ -161,7 +161,7 @@ SpeciesTree := '((((AnophelesgambiaePEST,(AnophelesfunestusFUMOZ,Anophelesmouche
 # (HOGs) will be strongly affected from this. Therefore this setting is 
 # strongly discouraged
 
-OutgroupSpecies := ['AnophelescruziiidAnoCruzASRS3206']
+OutgroupSpecies := ['AnophelescruziiidAnoCruzASRS3206'];
 
 # The cutoff in GETHOGs bottom-up algorithm to make an edge trusted in the 
 # orthology graph among HOGs. This parameter applies only to the bottom-up 
