@@ -196,11 +196,11 @@ or
 based on mitochondrial data
 https://parasitesandvectors.biomedcentral.com/articles/10.1186/s13071-021-04963-4
 
-For the Cellia clade, th NCBI taxonomy
+For the Cellia clade, the NCBI taxonomy
 (https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=44534&lvl=3&lin=f&keep=1&srchmode=1&unlock)
 suggests
 ```
-(AnophelesgambiaePEST=Pyretophorus,(AnophelesfunestusFUMOZ,AnophelesmouchetiidAnoMoucSNF2007)=Myzomyia
+(AnophelesgambiaePEST=Pyretophorus,(AnophelesfunestusFUMOZ,AnophelesmouchetiidAnoMoucSNF2007)=Myzomyia)
 ```
 
 We use the mitochondrial species phylogeny, making `AnophelescruziiidAnoCruzASRS3206` an outgroup.
