@@ -184,20 +184,29 @@ The 7 fully or quasi-fully assembled (location.genus):
 - `AnophelesatroparvusEBRO`: Europe.Anopheles
 
 Genus phylogeny
-((Cellia,Anopheles),(Nyssorhynchus,Kerteszia)Anophelinae) based on usual taxonomy
+```
+((Cellia,Anopheles),(Nyssorhynchus,Kerteszia)Anophelinae)
+```
+based on usual taxonomy
 https://www.intechopen.com/chapters/41407
 or
-(((Cellia,Anopheles),Nyssorhynchus),Kerteszia) based on mitochondrial data
+```
+(((Cellia,Anopheles),Nyssorhynchus),Kerteszia)
+```
+based on mitochondrial data
 https://parasitesandvectors.biomedcentral.com/articles/10.1186/s13071-021-04963-4
 
 For the Cellia clade, th NCBI taxonomy
 (https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=44534&lvl=3&lin=f&keep=1&srchmode=1&unlock)
 suggests
+```
 (AnophelesgambiaePEST=Pyretophorus,(AnophelesfunestusFUMOZ,AnophelesmouchetiidAnoMoucSNF2007)=Myzomyia
+```
 
 We use the mitochondrial species phylogeny, making `AnophelescruziiidAnoCruzASRS3206` an outgroup.
 
 Species phylogeny, without branch lengths
+```
 (
   (
     (
@@ -211,3 +220,4 @@ Species phylogeny, without branch lengths
   )node4,
   AnophelescruziiidAnoCruzASRS3206
 )node5;
+```
