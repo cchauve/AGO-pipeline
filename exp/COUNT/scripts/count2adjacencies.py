@@ -307,6 +307,8 @@ if __name__ == '__main__':
             help='gene-to-family assignment table')
     parser.add_argument('gene_orders', type=open,
             help='file pointing to gene order tables of extant species')
+    parser.add_argument('-m', '--min_weight', type=float, default=0.0,
+            help='minimum weight of ancestral adjacencies')
     args = parser.parse_args()
 
     # setup logging
@@ -341,6 +343,9 @@ if __name__ == '__main__':
 
     df.gene1 = df.apply(lambda x: '_'.join((x.family1, x.gene1)), axis=1)
     df.gene2 = df.apply(lambda x: '_'.join((x.family2, x.gene2)), axis=1)
+
+    # enforce minimum weight
+    df = df.loc[df.weight >= args.min_weight]
 
     # output final adjacency set
     df['#species'] = df['species']
