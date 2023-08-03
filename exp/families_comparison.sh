@@ -6,6 +6,7 @@ echo '```'
 echo "### OMA.OG versus VectoBase.OG"
 echo '```'
 python ../scripts/family_utils.py compare ./OMA_20230728/exp_2/families_OG.txt ../data/VectorBase/families_OG_2.txt 0
+echo '```'
 echo "### OMA.HOG versus PO"
 echo '```'
 python ../scripts/family_utils.py compare ./OMA_20230728/exp_2/families_HOG.txt ./proteinortho_20230728/exp_2/families.txt 0
