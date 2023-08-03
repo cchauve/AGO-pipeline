@@ -229,3 +229,36 @@ Size distribution 1:	1:19 2:129 3:257 4:481 5:6 6:1
 Size distribution 2:	2:202 3:268 4:491 5:6 6:2
 Component types:	o2o:879:2978:3026 z2o:76:0:155 o2z:0:0:0 o2m:4:13:16 m2o:4:11:11 m2m:1:6:6
 ```
+
+## Summary
+
+### Comparison between methods.
+
+The `VectorBase.OG` families with many families of size 1, together
+with a few families of larger size than in the other methods, likely
+caused by a single-linkage clustering due to the fact that the
+families are computed for a much larger set of spcies (all vector
+species in VectorBase).
+
+Moreover, the agreement in terms of one-to-one (`o2o`) families with
+the other methods is significantly lower, and we observe a large
+number of families in the classes many-to-one (i.e. larger families in
+`VectorBase.OG`) or many-to-many (`m2o,m2m`).
+
+The comparison between `OMA` and proteinortho (`PO`) shows a much
+larger agreement. The main differences are in families belonging to
+the `m2o` class, suggesting that generally `PO` families are refined
+`OMA` families. For the `X` chromosome dataset, the agreement is
+almost perfect.
+
+### Comparison between datasets, per method.
+
+Generally both `OMA` and `PO` are quite internally consistent, with
+`OMA.HOG` being the most consistent method. The `PO` families are
+slightly less consistent. The differences are unsignificant for the
+`X` chromosome dataset.
+
+## Conclusion
+
+The choice of method is between `OMA.HOG` and `PO`, and either, or the
+subset of `o2o` families, would be a good choice.
