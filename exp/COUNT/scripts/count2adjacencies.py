@@ -94,8 +94,8 @@ def readGO(data, path_prefix):
     return df
 
 
-def constructExtantAdjacenciesTable(df_go, tc=0):
-    """ Constructs adjacency table from given gene order table. Continuous enumeration of telomeres is ensured by tc counter. """
+def constructExtantAdjacenciesTable(df_go):
+    """ Constructs adjacency table from given gene order table. """
 
     map_orient1 = {0: EXTR_TAIL, 1: EXTR_HEAD, 2: EXTR_CAP}
     map_orient2 = {0: EXTR_HEAD, 1: EXTR_TAIL, 2: EXTR_CAP}
@@ -114,29 +114,29 @@ def constructExtantAdjacenciesTable(df_go, tc=0):
         # added and the table is prepared so that columns match that of the resulting df table
         df_c = df_go.loc[df_go.chromosome == chrom]
         df_c1 = df_c.shift(1) 
-        df_c1.loc[0, ['gene', 'orientation', 'family']] = [str(tc), 2, 't']
-        tc += 1
+        df_c1.loc[0, ['gene', 'orientation', 'family']] = ['0', 2, 't']
         df_c12 = df_c1.join(df_c, lsuffix='1', rsuffix='2')
         df_c12['ext1'] = df_c12.orientation1.map(map_orient1.get)
         df_c12['ext2'] = df_c12.orientation2.map(map_orient2.get)
         last = df_c12.tail(1)
         cols = ['gene1', 'family1', 'ext1', 'gene2', 'family2', 'ext2']
-        df_c12.loc[last.index.item() + 1, cols] = [last.gene2.item(), last.family2.item(), map_orient1[last.orientation2.item()], str(tc), 't',
-                                                   EXTR_CAP]
-        tc += 1
-
-        # make sure adjacencies are represented in canonical form 
-        sel_unsrtd = list(map(lambda y: y[0] > y[1], zip(map(lambda x: tuple(x[1]), df_c12[['family1', 'ext1', 'gene1']].iterrows()),
-                              map(lambda x: tuple(x[1]), df_c12[['family2', 'ext2', 'gene2']].iterrows()))))
-        df_tmp1 = df_c12.loc[sel_unsrtd, ['family1', 'ext1', 'gene1']]
-        df_tmp1.columns = ['family2', 'ext2', 'gene2']
-        df_tmp2 = df_c12.loc[sel_unsrtd, ['family2', 'ext2', 'gene2']]
-        df_tmp2.columns = ['family1', 'ext1', 'gene1']
-        df_c12.loc[sel_unsrtd, ['family1', 'ext1', 'gene1']] = df_tmp2
-        df_c12.loc[sel_unsrtd, ['family2', 'ext2', 'gene2']] = df_tmp1
+        df_c12.loc[last.index.item() + 1, cols] = [last.gene2.item(), last.family2.item(), map_orient1[last.orientation2.item()],
+                                                   str(last.index.item()+1), 't', EXTR_CAP]
+        canonizeAdjacencies(df_c12)
         df = pd.concat([df , df_c12], join='inner', ignore_index=True)
 
-    return df, tc
+    return df
+
+
+def canonizeAdjacencies(df):
+    """ makes sure adjacencies are represented in canonical form """
+    sel_unsrtd = df.apply(lambda x: (x.family1, x.ext1, x.gene1) > (x.family2, x.ext2, x.gene2), axis=1)
+    df_tmp1 = df.loc[sel_unsrtd, ['family1', 'ext1', 'gene1']]
+    df_tmp1.columns = ['family2', 'ext2', 'gene2']
+    df_tmp2 = df.loc[sel_unsrtd, ['family2', 'ext2', 'gene2']]
+    df_tmp2.columns = ['family1', 'ext1', 'gene1']
+    df.loc[sel_unsrtd, ['family1', 'ext1', 'gene1']] = df_tmp2
+    df.loc[sel_unsrtd, ['family2', 'ext2', 'gene2']] = df_tmp1
 
 
 def constructExtantAdjacenciesTableAll(tree, df_go):
@@ -152,7 +152,7 @@ def constructExtantAdjacenciesTableAll(tree, df_go):
         })
     # construct table of all observed adjacencies in extant genomes
     for v in tree.get_leaves():
-        df_v, tc = constructExtantAdjacenciesTable(df_go.loc[ids[v.name,:,:]].reset_index(), tc)
+        df_v = constructExtantAdjacenciesTable(df_go.loc[ids[v.name,:,:]].reset_index())
         df_v['species'] = v.name
         df = pd.concat([df, df_v], ignore_index=True)
     # initialize weight of extant adjacencies with 1
@@ -277,9 +277,12 @@ def instantiateGenes(df_adjs, df_counts):
 
         df_anc = df_adjs.loc[df_adjs.species==anc].set_index('family1').join(df_genes.set_index('family'), how='inner').reset_index()
         df_anc = df_anc.set_index('family2').join(df_genes.set_index('family'), how='inner', lsuffix='1', rsuffix='2').reset_index()
+        canonizeAdjacencies(df_anc)
+        df_anc.drop_duplicates(inplace=True)
         df = pd.concat([df, df_anc], ignore_index=True)
 
     return df
+
 
 def cleanupAncestralAdjacencies(df_adjs, df_counts):
 
@@ -291,6 +294,7 @@ def cleanupAncestralAdjacencies(df_adjs, df_counts):
     sel_rm_selfloop = ~sel_is_dup | (df_adjs.gene1 != df_adjs.gene2)
 
     return df_adjs.loc[sel_rm_same_ext & sel_rm_selfloop]
+
 
 if __name__ == '__main__':
 
