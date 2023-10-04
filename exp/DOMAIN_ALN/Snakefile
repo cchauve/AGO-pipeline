@@ -1,0 +1,158 @@
+# CONFIGURATION FILE ---------------------------------------------------------
+configfile: 'config.yaml'
+# ----------------------------------------------------------------------------
+
+from os.path import basename
+from contextlib import redirect_stdout
+
+
+# PROTEIN FAMILY PARAMETERS --------------------------------------------------
+
+FAMILIES            = config.get('gene_families')
+HMM_DB              = config.get('hmm_db')
+PROTEIN_SEQUENCES   = config.get('protein_sequences')
+
+# GENERAL VARIABLES ----------------------------------------------------------
+
+CORES               = int(snakemake.get_argument_parser().parse_args().cores or 1)
+OUT_DIR             = basename(FAMILIES).rsplit('.', 1)[0]
+SCRIPT_DIR          = config.get('script_dir', 'scripts')
+
+# ----------------------------------------------------------------------------
+
+
+# INITIAL RULE ---------------------------------------------------------------
+rule all:
+    input:
+        expand(f'{OUT_DIR}/proteins.domains.besthit.nooverlap.tsv')
+
+
+rule familes_to_df:
+    input:
+        FAMILIES
+    output:
+        f'{OUT_DIR}/families.tsv'
+    run:
+        from itertools import repeat, chain
+        import pandas as pd
+        import csv
+        df = pd.DataFrame(data=chain(*map(lambda x: zip(x[1].split(), repeat(x[0])), csv.reader(open(input[0]), delimiter='\t'))),
+                                columns=['gene_id', 'family'])
+        with open(output[0], 'w') as out:
+            df.to_csv(out, sep='\t', index=False)
+
+
+rule extract_protein_sequences:
+    input:
+        families = f'{OUT_DIR}/families.tsv',
+        protein_seqs = PROTEIN_SEQUENCES,
+    output:
+        f'{OUT_DIR}/proteins.faa',
+    run:
+        import pandas as pd
+
+        df_fam = pd.read_csv(input.families, sep='\t', header=[0], index_col=[0])
+        df_prot = pd.read_csv(input.protein_seqs, sep='\t', header=[0])
+
+        df_prot['species_gene_id'] = df_prot.apply(lambda x: x.Organism.replace(' ', '') + '|' + x['Gene ID'], axis=1)
+        df_prot.set_index('species_gene_id', inplace=True)
+        with open(output[0], 'w') as out:
+            for idx, gene in df_prot.loc[df_fam.index].iterrows():
+                print(f'>{idx}\n{gene["Predicted Protein Sequence"]}', file=out)
+
+
+rule hmmscan:
+    input:
+        hmm_db = HMM_DB,
+        protein_seqs = f'{OUT_DIR}/proteins.faa'
+    output:
+        f'{OUT_DIR}/proteins.domtblout'
+    log:
+        f'{OUT_DIR}/proteins.domtblout.log'
+    threads:
+        CORES
+    shell:
+        'hmmscan --cpu {threads} -o {log} --domtblout {output} {input.hmm_db} {input.protein_seqs}'
+
+
+rule domtblout_to_besthit_table:
+    input:
+        domtblout = f'{OUT_DIR}/proteins.domtblout',
+        families = f'{OUT_DIR}/families.tsv'
+    output:
+        f'{OUT_DIR}/proteins.domains.besthit.tsv'
+    log:
+        f'{OUT_DIR}/proteins.domains.besthit.log'
+    run:
+        import pandas as pd
+        from Bio import SearchIO
+
+        df_fam = pd.read_csv(input.families, sep='\t', header=[0], index_col=[0])
+
+        data = list()
+        for res in SearchIO.parse(open(input.domtblout), 'hmmscan3-domtab'):
+            for hit in res.hits:
+                # select best on conditional evalue:
+                # statistical significance of the domain given that we know that the sequence is a true homolog
+                hsp = min(hit, key=lambda x: x.evalue_cond)
+                data.append((hsp.query_id, hsp.query_start, hsp.query_end, hit.accession, hit.id, hit.description, hsp.hit_start, hsp.hit_end,
+                             hsp.evalue_cond, hsp.bitscore))
+        df = pd.DataFrame(data = data, columns=['query_id', 'query_start', 'query_end', 'hit_accession', 'hit_id', 'hit_description', 'hit_start',
+                                                'hit_end', 'conditional_evalue', 'bitscore'])
+        df.set_index('query_id', inplace=True)
+        df['family'] = df_fam.loc[df.index].family
+        with open(log[0], 'w') as logging:
+            print(f'{len(df_fam.index.difference(df.index))} out of {df_fam.shape[0]} genes have no significant hits to PFAM domains, ' + \
+                    f'affecting {len(df_fam.loc[df_fam.index.difference(df.index)].family.unique())} out of {len(df_fam.family.unique())} families, ' + \
+                    f'out of which {len(set(df_fam.family.unique()).difference(df.family))} have no domain hit in any of its members', file=logging)
+        with open(output[0], 'w') as out:
+            df.reset_index().to_csv(out, sep='\t', index=False)
+
+
+rule filter_overlapping_besthits:
+    input:
+        besthits = f'{OUT_DIR}/proteins.domains.besthit.tsv',
+    output:
+        f'{OUT_DIR}/proteins.domains.besthit.nooverlap.tsv'
+    run:
+        from itertools import combinations
+        import networkx as nx
+        import pandas as pd
+        import numpy as np
+
+        df_bh = pd.read_csv(input.besthits, sep='\t', header=[0], index_col=[0])
+        df_bh['query_interval'] = pd.IntervalIndex.from_arrays(df_bh['query_start'], df_bh['query_end'], closed='left')
+        # there will be a warning here regarding log'ing zeros, but that will be fine, because the outcome is -inf and that ensures that the
+        # corresponding elements are minimal and therefore chosen first
+        df_bh['conditional_evalue_log'] = df_bh.conditional_evalue.map(np.log)
+
+        df = None
+
+        for fam in df_bh.family.unique():
+            df_f = df_bh.loc[df_bh.family == fam].sort_values('conditional_evalue_log')
+            # construct overlap graph
+            G = nx.Graph()
+            G.add_nodes_from(df_f.hit_accession.unique())
+            for a, b in combinations(G.nodes(), 2):
+                df_a = df_f.loc[df_f.hit_accession == a]
+                df_b = df_f.loc[df_f.hit_accession == b]
+                for query in df_a.index.intersection(df_b.index):
+                    if df_a.loc[query].query_interval.overlaps(df_b.loc[query].query_interval):
+                        G.add_edge(a, b)
+                        break
+            df_hits = df_f[['hit_accession', 'conditional_evalue_log']].groupby('hit_accession').sum().sort_values('conditional_evalue_log')
+            df_hits['covered']=False
+            for acc in df_hits.index:
+                if not df_hits.covered[acc]:
+                    df_acc = df_f.loc[df_f.hit_accession == acc].groupby(level=0).first().reset_index()
+                    if df is None:
+                        df = df_acc
+                    else:
+                        df = pd.concat([df, df_acc])
+                    df_hits.loc[list(nx.node_connected_component(G, acc)), 'covered'] = True
+
+        df.drop(['conditional_evalue_log', 'query_interval'], axis=1, inplace=True)
+        with open(output[0], 'w') as out:
+            df.to_csv(out, sep='\t', index=False)
+
+

@@ -1,0 +1,13 @@
+# PLEASE ADJUST THE FOLLOWING PARAMETERS --------------------------------------
+#
+
+# GENERAL VARIABLES ----------------------------------------------------------
+
+gene_families:          ../../data/VectorBase/families_OG_4.txt
+protein_sequences:      ../../data/VectorBase/proteins_20230728.txt
+hmm_db:                 ../../data/PFAM/Pfam-A.hmm
+
+#
+# DON'T TOUCH UNLESS YOU KNOW WHAT YOU'RE DOING -------------------------------
+script_dir: scripts
+
