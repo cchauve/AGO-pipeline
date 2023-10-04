@@ -11,6 +11,7 @@ from contextlib import redirect_stdout
 FAMILIES            = config.get('gene_families')
 HMM_DB              = config.get('hmm_db')
 PROTEIN_SEQUENCES   = config.get('protein_sequences')
+HMMPRESS_OUT        = ['h3f', 'h3i', 'h3m', 'h3p']
 
 # GENERAL VARIABLES ----------------------------------------------------------
 
@@ -42,6 +43,17 @@ rule familes_to_df:
             df.to_csv(out, sep='\t', index=False)
 
 
+rule hmmpress:
+    input:
+        HMM_DB
+    output:
+        expand(f'{HMM_DB}.{{out}}', out=HMMPRESS_OUT)
+    log:
+        f'{HMM_DB}.hmmpress.log'
+    shell:
+        'hmmpress {input} > {log}'
+
+
 rule extract_protein_sequences:
     input:
         families = f'{OUT_DIR}/families.tsv',
@@ -64,6 +76,7 @@ rule extract_protein_sequences:
 rule hmmscan:
     input:
         hmm_db = HMM_DB,
+        _ = expand(f'{HMM_DB}.{{out}}', out=HMMPRESS_OUT),
         protein_seqs = f'{OUT_DIR}/proteins.faa'
     output:
         f'{OUT_DIR}/proteins.domtblout'
