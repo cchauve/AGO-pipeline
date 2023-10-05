@@ -2,8 +2,7 @@
 configfile: 'config.yaml'
 # ----------------------------------------------------------------------------
 
-from os.path import basename
-from contextlib import redirect_stdout
+from os.path import basename, dirname
 
 
 # PROTEIN FAMILY PARAMETERS --------------------------------------------------
@@ -21,12 +20,42 @@ SCRIPT_DIR          = config.get('script_dir', 'scripts')
 
 # ----------------------------------------------------------------------------
 
+def get_domain_files():
+    import pandas as pd
+    df = pd.read_csv(f'{OUT_DIR}/proteins.domains.besthit.nooverlap.tsv', sep='\t', header=[0])
+
+    return df.apply(lambda x: f'{OUT_DIR}/domains/{x.family}.{x.hit_accession}.faa', axis=1).unique().tolist()
+
+def get_aln_files_for_all_domains():
+    import pandas as pd
+    df = pd.read_csv(f'{OUT_DIR}/proteins.domains.besthit.nooverlap.tsv', sep='\t', header=[0])
+
+    return df.apply(lambda x: f'{OUT_DIR}/domains/{x.family}.{x.hit_accession}.aln', axis=1).unique().tolist()
+
+def get_aln_files_for_all_families():
+    import pandas as pd
+    df = pd.read_csv(f'{OUT_DIR}/proteins.domains.besthit.nooverlap.tsv', sep='\t', header=[0])
+
+    return expand(f'{OUT_DIR}/{{family}}.phy', family=df.family.unique())
+
+def get_aln_files_for_family(wildcards):
+    import pandas as pd
+    df = pd.read_csv(f'{OUT_DIR}/proteins.domains.besthit.nooverlap.tsv', sep='\t', header=[0])
+
+    return expand(f'{OUT_DIR}/domains/{wildcards.family}.{{acc}}.aln', acc=df.loc[df.family == wildcards.family].hit_accession.unique())
+
+
+def get_profile_files(wildcards):
+    import pandas as pd
+    df = pd.read_csv(f'{OUT_DIR}/proteins.domains.besthit.nooverlap.tsv', sep='\t', header=[0])
+
+    return df.hit_accession.map(lambda x: f'{dirname(HMM_DB)}/profiles/{x}.hmm').unique().tolist()
+
 
 # INITIAL RULE ---------------------------------------------------------------
 rule all:
     input:
-        expand(f'{OUT_DIR}/proteins.domains.besthit.nooverlap.tsv')
-
+        get_aln_files_for_all_families()
 
 rule familes_to_df:
     input:
@@ -142,6 +171,7 @@ rule filter_overlapping_besthits:
         df = None
 
         for fam in df_bh.family.unique():
+            # sorting ensures that the best hit will remain in df_acc when grouping by index
             df_f = df_bh.loc[df_bh.family == fam].sort_values('conditional_evalue_log')
             # construct overlap graph
             G = nx.Graph()
@@ -153,7 +183,11 @@ rule filter_overlapping_besthits:
                     if df_a.loc[query].query_interval.overlaps(df_b.loc[query].query_interval):
                         G.add_edge(a, b)
                         break
+
+            # we sort values so that the best groups (with of log(evalue) is smallest) are processed first
             df_hits = df_f[['hit_accession', 'conditional_evalue_log']].groupby('hit_accession').sum().sort_values('conditional_evalue_log')
+
+            # covered is a flag that ensures that only the best out of all overlapping domains are chosen
             df_hits['covered']=False
             for acc in df_hits.index:
                 if not df_hits.covered[acc]:
@@ -162,6 +196,7 @@ rule filter_overlapping_besthits:
                         df = df_acc
                     else:
                         df = pd.concat([df, df_acc])
+                    # choosing the complete connected component of the overlap graph may not be the best choice, but so far it's been fine
                     df_hits.loc[list(nx.node_connected_component(G, acc)), 'covered'] = True
 
         df.drop(['conditional_evalue_log', 'query_interval'], axis=1, inplace=True)
@@ -169,3 +204,97 @@ rule filter_overlapping_besthits:
             df.to_csv(out, sep='\t', index=False)
 
 
+rule produce_domain_faa_per_family:
+    input:
+        domains = f'{OUT_DIR}/proteins.domains.besthit.nooverlap.tsv',
+        proteins = f'{OUT_DIR}/proteins.faa',
+        profiles_dummy = get_profile_files,
+    output:
+        get_domain_files()
+    run:
+        from os.path import dirname
+        from Bio import SeqIO
+        import pandas as pd
+
+        seqs = dict(map(lambda x: (x.id, x), SeqIO.parse(open(input.proteins), format='fasta')))
+        df = pd.read_csv(input.domains, sep='\t', header=[0])
+        df.set_index(['family', 'hit_accession'], inplace=True)
+
+        for fam, acc in df.index.unique():
+            with open(f'{dirname(output[0])}/{fam}.{acc}.faa', 'w') as out:
+                for _, row in df.loc[(fam, acc)].iterrows():
+                    s = seqs[row.query_id][row.query_start:row.query_end]
+                    s.id += f':{row.query_start}-{row.query_end}'
+                    s.description = ''
+                    SeqIO.write(s, out, format='fasta')
+
+
+checkpoint hmmfetch:
+    input:
+        hmm_db = HMM_DB,
+        besthits = f'{OUT_DIR}/proteins.domains.besthit.nooverlap.tsv'
+    output:
+        directory(f'{dirname(HMM_DB)}/profiles'),
+    shell:
+        'PROFILE_LIST="{input.besthits}.profiles";'
+        'OUT_DIR=$(dirname "{output.profiles}");'
+        'tail -n+2 {input.besthits} | cut -f4 | sort | uniq > $PROFILE_LIST;'
+        'while read LINE; do hmmfetch {input.hmm_db} $LINE > $OUT_DIR/$LINE.hmm; done < $PROFILE_LIST;'
+        'rm -f $PROFILE_LIST'
+
+
+rule hmmalign:
+    input:
+        hmm_profile = f'{dirname(HMM_DB)}/profiles/{{profile}}.hmm',
+        domains = f'{OUT_DIR}/domains/{{family}}.{{profile}}.faa'
+    output:
+        f'{OUT_DIR}/domains/{{family}}.{{profile}}.aln'
+    wildcard_constraints:
+        profile = r'PF\d+\.\d+'
+    shell:
+        'hmmalign {input.hmm_profile} {input.domains} > {output}'
+
+
+rule concat_domain_alns:
+    input:
+        get_aln_files_for_family
+    output:
+        f'{OUT_DIR}/{{family}}.phy'
+    run:
+        from Bio import AlignIO, SeqIO
+        from Bio.SeqRecord import SeqRecord
+        from Bio.Seq import Seq
+        from io import StringIO
+        alns = dict()
+        c = 0
+        for f in input:
+            for a in AlignIO.parse(open(f), format='stockholm'):
+                cur_c = 0
+                for s in SeqIO.parse(StringIO(format(a, 'fasta')), format='fasta'):
+                    s.id = s.id.split(':', 1)[0]
+                    s.description == ''
+                    if s.id in alns:
+                        alns[s.id] += s
+                    else:
+                        alns[s.id] = SeqRecord(Seq('-'*c + str(s.seq)), id=s.id, description='')
+                    cur_c = max(cur_c, len(alns[s.id]) - c)
+                c += cur_c
+                for sid, s in alns.items():
+                    if len(s) < c:
+                        alns[sid] += Seq('-'*(c-len(s)))
+
+        mfasta = StringIO()
+        for sid in sorted(alns.keys()):
+            SeqIO.write(alns[sid], mfasta, format='fasta')
+        mfasta.seek(0)
+        with open(output[0], 'w') as out:
+            AlignIO.write(AlignIO.parse(mfasta, format='fasta'), out, 'phylip-relaxed')
+
+
+#rule touch_faa_files:
+#    input:
+#        get_domain_files
+#    output:
+#        f'{OUT_DIR}/domains/{{family}}.{{profile}}.faa'
+#    shell:
+#        'touch {output}'
