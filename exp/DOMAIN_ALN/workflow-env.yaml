@@ -1,0 +1,13 @@
+name: hmmer
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+
+dependencies:
+  - hmmer=3.3.2
+  - pandas=2.1.1
+  - networkx=3.1
+  - numpy=1.26.0
+  - biopython=1.81
+
