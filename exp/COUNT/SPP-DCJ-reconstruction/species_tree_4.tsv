@@ -1,0 +1,7 @@
+#Node	Parent
+node1	node2
+node0	node1
+AnophelesgambiaePEST	node0
+AnophelesfunestusFUMOZ	node0
+AnophelesatroparvusEBRO	node1
+AnophelesalbimanusSTECLA	node2
