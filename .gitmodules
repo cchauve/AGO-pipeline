@@ -1,0 +1,4 @@
+[submodule "exp/COUNT/SPP-DCJ-reconstruction/spp_dcj_v2"]
+	path = exp/COUNT/SPP-DCJ-reconstruction/spp_dcj_v2
+    url = git@github.com:marschall-lab/spp_dcj_v2.git
+    branch = genetree-free2
