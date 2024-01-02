@@ -155,9 +155,8 @@ def select_families(data_df_by_family, min_size, target_chr, min_on_target):
     selected_families = []
     nb_families = 0
     stat_small1,stat_absent,stat_off_target,stat_ambiguous,stat_small2,stat_on_target = 0,0,0,0,0,0
-    for key, item in data_df_by_family:
+    for key, family_df in data_df_by_family:
         nb_families += 1
-        family_df = data_df_by_family.get_group(key)
         family_id = family_df['family'].tolist()[0]
         family_stats = check_target_chr(family_df, target_chr)
         nb_on_target,nb_ambiguous,nb_off_target,nb_absent = 0,0,0,0        
@@ -197,8 +196,7 @@ def get_gene_id(df_row, sep='|'):
 def build_families(data_df_by_family, selected_families, out_dir, suffix):
     families_file = os.path.join(out_dir,f'families_{suffix}.txt')
     with open(families_file, 'w') as out_file:
-        for key, item in data_df_by_family:
-            family_df = data_df_by_family.get_group(key)
+        for key, family_df in data_df_by_family:
             family_id = family_df['family'].tolist()[0]
             if family_id in selected_families:
                 out_file.write(family_id)
@@ -217,8 +215,7 @@ def build_sequences(data_df_by_family, selected_families, out_dir, suffix):
     os.makedirs(sequences_dir, exist_ok=True)
     sequences_file = os.path.join(out_dir,f'sequences_{suffix}.txt')
     with open(sequences_file, 'w') as out_file:
-        for key, item in data_df_by_family:
-            family_df = data_df_by_family.get_group(key)
+        for key, family_df in data_df_by_family:
             family_id = family_df['family'].tolist()[0]
             if family_id in selected_families:
                 fasta_file = os.path.join(sequences_dir,f'{family_id}.fasta')
@@ -235,8 +232,7 @@ def build_gene_orders(data_df_by_species, selected_families, out_dir, suffix):
     os.makedirs(gene_orders_dir, exist_ok=True)
     gene_orders_file = os.path.join(out_dir,f'gene_orders_{suffix}.txt')
     with open(gene_orders_file, 'w') as out_file:
-        for key, item in data_df_by_species:
-            species_df = data_df_by_species.get_group(key)
+        for key, species_df in data_df_by_species:
             species = species_df['species'].tolist()[0]
             genes = []
             for _,gene in species_df.iterrows():                
