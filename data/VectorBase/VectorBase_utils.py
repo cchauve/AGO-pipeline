@@ -77,7 +77,7 @@ def delete_species(data_df, target_species):
 
 def delete_ambiguous_data(data_df):
     nb_rows_before = len(data_df.index)
-    data_df.drop(data_df[data_df['family'] == 'NA'].index, inplace = True)
+    data_df.drop(data_df[data_df['family'].str.startswith('NA')].index, inplace = True)
     data_df.drop(data_df[data_df['chromosome'] == 'UNKN'].index, inplace = True)
     data_df.drop(data_df[data_df['chromosome'] == 'Yunplaced'].index, inplace = True)
     nb_rows_after = len(data_df.index)
