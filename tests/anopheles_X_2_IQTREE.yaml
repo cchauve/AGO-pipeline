@@ -196,7 +196,11 @@ tools:
          cmd:
             - !concat ['NBSEQS=`grep ">" -c ', *iqtree_slurm_array_input_name, '`']
             - !concat [' ']
-            - !concat ['if [ ${NBSEQS} -eq 3 ]; then']
+            - !concat ['if [ ${NBSEQS} -eq 2 ]; then']
+            - !concat ['    ', !join [*run_dir_scripts, 'IQ-TREE_2fam.py'], ' \']
+            - !concat ['       ', *iqtree_slurm_array_input_name,' \']
+            - !concat ['       ', *iqtree_slurm_results_file_ufboot]
+            - !concat ['elif [ ${NBSEQS} -eq 3 ]; then']
             - !concat ['    ', *iqtree_exec, ' \']
             - !concat ['       -s ',*iqtree_slurm_array_input_name,' \']
             - !concat ['       ', *iqtree_options,' \']

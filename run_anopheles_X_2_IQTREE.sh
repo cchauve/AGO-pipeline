@@ -14,4 +14,5 @@ python src/AGO.py tests/anopheles_X_2_IQTREE.yaml check IQ-TREE
 #        LOG:    /scratch/chauvec/SPP/anopheles_X_2_IQTREE/log/IQ-TREE.log
 #        OUTPUT: /scratch/chauvec/SPP/anopheles_X_2_IQTREE/data/gene_trees_X.txt
 # Errors due to 2 genes families
-# OG6100957
+# Redoing with modified IQ-TREE script
+

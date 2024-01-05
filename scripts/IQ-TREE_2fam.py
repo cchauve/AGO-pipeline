@@ -15,12 +15,14 @@ from data_utils import data_family2genes
 
 
 def main():
-    in_families_file = sys.argv[1]
-    in_family = sys.argv[2]
-    out_tree_file = sys.argv[3]
-    
-    family_2_genes = data_family2genes(in_families_file)
-    genes = family_2_genes[in_family]
+    in_alignment_file = sys.argv[1]
+    out_tree_file = sys.argv[2]
+
+    genes = []
+    with open(in_alignment_file) as in_file:
+        for line in in_file.readlines():
+            if line[0] == '>':
+                genes.append(line.rstrip()[1:])
 
     with open(out_tree_file, 'w') as out_file:
         out_file.write(f'({genes[0]}:1.0,{genes[1]}:1.0);')
