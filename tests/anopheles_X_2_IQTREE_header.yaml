@@ -64,7 +64,7 @@ tools:
    - &ale_object_exec                !join [*run_dir_bin,'ALE/bin/ALEobserve']
    - &ale_object_ext                 '.ale'
    - &ale_uml_exec                   !join [*run_dir_bin,'ALE/bin/ALEml_undated']
-   - &ale_uml_options                !concat ['sample=1 separators="', *species_gene_name_separator, '"']
+   - &ale_uml_options                '' 
    - &ale_modules                    ''
    - &ale_slurm_options              '--mem=2G --time=02:00:00'
    # DeCoSTAR

@@ -71,8 +71,7 @@ def sppdcj_adjacencies(
     with open(out_adjacencies_file, 'w') as out_adjacencies:
         header_str = [
             "#Species","Gene_1","Ext_1",
-            "Species","Gene_2","Ext_2",
-            "Weight"
+            "Gene_2","Ext_2", "Weight"
         ]
         out_adjacencies.write(f'{sppdcj_sep.join(header_str)}')
         for species,in_adjacencies_path in species2adjacencies_file:
@@ -89,8 +88,7 @@ def sppdcj_adjacencies(
                 fam2,gene2 = split_gene(g2)
                 adj_str = [
                     sp,f'{fam1}_{gene1}',exts[0],
-                    sp,f'{fam2}_{gene2}',exts[1],
-                    w2
+                    f'{fam2}_{gene2}',exts[1], w2
                 ]
                 out_adjacencies.write(
                     f'\n{sppdcj_sep.join(adj_str)}'

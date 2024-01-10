@@ -139,8 +139,7 @@ if __name__ == '__main__':
 
     LOG.info(f'loading adjacency set from {args.in_adjacencies.name}')
     df = pd.read_csv(args.in_adjacencies, sep='\t',  header=0)
-    if 'penality' not in df.columns:
-        df['penality'] = np.nan
+    df['Species'] = df['#Species']
 
     species = df.Species.unique()
 
@@ -153,7 +152,8 @@ if __name__ == '__main__':
         for (g1, ext1), (g2, ext2), data in G.edges(data=True):
             if 'complement' in data and data['complement']:
                 i = df.index.max()+1
-                df.loc[i] = [s, g1, ext1, s, g2, ext2, 0, 1]
+                df.loc[i, ['#Species', 'Gene_1', 'Ext_1', 'Gene_2', 'Ext_2',
+                    'Weight']] = [s, g1, ext1, g2, ext2, -1]
 
     LOG.info(f'writing complemented adjacency set to {args.out_adjacencies.name}')
-    df.to_csv(args.out_adjacencies, sep='\t', index=False)
+    df[[x for x in df.columns if x != 'Species']].to_csv(args.out_adjacencies, sep='\t', index=False)

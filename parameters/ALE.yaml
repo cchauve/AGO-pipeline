@@ -44,7 +44,7 @@
             names:
                - &ale_slurm_recphyloxml_file_name   !concat [*ale_slurm_array_results_name, *data_reconciliations_ext]
                - &ale_slurm_object_file_name        !concat [*ale_slurm_array_input_name, *ale_object_ext]
-               - &ale_slurm_uml_rec_file_prefix     !concat [*ale_input_species_tree_name, '_', *ale_slurm_object_file_name]
+               - &ale_slurm_uml_rec_file_prefix     !concat [*ale_slurm_object_file_name]
                - &ale_slurm_uml_rec_file_name       !concat [*ale_slurm_uml_rec_file_prefix, *ale_uml_rec_ext]
                - &ale_slurm_uml_rec_stree_file_name !concat [*ale_slurm_uml_rec_file_prefix, *ale_uml_rec_stree_ext]
                - &ale_slurm_uml_rec_recs_file_name  !concat [*ale_slurm_uml_rec_file_prefix, *ale_uml_rec_recs_ext]

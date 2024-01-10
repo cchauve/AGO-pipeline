@@ -34,9 +34,9 @@ def sppdcj_read_sppdcj_adjacencies(in_adjacencies_file):
             species = adjacency[0]
             gene1 = adjacency[1].replace('_',decostar_sep)
             ext1 = adjacency[2]
-            gene2 = adjacency[4].replace('_',decostar_sep)
-            ext2 = adjacency[5]
-            weight = adjacency[6]
+            gene2 = adjacency[3].replace('_',decostar_sep)
+            ext2 = adjacency[4]
+            weight = adjacency[5]
             if (gene1,ext1)>(gene2,ext2):
                 key = (gene2,gene1,ext2,ext1)
             else:
