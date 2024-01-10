@@ -83,12 +83,12 @@ def complement_conflicting_adjacencies(G, c):
         elif deg_values == set((1, 2)):
             LOG.info(f'identified linear component of conflicting ' + \
                     f'adjacencies of size {len(C)}')
-            # component is linear 
+            # component is linear
             ends = [x[0] for x in degs if x[1] == 1]
             if len(C) % 2:
                 # component is of odd length; all we gotta do is add 1
                 # telomeric extremity and add two telomeric adjacencies to it
-                # to close the cycle 
+                # to close the cycle
                 c += 1
                 t = (f't_{c}', 'o')
                 for adj in ((ends[0], t), (ends[1], t)):
@@ -106,9 +106,11 @@ def complement_conflicting_adjacencies(G, c):
                 G.add_edge(unmatched.pop(), unmatched.pop(), complement=True)
             if unmatched:
                 # component is of odd length; all we gotta do is add 1
-                # telomeric extremity to connect the last extremity 
+                # telomeric extremity to connect the last extremity
                 c += 1
                 G.add_edge(unmatched.pop(), (f't_{c}', 'o'), complement=True)
+
+
 
 if __name__ == '__main__':
 
@@ -122,8 +124,8 @@ if __name__ == '__main__':
     parser.add_argument('out_adjacencies', type=FileType('w'),
             help='Output adjacencies file')
     parser.add_argument('log_file', type=FileType('w'),
-            help='Log file')    
-    
+            help='Log file')
+
     args = parser.parse_args()
 
     out = stdout
