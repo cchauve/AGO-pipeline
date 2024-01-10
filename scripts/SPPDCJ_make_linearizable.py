@@ -83,12 +83,12 @@ def complement_conflicting_adjacencies(G, c):
         elif deg_values == set((1, 2)):
             LOG.info(f'identified linear component of conflicting ' + \
                     f'adjacencies of size {len(C)}')
-            # component is linear 
+            # component is linear
             ends = [x[0] for x in degs if x[1] == 1]
             if len(C) % 2:
                 # component is of odd length; all we gotta do is add 1
                 # telomeric extremity and add two telomeric adjacencies to it
-                # to close the cycle 
+                # to close the cycle
                 c += 1
                 t = (f't_{c}', 'o')
                 for adj in ((ends[0], t), (ends[1], t)):
@@ -106,9 +106,11 @@ def complement_conflicting_adjacencies(G, c):
                 G.add_edge(unmatched.pop(), unmatched.pop(), complement=True)
             if unmatched:
                 # component is of odd length; all we gotta do is add 1
-                # telomeric extremity to connect the last extremity 
+                # telomeric extremity to connect the last extremity
                 c += 1
                 G.add_edge(unmatched.pop(), (f't_{c}', 'o'), complement=True)
+
+
 
 if __name__ == '__main__':
 
@@ -122,8 +124,8 @@ if __name__ == '__main__':
     parser.add_argument('out_adjacencies', type=FileType('w'),
             help='Output adjacencies file')
     parser.add_argument('log_file', type=FileType('w'),
-            help='Log file')    
-    
+            help='Log file')
+
     args = parser.parse_args()
 
     out = stdout
@@ -137,8 +139,7 @@ if __name__ == '__main__':
 
     LOG.info(f'loading adjacency set from {args.in_adjacencies.name}')
     df = pd.read_csv(args.in_adjacencies, sep='\t',  header=0)
-    if 'penality' not in df.columns:
-        df['penality'] = np.nan
+    df['Species'] = df['#Species']
 
     species = df.Species.unique()
 
@@ -151,7 +152,8 @@ if __name__ == '__main__':
         for (g1, ext1), (g2, ext2), data in G.edges(data=True):
             if 'complement' in data and data['complement']:
                 i = df.index.max()+1
-                df.loc[i] = [s, g1, ext1, s, g2, ext2, 0, 1]
+                df.loc[i, ['#Species', 'Gene_1', 'Ext_1', 'Gene_2', 'Ext_2',
+                    'Weight']] = [s, g1, ext1, g2, ext2, -1]
 
     LOG.info(f'writing complemented adjacency set to {args.out_adjacencies.name}')
-    df.to_csv(args.out_adjacencies, sep='\t', index=False)
+    df[[x for x in df.columns if x != 'Species']].to_csv(args.out_adjacencies, sep='\t', index=False)
