@@ -11,11 +11,10 @@ def ale_splitter(rec_file, options):
         stree = lines[2].strip()
         ll = lines[6].strip().split()[-1]
         rates = lines[8].strip().split("\t")[1:]
-        
-        n_reconciled_trees = int(lines[9].strip().split()[0])
-        reconciled_trees = lines[11:n_reconciled_trees + 11]
-        n_of_events = lines[11 + n_reconciled_trees + 1].split("\t")[1:]
-        table = lines[11 + n_reconciled_trees + 3:]             
+        n_reconciled_trees = int(lines[10].strip().split()[0])
+        reconciled_trees = lines[12:n_reconciled_trees + 12]
+        n_of_events = lines[12 + n_reconciled_trees + 1].split("\t")[1:]
+        table = lines[12 + n_reconciled_trees + 3:]             
     
     if options[0]:
         with open(rec_file.replace("uml_rec","stree"),"w") as f:
