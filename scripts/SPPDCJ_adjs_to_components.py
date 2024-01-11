@@ -16,7 +16,7 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.DEBUG)
 
 
-def build_adj_graph(df, species):
+def build_adj_graph(df, genes, species):
     '''
     Constructs a species-specific undirected NetworkX graph where marker
     extremities correspond to nodes and adjacencies to edges.
@@ -34,8 +34,6 @@ def build_adj_graph(df, species):
     '''
 
 
-    genes = set(df.loc[df.Species == species].Gene_1).union(
-            df.loc[df.Species == species].Gene_2)
     G = nx.Graph()
     G.add_nodes_from(map(lambda x: (x, 'h'), genes))
     G.add_nodes_from(map(lambda x: (x, 't'), genes))
@@ -72,17 +70,18 @@ if __name__ == '__main__':
 
     LOG.info(f'loading adjacency set from {args.adjacencies.name}')
     df = pd.read_csv(args.adjacencies, sep='\t',  header=0)
+    df.columns = map(lambda x: x.title(), df.columns)
     df['Species'] = df['#Species']
     species = df.Species.unique()
 
     for s in species:
         LOG.info(f'building adjacency graph for {s}')
-        G = build_adj_graph(df, s)
+        genes = set(df.loc[(df.Species == s) & (df.Ext_1 != 'o')].Gene_1).union(df.loc[(df.Species == s) & (df.Ext_2 != 'o')].Gene_2)
+        G = build_adj_graph(df, genes, s)
 
         if args.contig:
             f = join(args.out_dir, f'contig-components.{s}.tsv')
             LOG.info(f'writing contig components to {f}')
-            genes = set(df.loc[df.Species == s].Gene_1).union(df.loc[df.Species == s].Gene_2)
             G.add_edges_from(map(lambda x: ((x, 'h'), (x, 't')), genes))
             C = sorted(nx.components.connected_components(G), key=len, reverse=True)
             with open(f, 'w') as out:
