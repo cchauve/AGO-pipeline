@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
     LOG.info(f'loading adjacency set from {args.adjacencies.name}')
     df = pd.read_csv(args.adjacencies, sep='\t',  header=0)
-
+    df['Species'] = df['#Species']
     species = df.Species.unique()
 
     for s in species:
