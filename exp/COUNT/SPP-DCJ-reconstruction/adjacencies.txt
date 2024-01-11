@@ -1,4 +1,4 @@
-#species	gene1	ext1	gene2	ext2	weight
+#species	gene_1	ext_1	gene_2	ext_2	weight
 node2	OG6100435_7	h	OG6100435_7	t	0.667
 node2	OG6100445_8	h	OG6100445_8	t	0.0
 node2	OG6100524_10	t	OG6100598_12	t	0.667

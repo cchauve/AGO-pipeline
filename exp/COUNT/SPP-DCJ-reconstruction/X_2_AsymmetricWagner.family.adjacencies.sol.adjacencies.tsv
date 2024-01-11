@@ -1,4 +1,4 @@
-#Species Gene_1 Ext_1 Gene_2 Ext_2 Weight
+#Species	Gene_1	Ext_1	Gene_2	Ext_2	Weight
 AnophelesfunestusFUMOZ	OG6163747_AFUN020699	t	OG6129238_AFUN022308	h	0
 AnophelesfunestusFUMOZ	OG6104525_AFUN005595	h	OG6102890_AFUN020237	h	0
 AnophelesfunestusFUMOZ	OG6103261_AFUN007541	t	OG6124179_AFUN020736	t	0

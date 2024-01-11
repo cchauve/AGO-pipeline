@@ -4,7 +4,7 @@ COUNT_DATA_DIR=../Anopheles
 RAW_DATA_DIR=../../../data/VectorBase
 SPP_DCJ_BIN=./spp_dcj_v2/scripts
 THREADS=8
-MIN_SIZE=5
+MIN_SIZE=0
 
 echo "reformat weight table (weights.formatted.tsv)"
 ./reformat_weight_table.py weights.tsv > weights.formatted.tsv
