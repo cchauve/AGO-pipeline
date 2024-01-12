@@ -68,7 +68,7 @@
             - '   write.adjacencies=true \'
             - '   write.genes=true \'
             - '   use.boltzmann=true \'
-            - '   char.sep="|" \'
+            - !concat ['   char.sep="', *species_gene_name_separator, '" \'
             - '   with.transfer=false \'
             - '   verbose=2'
             - ' '
