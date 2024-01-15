@@ -76,8 +76,8 @@ tools:
    - &decostar_exec                  # REQUIRED: DeCoSTAR command line                             (ex: !join [*run_dir_bin, 'DeCoSTAR'])
    - &decostar_input_path            # REQUIRED: input file, !ref [*data_reconciliations_path] or !ref [*data_gene_trees_path]
    - &decostar_already_reconciled    # REQUIRED: 'true' if ALE or GeneRax, 'false' if IQ-TREE only       
-   - &decostar_dupli_cost            # REQUIRED: used only if *decostar_already_reconciled is true (ex: '2', DeCoSTAR default)
-   - &decostar_loss_cost             # REQUIRED: used only if *decostar_already_reconciled is true (ex: '1', DeCoSTAR default)
+   - &decostar_dupli_cost            # REQUIRED: used only if *decostar_already_reconciled is false (ex: '2', DeCoSTAR default)
+   - &decostar_loss_cost             # REQUIRED: used only if *decostar_already_reconciled is false (ex: '1', DeCoSTAR default)
    - &decostar_again_cost            # REQUIRED: adjacency gain cost                               (ex: '2', DeCoSTAR default)
    - &decostar_abreak_cost           # REQUIRED: adjacency break cost                              (ex: '1', DeCoSTAR default)
    - &decostar_loss_aware            # REQUIRED: loss aware mode (true/false)                      (ex: 'false', DeCoSTAR default)
