@@ -1,0 +1,9 @@
+INFO	2024-01-15 22:29:52,841	loading species tree from ../../../data/VectorBase/species_tree_4.newick
+INFO	2024-01-15 22:29:52,842	loading gene family counts from ../Anopheles/X_3_AsymmetricWagner.family.csv
+INFO	2024-01-15 22:29:52,845	loading gene family assignments from ../../../data/VectorBase/families_X_3.txt
+INFO	2024-01-15 22:29:52,861	loading extant gene orders from ../../../data/VectorBase/gene_orders_X_3.txt
+INFO	2024-01-15 22:29:52,862	++ parsing gene order of AnophelesalbimanusSTECLA from ../../../data/VectorBase/./gene_orders_X_3/AnophelesalbimanusSTECLA.txt
+INFO	2024-01-15 22:29:52,863	++ parsing gene order of AnophelesatroparvusEBRO from ../../../data/VectorBase/./gene_orders_X_3/AnophelesatroparvusEBRO.txt
+INFO	2024-01-15 22:29:52,864	++ parsing gene order of AnophelesfunestusFUMOZ from ../../../data/VectorBase/./gene_orders_X_3/AnophelesfunestusFUMOZ.txt
+INFO	2024-01-15 22:29:52,865	++ parsing gene order of AnophelesgambiaePEST from ../../../data/VectorBase/./gene_orders_X_3/AnophelesgambiaePEST.txt
+INFO	2024-01-15 22:29:53,800	DONE
