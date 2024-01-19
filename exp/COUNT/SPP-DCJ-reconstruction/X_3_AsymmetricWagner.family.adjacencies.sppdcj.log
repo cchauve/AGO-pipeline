@@ -1,0 +1,46 @@
+INFO	2024-01-15 22:31:34,601	loading species tree from species_tree_4.tsv
+INFO	2024-01-15 22:31:34,601	loading candidate adjacencies from X_3_AsymmetricWagner.family.adjacencies.txt, using "_" to separate gene family from uniquifying identifier
+INFO	2024-01-15 22:31:34,610	identified 2 candidate telomeres in genome node2
+INFO	2024-01-15 22:31:34,611	identified 2 candidate telomeres in genome node1
+INFO	2024-01-15 22:31:34,611	identified 2 candidate telomeres in genome node0
+INFO	2024-01-15 22:31:34,611	identified 2 candidate telomeres in genome AnophelesgambiaePEST
+INFO	2024-01-15 22:31:34,611	identified 2 candidate telomeres in genome AnophelesfunestusFUMOZ
+INFO	2024-01-15 22:31:34,611	identified 2 candidate telomeres in genome AnophelesatroparvusEBRO
+INFO	2024-01-15 22:31:34,611	identified 2 candidate telomeres in genome AnophelesalbimanusSTECLA
+INFO	2024-01-15 22:31:34,615	constructing relational diagrams for all 6 branches of the tree
+INFO	2024-01-15 22:31:35,261	identified 13 circular singleton candidates
+INFO	2024-01-15 22:31:35,265	identified 40 circular singleton candidates
+INFO	2024-01-15 22:31:35,267	identified 5 circular singleton candidates
+INFO	2024-01-15 22:31:35,268	identified 0 circular singleton candidates
+INFO	2024-01-15 22:31:35,270	identified 1 circular singleton candidates
+INFO	2024-01-15 22:31:35,271	identified 0 circular singleton candidates
+INFO	2024-01-15 22:31:35,272	writing objective over all graphs
+INFO	2024-01-15 22:31:35,306	writing constraints...
+INFO	2024-01-15 22:31:35,306	writing constraints for relational diagram of AnophelesalbimanusSTECLA and node2
+INFO	2024-01-15 22:31:35,335	writing constraints for relational diagram of AnophelesatroparvusEBRO and node1
+INFO	2024-01-15 22:31:35,367	writing constraints for relational diagram of AnophelesfunestusFUMOZ and node0
+INFO	2024-01-15 22:31:35,398	writing constraints for relational diagram of AnophelesgambiaePEST and node0
+INFO	2024-01-15 22:31:35,428	writing constraints for relational diagram of node0 and node1
+INFO	2024-01-15 22:31:35,472	writing constraints for relational diagram of node1 and node2
+INFO	2024-01-15 22:31:35,516	writing domains...
+INFO	2024-01-15 22:31:35,516	writing domains for relational diagram of AnophelesalbimanusSTECLA and node2
+INFO	2024-01-15 22:31:35,516	writing domains for relational diagram of AnophelesatroparvusEBRO and node1
+INFO	2024-01-15 22:31:35,517	writing domains for relational diagram of AnophelesfunestusFUMOZ and node0
+INFO	2024-01-15 22:31:35,517	writing domains for relational diagram of AnophelesgambiaePEST and node0
+INFO	2024-01-15 22:31:35,518	writing domains for relational diagram of node0 and node1
+INFO	2024-01-15 22:31:35,519	writing domains for relational diagram of node1 and node2
+INFO	2024-01-15 22:31:35,519	writing variables...
+INFO	2024-01-15 22:31:35,519	writing general variables for relational diagram of AnophelesalbimanusSTECLA and node2
+INFO	2024-01-15 22:31:35,520	writing general variables for relational diagram of AnophelesatroparvusEBRO and node1
+INFO	2024-01-15 22:31:35,520	writing general variables for relational diagram of AnophelesfunestusFUMOZ and node0
+INFO	2024-01-15 22:31:35,521	writing general variables for relational diagram of AnophelesgambiaePEST and node0
+INFO	2024-01-15 22:31:35,521	writing general variables for relational diagram of node0 and node1
+INFO	2024-01-15 22:31:35,521	writing general variables for relational diagram of node1 and node2
+INFO	2024-01-15 22:31:35,522	writing binary variables for relational diagram of AnophelesalbimanusSTECLA and node2
+INFO	2024-01-15 22:31:35,526	writing binary variables for relational diagram of AnophelesatroparvusEBRO and node1
+INFO	2024-01-15 22:31:35,532	writing binary variables for relational diagram of AnophelesfunestusFUMOZ and node0
+INFO	2024-01-15 22:31:35,536	writing binary variables for relational diagram of AnophelesgambiaePEST and node0
+INFO	2024-01-15 22:31:35,540	writing binary variables for relational diagram of node0 and node1
+INFO	2024-01-15 22:31:35,546	writing binary variables for relational diagram of node1 and node2
+INFO	2024-01-15 22:31:35,553	writing ID-to-gene extremity mapping to X_3_AsymmetricWagner.family.adjacencies.idmap
+INFO	2024-01-15 22:31:35,557	DONE
