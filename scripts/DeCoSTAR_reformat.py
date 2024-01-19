@@ -33,8 +33,8 @@ decostar_sep = '|'
 def decostar_read_species_file(in_species_file):
     '''
     input: DeCoSTAR species file
-    output: dictionary dict(str->list(str)) indexed by names of 
-      nodes in  in_species_file to list of extant descendants 
+    output: dictionary dict(str->list(str)) indexed by names of
+      nodes in  in_species_file to list of extant descendants
       species each list is sorted in alphabetical order
     '''
     leaves = {}
@@ -64,7 +64,7 @@ def decostar_family_map(
         in_gene_trees_file, in_input_file, add_path=False
 ):
     '''
-    input: 
+    input:
     - in_gene_trees_file: DeCoSTAR input gene trees distribution file
     - in_distribution_file: map from original family ID to rec/gene trees path
     - if add_path is True, adds the reconciliation path
@@ -96,9 +96,9 @@ def decostar_test_ancestral(gene):
     gene1 = gene.split(decostar_sep)
     return len(gene1)==2 and gene1[0].isdigit() and gene1[1].isdigit()
 
-''' 
-Read DeCoSTAR genes file to compute a map from gene name 
-to list of species + descendant (gene) leaves 
+'''
+Read DeCoSTAR genes file to compute a map from gene name
+to list of species + descendant (gene) leaves
 '''
 def decostar_genes2leaves(in_genes_file, species_map):
     '''
@@ -124,9 +124,9 @@ def decostar_genes2leaves(in_genes_file, species_map):
     return gene2leaves
 
 def xml_parse_tree(rec_path):
-    ''' 
+    '''
     input: XML file path
-    output: 
+    output:
     dict(node name(str) -> species + name of descendant leaves (str/None))
     '''
     def parse_clade_recursive(node, result):
@@ -194,7 +194,7 @@ def decostar_gene_map_identity(in_genes_file):
             gene_name = gene.rstrip().split()[1]
             genes_map[gene_name] = gene_name.split(decostar_sep)[1]
     return genes_map
-    
+
 ''' Reformat DeCoSTAR genes file '''
 def decostar_reformat_genes(
         in_species_map,
@@ -240,7 +240,7 @@ def decostar_reformat_genes(
             in_species,in_fam_gene = line_split[0:2]
             out_species = in_species_map[in_species]
             if decostar_test_ancestral(in_fam_gene):
-                # Ancestral gene: replace DeCoSTAR family name by original 
+                # Ancestral gene: replace DeCoSTAR family name by original
                 # family name and DeCoSTAR gene name by original gene name
                 in_fam,in_gene = in_fam_gene.split(decostar_sep)
                 out_fam = family_map[in_fam][0]
@@ -259,7 +259,7 @@ def decostar_reformat_genes(
             out_genes.write(f'{out_gene_str}\n')
     return original_fam_gene
 
-''' 
+'''
 Reads a DeCoSTAR adjacencies field and returns a list of
 adjacencies in form (species,gene1,gene2,extremity1,extremity2,weight1,weight2)
 '''
@@ -274,7 +274,7 @@ def decostar_read_adjacencies(in_adjacencies_file, species=None):
                 g1,g2,sign1,sign2,w1,w2 = line.rstrip().split()
                 adjacencies.append([species,g1,g2,sign1,sign2,w1,w2])
     return adjacencies
-            
+
 ''' Reformat DeCoSTAR adjacencies file '''
 def decostar_reformat_adjacencies_file(
         in_species_map,
@@ -324,7 +324,7 @@ def main():
     in_genes_file = sys.argv[7]
     in_adjacencies_file = sys.argv[8]
     out_genes_file = sys.argv[9]
-    out_adjacencies_dir = sys.argv[10]    
+    out_adjacencies_dir = sys.argv[10]
 
     # Creates a map from DeCoSTAR species names to original species names
     species_map = decostar_species_map(
@@ -343,7 +343,7 @@ def main():
         species_map, genes_map, in_adjacencies_file,
         out_adjacencies_dir
     )
-    
+
 if __name__ == "__main__":
     main()
 
