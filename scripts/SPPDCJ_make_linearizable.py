@@ -36,8 +36,8 @@ def build_adj_graph(df, species):
     '''
 
 
-    genes = set(df.loc[df.Species == species].Gene_1).union(
-            df.loc[df.Species == species].Gene_2)
+    genes = set(df.loc[(df.Species == species) & (df.Ext_1 != 'o')].Gene_1).union(
+            df.loc[(df.Species == species) & (df.Ext_2 != 'o')].Gene_2)
     G = nx.Graph()
     G.add_nodes_from(map(lambda x: (x, 'h'), genes))
     G.add_nodes_from(map(lambda x: (x, 't'), genes))
