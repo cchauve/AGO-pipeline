@@ -20,6 +20,7 @@
          script:
             - !join [*run_dir_scripts, 'SPPDCJ_create_input_files.py']
             - !ref [*data_adjacencies_path]
+            - !ref [*data_reconciliations_path]
             - !ref [*data_species_tree_path]
             - !ref [*sppdcj_input_species]
             - !ref [*sppdcj_ilp_threshold]
