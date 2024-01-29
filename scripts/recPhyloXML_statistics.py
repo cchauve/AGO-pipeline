@@ -30,6 +30,7 @@ STATS_hgt = 'transfers' # Number of HGTs
 STATS_xmlkeys = {
     'leaf': STATS_genes,
     'speciation': STATS_genes,
+    'speciationLoss': STATS_genes,
     'duplication': STATS_dup,
     'loss': STATS_loss,
     'branchingOut': STATS_hgt
@@ -94,8 +95,14 @@ def xml_read_events(in_file):
             # If more than one, then speciationLoss ended by last event
             # Loop on speciationLoss events to add a loss to the sibling species
             for event in events[1:][::-1]:
-                sibling = siblings[xml_get_rec_species(event)]
+                event_species = xml_get_rec_species(event)
+                sibling = siblings[event_species]
                 stats[sibling][STATS_loss] += 1
+            # Loop on speciation loss events to add a gene to the species
+            for event in events[:-1]:
+                event_species = xml_get_rec_species(event)
+                event_tag = xml_get_tag(event)
+                stats[event_species][STATS_xmlkeys[event_tag]] += 1
             # Last event
             last_event_tag = xml_get_tag(events[-1])
             last_event_species = xml_get_rec_species(events[-1])
@@ -132,6 +139,7 @@ def xml_collect_statistics(in_reconciliations_file):
     stats_families = {}
     for fam_id,reconciliation_path in family2reconciliation.items():  
         events = xml_read_events(reconciliation_path)
+        print(events)
         stats_families[fam_id] = events
         for species,stats in stats_families[fam_id].items():
             if species not in stats_species.keys():
