@@ -139,7 +139,6 @@ def xml_collect_statistics(in_reconciliations_file):
     stats_families = {}
     for fam_id,reconciliation_path in family2reconciliation.items():  
         events = xml_read_events(reconciliation_path)
-        print(events)
         stats_families[fam_id] = events
         for species,stats in stats_families[fam_id].items():
             if species not in stats_species.keys():
